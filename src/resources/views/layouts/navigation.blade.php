@@ -8,7 +8,7 @@
         <div class="flex items-center justify-center w-7 h-7 rounded-md bg-primary">
             <x-heroicon-s-command-line class="h-4 w-4 text-primary-foreground" />
         </div>
-        <span class="font-semibold text-sm text-foreground tracking-tight">{{ config('app.name', 'SI Tiket') }}</span>
+        <span class="font-semibold text-sm text-foreground tracking-tight">{{ config('app.name', 'JoinFest') }}</span>
 
         {{-- Mobile close button --}}
         <button @click="sidebarOpen = false" class="ml-auto md:hidden p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary cursor-pointer">
