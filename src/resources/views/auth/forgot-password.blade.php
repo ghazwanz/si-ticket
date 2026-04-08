@@ -1,25 +1,35 @@
 <x-guest-layout>
-    <div class="mb-4 text-sm text-muted-foreground">
-        {{ __('Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.') }}
-    </div>
+    <h2 class="auth-title">Reset</h2>
 
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+    <p style="font-size:13px;color:#666a73;margin-top:0;margin-bottom:14px;">
+        Enter your account email. We will send a link to reset your password.
+    </p>
+
+    @if (session('status'))
+        <div class="auth-status">{{ session('status') }}</div>
+    @endif
+
+    @if ($errors->any())
+        <div class="auth-errors">
+            @foreach ($errors->all() as $error)
+                <div>{{ $error }}</div>
+            @endforeach
+        </div>
+    @endif
 
     <form method="POST" action="{{ route('password.email') }}">
         @csrf
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+        <div class="auth-field">
+            <label for="email">Email <span style="color:#b42318">*</span></label>
+            <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus>
         </div>
 
-        <div class="flex items-center justify-end mt-4">
-            <x-primary-button>
-                {{ __('Email Password Reset Link') }}
-            </x-primary-button>
-        </div>
+        <button type="submit" class="btn btn-dark">Send reset link</button>
     </form>
+
+    <div class="tiny-note">
+        Already remember your password?
+        <a class="inline-link" href="{{ route('login') }}">Back to login</a>
+    </div>
 </x-guest-layout>

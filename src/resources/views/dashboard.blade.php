@@ -15,8 +15,8 @@
         <div class="px-4 sm:px-6 lg:px-8 lg:space-y-12 space-y-6">
             <div class="space-y-6">
                 <div>
-                    <h2 class="text-2xl font-medium tracking-tight text-foreground">Selamat Datang, {{ Auth::user()->name }}!</h2>
-                    <p class="text-base text-muted-foreground">Berikut adalah ringkasan aktivitas event Anda hari ini.</p>
+                    <h2 class="text-2xl font-medium tracking-tight text-foreground">Welcome, {{ Auth::user()->name }}!</h2>
+                    <p class="text-base text-muted-foreground">Here is a summary of your event activity today.</p>
                 </div>
 
                 {{-- KPI Cards --}}
@@ -190,7 +190,7 @@
                 <div class="flex justify-between">
                     <h2 class="text-2xl font-medium tracking-tight text-foreground">Recent QR Scans</h2>
                     <a href="#" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md border border-border bg-background text-foreground hover:bg-secondary transition-colors cursor-pointer">
-                        Lihat Semua
+                        View All
                     </a>
                 </div>
 
