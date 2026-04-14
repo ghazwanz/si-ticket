@@ -408,6 +408,7 @@
                     @auth
                         <a href="{{ url('/dashboard') }}" class="btn-link btn-outline">Dashboard</a>
                     @else
+                        <a href="{{ route('events.index') }}" class="btn-link btn-outline">Katalog Event</a>
                         @if (Route::has('login'))
                             <a href="{{ route('login') }}" class="btn-link btn-outline">Login</a>
                         @endif
