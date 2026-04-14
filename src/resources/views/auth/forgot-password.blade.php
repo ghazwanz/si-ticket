@@ -1,35 +1,36 @@
 <x-guest-layout>
-    <h2 class="auth-title">Reset</h2>
+    <p class="mb-1 text-xs font-semibold uppercase tracking-[0.2em] text-violet-600">JoinFest</p>
+    <h1 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Reset</h1>
 
-    <p style="font-size:13px;color:#666a73;margin-top:0;margin-bottom:14px;">
+    <p class="mt-2 mb-6 text-sm text-slate-500">
         Enter your account email. We will send a link to reset your password.
     </p>
 
     @if (session('status'))
-        <div class="auth-status">{{ session('status') }}</div>
+        <div class="mb-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{{ session('status') }}</div>
     @endif
 
     @if ($errors->any())
-        <div class="auth-errors">
+        <div class="mb-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
             @foreach ($errors->all() as $error)
                 <div>{{ $error }}</div>
             @endforeach
         </div>
     @endif
 
-    <form method="POST" action="{{ route('password.email') }}">
+    <form method="POST" action="{{ route('password.email') }}" class="space-y-4">
         @csrf
 
-        <div class="auth-field">
-            <label for="email">Email <span style="color:#b42318">*</span></label>
-            <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus>
+        <div>
+            <label for="email" class="mb-2 block text-sm font-medium text-slate-700">Email <span class="text-red-600">*</span></label>
+            <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-violet-500 focus:ring-4 focus:ring-violet-500/15">
         </div>
 
-        <button type="submit" class="btn btn-dark">Send reset link</button>
+        <button type="submit" class="inline-flex h-12 w-full items-center justify-center rounded-xl bg-gradient-to-r from-violet-600 to-violet-500 px-4 text-sm font-semibold text-white shadow-[0_12px_20px_rgba(109,40,217,0.25)] transition hover:-translate-y-0.5 hover:shadow-[0_16px_24px_rgba(109,40,217,0.3)]">Send reset link</button>
     </form>
 
-    <div class="tiny-note">
+    <p class="mt-4 text-center text-sm text-slate-500">
         Already remember your password?
-        <a class="inline-link" href="{{ route('login') }}">Back to login</a>
-    </div>
+        <a class="font-semibold text-violet-600 transition hover:text-violet-700" href="{{ route('login') }}">Back to login</a>
+    </p>
 </x-guest-layout>

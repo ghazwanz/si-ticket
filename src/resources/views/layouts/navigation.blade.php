@@ -1,7 +1,9 @@
 {{-- Sidebar Navigation --}}
 <aside
+    data-reveal
+    data-reveal-delay="0"
     :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
-    class="fixed inset-y-0 left-0 z-50 w-56 bg-background border-r border-border flex flex-col transition-transform duration-200 ease-in-out md:translate-x-0"
+    class="fixed inset-y-0 left-0 z-50 w-56 bg-background border-r border-border flex flex-col transition-transform duration-200 ease-in-out md:translate-x-0 opacity-0 translate-y-6 scale-[0.98] blur-sm"
 >
     {{-- Brand --}}
     <div class="flex items-center gap-2 px-4 h-14 border-b border-border shrink-0">

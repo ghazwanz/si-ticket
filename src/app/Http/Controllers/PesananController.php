@@ -44,7 +44,7 @@ class PesananController extends Controller
                 ],
                 'merchandises'       => [
                     (object)[
-                        'nama'          => 'Venture Exclusive T-Shirt 2024',
+                        'nama'          => config('app.name') . ' Exclusive T-Shirt 2024',
                         'varian'        => 'XL - Black',
                         'qty'           => 1,
                         'gambar'        => null,

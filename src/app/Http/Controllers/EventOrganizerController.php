@@ -51,7 +51,7 @@ class EventOrganizerController extends Controller
                 'nama'     => 'AI & Future of Design',
                 'kategori' => 'Workshop',
                 'tanggal'  => '2024-09-05',
-                'lokasi'   => 'Venture Studio Lab',
+                'lokasi'   => config('app.name') . ' Studio Lab',
                 'gambar'   => null,
             ],
         ]);
@@ -93,7 +93,7 @@ class EventOrganizerController extends Controller
             ],
             (object)[
                 'rating'   => 5,
-                'komentar' => 'Konser Jazz paling intim yang pernah saya datangi. Sound system dan pemilihan venue selalu menjadi kekuatan Venture Productions.',
+                'komentar' => 'Konser Jazz paling intim yang pernah saya datangi. Sound system dan pemilihan venue selalu menjadi kekuatan ' . config('app.name') . ' Productions.',
                 'nama'     => 'Siska Pratama',
                 'jabatan'  => 'Music Enthusiast',
                 'avatar'   => null,

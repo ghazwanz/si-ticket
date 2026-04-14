@@ -11,7 +11,7 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased text-foreground" x-data="{ sidebarOpen: false }">
-        <div class="min-h-screen bg-background">
+            <div class="min-h-screen bg-background">
             {{-- Mobile sidebar overlay --}}
             <div x-show="sidebarOpen" x-transition:enter="transition-opacity ease-linear duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition-opacity ease-linear duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 z-40 bg-black/50 md:hidden" @click="sidebarOpen = false" x-cloak></div>
 
@@ -21,7 +21,7 @@
             {{-- Main content area --}}
             <div class="md:pl-56">
                 {{-- Top header bar --}}
-                <header class="sticky top-0 z-20 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+                <header data-site-header data-scrolled="false" class="sticky top-0 z-20 border-b border-border bg-background/95 backdrop-blur transition-all duration-300 supports-[backdrop-filter]:bg-background/60 data-[scrolled=true]:border-violet-200 data-[scrolled=true]:shadow-[0_12px_30px_rgba(15,23,42,0.08)]">
                     <div class="flex items-center justify-between h-14 px-4 sm:px-6 lg:px-8">
                         {{-- Mobile hamburger --}}
                         <button @click="sidebarOpen = true" class="md:hidden inline-flex items-center justify-center p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer">
@@ -38,9 +38,11 @@
                 </header>
 
                 {{-- Page Content --}}
-                <main>
-                    <!-- @yield('content') -->
-                     {{ $slot }}
+                <main data-page-shell>
+                    <div data-reveal data-reveal-delay="80" class="opacity-0 translate-y-6 scale-[0.98] blur-sm transition-all duration-700 ease-out">
+                        <!-- @yield('content') -->
+                         {{ $slot }}
+                    </div>
                 </main>
             </div>
         </div>

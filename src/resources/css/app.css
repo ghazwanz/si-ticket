@@ -4,6 +4,10 @@
 @tailwind utilities;
 
 @layer base {
+    [x-cloak] {
+        display: none !important;
+    }
+
     * {
         border-color: hsl(220 13% 91%);
     }
