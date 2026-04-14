@@ -54,8 +54,9 @@
 
         {{-- Main Content --}}
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {{-- Check-in Section --}}
+            {{-- Scanner Section (Side by Side) --}}
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                {{-- Check-in Scanner --}}
                 <div class="bg-white rounded-xl border border-[#E0E0E8] p-8">
                     <div class="flex items-center gap-3 mb-6">
                         <div class="w-12 h-12 rounded-lg bg-[#EDE9FE] flex items-center justify-center">
@@ -73,9 +74,43 @@
                     {{-- QR Input --}}
                     <div class="mb-6">
                         <label class="block text-sm font-medium text-[#111118] mb-2">Pindai QR Tiket</label>
-                        <input type="text" placeholder="Arahkan kamera ke QR code atau paste token di sini..."
-                            id="checkinInput"
-                            class="w-full px-4 py-3 border border-[#E0E0E8] rounded-lg text-[#111118] placeholder-[#6B6B80] focus:outline-none focus:ring-2 focus:ring-[#7C3AED] focus:border-transparent">
+                        
+                        {{-- Camera Scanner Visual --}}
+                        <div class="relative w-full bg-[#111118] rounded-lg overflow-hidden border-2 border-[#7C3AED] aspect-video flex items-center justify-center cursor-pointer hover:border-[#6d28d9] transition-colors"
+                            id="checkinScanner" onclick="document.getElementById('checkinInput').focus()">
+                            {{-- Scanning Area --}}
+                            <div class="absolute inset-0 bg-gradient-to-b from-transparent via-[#7C3AED]/10 to-transparent"></div>
+                            
+                            {{-- Corner Markers --}}
+                            <svg class="absolute inset-0 w-full h-full" viewBox="0 0 400 300" fill="none">
+                                {{-- Top Left --}}
+                                <path d="M 20 20 L 20 80 M 20 20 L 80 20" stroke="#7C3AED" stroke-width="3" stroke-linecap="round"/>
+                                {{-- Top Right --}}
+                                <path d="M 380 20 L 380 80 M 380 20 L 320 20" stroke="#7C3AED" stroke-width="3" stroke-linecap="round"/>
+                                {{-- Bottom Left --}}
+                                <path d="M 20 280 L 20 220 M 20 280 L 80 280" stroke="#7C3AED" stroke-width="3" stroke-linecap="round"/>
+                                {{-- Bottom Right --}}
+                                <path d="M 380 280 L 380 220 M 380 280 L 320 280" stroke="#7C3AED" stroke-width="3" stroke-linecap="round"/>
+                            </svg>
+
+                            {{-- Content --}}
+                            <div class="text-center z-10">
+                                <svg class="w-16 h-16 text-[#7C3AED] mx-auto mb-3 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                        d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z">
+                                    </path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                        d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                </svg>
+                                <p class="text-white font-bold">Arahkan Kamera</p>
+                                <p class="text-[#7C3AED]/80 text-xs mt-1">ke QR Code</p>
+                            </div>
+                        </div>
+
+                        {{-- Hidden Input untuk scan data --}}
+                        <input type="text" id="checkinInput"
+                            class="opacity-0 h-0 w-0 pointer-events-none"
+                            placeholder="hidden">
                     </div>
 
                     {{-- Display Result --}}
@@ -168,9 +203,43 @@
                     {{-- QR Input --}}
                     <div class="mb-6">
                         <label class="block text-sm font-medium text-[#111118] mb-2">Pindai QR Merchandise</label>
-                        <input type="text" placeholder="Arahkan kamera ke QR code atau paste token di sini..."
-                            id="merchandiseInput"
-                            class="w-full px-4 py-3 border border-[#E0E0E8] rounded-lg text-[#111118] placeholder-[#6B6B80] focus:outline-none focus:ring-2 focus:ring-[#F97316] focus:border-transparent">
+                        
+                        {{-- Camera Scanner Visual --}}
+                        <div class="relative w-full bg-[#111118] rounded-lg overflow-hidden border-2 border-[#F97316] aspect-video flex items-center justify-center cursor-pointer hover:border-[#ea580c] transition-colors"
+                            id="merchandiseScanner" onclick="document.getElementById('merchandiseInput').focus()">
+                            {{-- Scanning Area --}}
+                            <div class="absolute inset-0 bg-gradient-to-b from-transparent via-[#F97316]/10 to-transparent"></div>
+                            
+                            {{-- Corner Markers --}}
+                            <svg class="absolute inset-0 w-full h-full" viewBox="0 0 400 300" fill="none">
+                                {{-- Top Left --}}
+                                <path d="M 20 20 L 20 80 M 20 20 L 80 20" stroke="#F97316" stroke-width="3" stroke-linecap="round"/>
+                                {{-- Top Right --}}
+                                <path d="M 380 20 L 380 80 M 380 20 L 320 20" stroke="#F97316" stroke-width="3" stroke-linecap="round"/>
+                                {{-- Bottom Left --}}
+                                <path d="M 20 280 L 20 220 M 20 280 L 80 280" stroke="#F97316" stroke-width="3" stroke-linecap="round"/>
+                                {{-- Bottom Right --}}
+                                <path d="M 380 280 L 380 220 M 380 280 L 320 280" stroke="#F97316" stroke-width="3" stroke-linecap="round"/>
+                            </svg>
+
+                            {{-- Content --}}
+                            <div class="text-center z-10">
+                                <svg class="w-16 h-16 text-[#F97316] mx-auto mb-3 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                        d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z">
+                                    </path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                        d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                </svg>
+                                <p class="text-white font-bold">Arahkan Kamera</p>
+                                <p class="text-[#F97316]/80 text-xs mt-1">ke QR Code</p>
+                            </div>
+                        </div>
+
+                        {{-- Hidden Input untuk scan data --}}
+                        <input type="text" id="merchandiseInput"
+                            class="opacity-0 h-0 w-0 pointer-events-none"
+                            placeholder="hidden">
                     </div>
 
                     {{-- Display Result --}}
@@ -235,8 +304,63 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
+
+                    {{-- Display Result --}}
+                    <div id="checkinResult" class="mb-6 hidden">
+                        <div class="bg-[#EDE9FE] rounded-lg p-6 border border-[#7C3AED]">
+                            <div class="flex items-start gap-3">
+                                <svg class="w-6 h-6 text-[#16A34A] flex-shrink-0 mt-0.5" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <div class="flex-1">
+                                    <h3 class="font-bold text-[#111118]">Check-in Berhasil! ✓</h3>
+                                    <div class="mt-3 space-y-2 text-sm">
+                                        <div class="flex justify-between">
+                                            <span class="text-[#6B6B80]">Nama Pengunjung:</span>
+                                            <span class="font-medium text-[#111118]" id="visitorName">Budi
+                                                Santoso</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-[#6B6B80]">Kategori Tiket:</span>
+                                            <span class="font-medium text-[#111118]" id="ticketCategory">VIP</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-[#6B6B80]">Jam Check-in:</span>
+                                            <span class="font-medium text-[#111118]" id="checkinTime">14:32:15</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-[#6B6B80]">No. Tiket:</span>
+                                            <span class="font-medium text-[#111118]"
+                                                id="ticketNo">#ORD-2026-001234</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Error Result --}}
+                    <div id="checkinError" class="mb-6 hidden">
+                        <div class="bg-red-50 rounded-lg p-6 border border-[#DC2626]">
+                            <div class="flex items-start gap-3">
+                                <svg class="w-6 h-6 text-[#DC2626] flex-shrink-0 mt-0.5" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <div class="flex-1">
+                                    <h3 class="font-bold text-[#111118]">QR Tidak Valid ✗</h3>
+                                    <p class="text-sm text-[#6B6B80] mt-2" id="errorMessage">Tiket sudah dipindai
+                                        sebelumnya atau tidak ditemukan.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    
+                    
 
     <script>
         { { --Check -in Logic-- } }
