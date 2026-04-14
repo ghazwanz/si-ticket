@@ -14,7 +14,7 @@
 <div class="min-h-screen bg-[#F8F8FA]">
     {{-- Header Section --}}
     <div class="border-b border-[#E0E0E8] bg-white sticky top-0 z-40">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <div class="flex items-center gap-4">
                 <a href="{{ route('organizer.merchandise.index') }}" class="text-[#6B6B80] hover:text-[#111118]">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -30,7 +30,7 @@
     </div>
 
     {{-- Form Content --}}
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <form class="space-y-6">
             {{-- Basic Information Section --}}
             <div class="bg-white rounded-xl border border-[#E0E0E8] p-8">
