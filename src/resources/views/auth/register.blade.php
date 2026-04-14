@@ -1,5 +1,11 @@
 <x-guest-layout>
+    <p class="auth-brand">JoinFest</p>
     <h2 class="auth-title">Register</h2>
+    <p class="auth-subtitle">Buat akun untuk mulai menemukan dan memesan event di JoinFest.</p>
+
+    @if (session('status'))
+        <div class="auth-status">{{ session('status') }}</div>
+    @endif
 
     @if ($errors->any())
         <div class="auth-errors">
