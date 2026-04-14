@@ -3,7 +3,9 @@
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\EventOrganizerController;
 use App\Http\Controllers\PesananController;
+use App\Http\Controllers\MerchandiseController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ScannerController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -20,6 +22,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
 Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
 
@@ -27,12 +30,33 @@ Route::get('/pesanan', [PesananController::class, 'index'])->name('pesanan.index
 Route::get('/pesanan/{id}',  [PesananController::class, 'show'])->name('pesanan.show');
 
 Route::get('/pesanan/{id}/invoice', [PesananController::class, 'invoice'])->name('pesanan.invoice');
-Route::get('/organizer/{id}',         [EventOrganizerController::class, 'show'])->name('organizer.show');
-Route::get('/organizer/{id}/hubungi', [EventOrganizerController::class, 'hubungi'])->name('organizer.hubungi');
- 
+// Route::get('/organizer/{id}',         [EventOrganizerController::class, 'show'])->name('organizer.show');
+// Route::get('/organizer/{id}/hubungi', [EventOrganizerController::class, 'hubungi'])->name('organizer.hubungi');
+
 // Route::middleware('auth')->group(function () {
-    Route::post('/organizer/{id}/ikuti', [EventOrganizerController::class, 'ikuti'])->name('organizer.ikuti');
+//     Route::post('/organizer/{id}/ikuti', [EventOrganizerController::class, 'ikuti'])->name('organizer.ikuti');
+// });
 
+// Organizer Routes - Merchandise & Scanner
+Route::middleware(['auth', 'verified'])->prefix('organizer')->name('organizer.')->group(function () {
+    // Merchandise CRUD
+    Route::get('merchandise', [MerchandiseController::class, 'index'])->name('merchandise.index');
+    Route::get('merchandise/create', [MerchandiseController::class, 'create'])->name('merchandise.create');
+    Route::post('merchandise', [MerchandiseController::class, 'store'])->name('merchandise.store');
+    Route::get('merchandise/{id}/edit', [MerchandiseController::class, 'edit'])->name('merchandise.edit');
+    Route::put('merchandise/{id}', [MerchandiseController::class, 'update'])->name('merchandise.update');
+    Route::delete('merchandise/{id}', [MerchandiseController::class, 'destroy'])->name('merchandise.destroy');
+    
+    // QR Scanner
+    Route::get('scanner', [ScannerController::class, 'index'])->name('scanner.index');
+});
 
+// User Profile Routes
+Route::middleware(['auth', 'verified'])->prefix('profile')->group(function () {
+    Route::get('/', [ProfileController::class, 'index'])->name('profile.index');
+    Route::get('edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('orders/{orderId}', [ProfileController::class, 'orderDetail'])->name('profile.order-detail');
+    Route::get('orders/{orderId}/tickets', [ProfileController::class, 'ticketsQr'])->name('profile.tickets-qr');
+});
 
 require __DIR__.'/auth.php';

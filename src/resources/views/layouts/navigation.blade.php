@@ -37,12 +37,12 @@
                     <x-heroicon-o-ticket class="h-4 w-4 shrink-0" />
                     Kategori Tiket
                 </a>
-                <a href="#"
+                <a href="{{ route('organizer.merchandise.index') }}"
                    class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer">
                     <x-heroicon-o-shopping-bag class="h-4 w-4 shrink-0" />
                     Merchandise
                 </a>
-                <a href="#"
+                <a href="{{ route('organizer.scanner.index') }}"
                    class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer">
                     <x-heroicon-o-qr-code class="h-4 w-4 shrink-0" />
                     QR-Scanner
@@ -87,7 +87,7 @@
             </x-slot>
 
             <x-slot name="content">
-                <x-dropdown-link :href="route('profile.edit')">
+                <x-dropdown-link :href="route('profile.index')">
                     {{ __('Profile') }}
                 </x-dropdown-link>
 
