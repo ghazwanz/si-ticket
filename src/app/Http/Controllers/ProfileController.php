@@ -12,6 +12,14 @@ use Illuminate\View\View;
 class ProfileController extends Controller
 {
     /**
+     * Display the user's profile dashboard.
+     */
+    public function index(): View
+    {
+        return view('profile.index');
+    }
+
+    /**
      * Display the user's profile form.
      */
     public function edit(Request $request): View
@@ -35,6 +43,26 @@ class ProfileController extends Controller
         $request->user()->save();
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
+    }
+
+    /**
+     * Delete the user's account.
+     */
+    public function orderDetail(Request $request, string $orderId): View
+    {
+        return view('profile.order-detail', [
+            'orderId' => $orderId,
+        ]);
+    }
+
+    /**
+     * Display order tickets QR codes.
+     */
+    public function ticketsQr(Request $request, string $orderId): View
+    {
+        return view('profile.tickets-qr', [
+            'orderId' => $orderId,
+        ]);
     }
 
     /**
