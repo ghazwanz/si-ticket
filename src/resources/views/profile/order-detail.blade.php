@@ -14,7 +14,7 @@
     <div class="min-h-screen bg-[#F8F8FA]">
         {{-- Header Section --}}
         <div class="border-b border-[#E0E0E8] bg-white sticky top-0 z-40">
-            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
                 <div class="flex items-center gap-4">
                     <a href="{{ route('profile.index') }}" class="text-[#6B6B80] hover:text-[#111118]">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -31,7 +31,7 @@
         </div>
 
         {{-- Main Content --}}
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             {{-- Status Card --}}
             <div class="bg-[#DEF7EC] border border-[#16A34A] rounded-xl p-6 mb-8">
                 <div class="flex items-center gap-3">
@@ -91,17 +91,18 @@
                                         </span>
                                     </div>
                                     <p class="text-xs text-[#6B6B80] mb-3">ID Tiket: #TKT-{{ rand(100000, 999999) }}</p>
-                                    <button class="text-[#7C3AED] hover:text-[#6d28d9] font-medium text-sm">
+                                    <a href="{{ route('profile.tickets-qr', $orderId ?? 'order-id') }}"
+                                        class="text-[#7C3AED] hover:text-[#6d28d9] font-medium text-sm">
                                         Lihat QR Code →
-                                    </button>
+                                    </a>
                                 </div>
                             @endforeach
                         </div>
 
-                        <button
-                            class="w-full mt-6 px-4 py-3 bg-[#7C3AED] text-white font-medium rounded-lg hover:bg-[#6d28d9] transition-colors">
+                        <a href="{{ route('profile.tickets-qr', $orderId ?? 'order-id') }}"
+                            class="w-full mt-6 px-4 py-3 bg-[#7C3AED] text-white font-medium rounded-lg hover:bg-[#6d28d9] transition-colors inline-block text-center">
                             Lihat Semua Tiket QR
-                        </button>
+                        </a>
                     </div>
 
                     {{-- Merchandise --}}
