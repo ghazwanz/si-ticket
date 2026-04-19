@@ -2,19 +2,14 @@
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <h1 class="text-lg font-semibold text-foreground tracking-tight">
-                {{ __('Dashboard') }}
+                {{ __('Detail Pesanan') }}
             </h1>
-            <button
-                class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors cursor-pointer">
-                <x-heroicon-o-plus-circle class="h-4 w-4" />
-                Quick Create
-            </button>
         </div>
     </x-slot>
     <div class="min-h-screen bg-[#F8F8FA]">
         {{-- Header Section --}}
         <div class="border-b border-[#E0E0E8] bg-white sticky top-0 z-40">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class=" mx-auto px-4 sm:px-6 lg:px-8 py-6">
                 <div class="flex items-center gap-4">
                     <a href="{{ route('profile.index') }}" class="text-[#6B6B80] hover:text-[#111118]">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -31,7 +26,7 @@
         </div>
 
         {{-- Main Content --}}
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class=" mx-auto px-4 sm:px-6 lg:px-8 py-8">
             {{-- Status Card --}}
             <div class="bg-[#DEF7EC] border border-[#16A34A] rounded-xl p-6 mb-8">
                 <div class="flex items-center gap-3">

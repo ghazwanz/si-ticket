@@ -2,19 +2,14 @@
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <h1 class="text-lg font-semibold text-foreground tracking-tight">
-                {{ __('Dashboard') }}
+                {{ __('Kode QR') }}
             </h1>
-            <button
-                class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors cursor-pointer">
-                <x-heroicon-o-plus-circle class="h-4 w-4" />
-                Quick Create
-            </button>
         </div>
     </x-slot>
     <div class="min-h-screen bg-[#F8F8FA]">
         {{-- Header Section --}}
         <div class="border-b border-[#E0E0E8] bg-white sticky top-0 z-40">
-            <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class=" mx-auto px-4 sm:px-6 lg:px-8 py-6">
                 <div class="flex justify-between items-center">
                     <div>
                         <h1 class="text-2xl font-bold text-[#111118]">Tiket QR Anda</h1>
@@ -30,7 +25,7 @@
 
         {{-- Important Info --}}
         <div class="border-b border-[#E0E0E8] bg-white">
-            <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class=" mx-auto px-4 sm:px-6 lg:px-8 py-4">
                 <div class="flex items-start gap-3">
                     <svg class="w-5 h-5 text-[#F97316] flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd"
@@ -47,7 +42,7 @@
         </div>
 
         {{-- Main Content --}}
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class=" mx-auto px-4 sm:px-6 lg:px-8 py-8">
             {{-- Download Options --}}
             <div class="flex gap-4 mb-8 flex-wrap">
                 <button

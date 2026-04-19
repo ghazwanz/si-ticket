@@ -2,25 +2,20 @@
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <h1 class="text-lg font-semibold text-foreground tracking-tight">
-                {{ __('Dashboard') }}
+                {{ __('Profil') }}
             </h1>
-            <button
-                class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors cursor-pointer">
-                <x-heroicon-o-plus-circle class="h-4 w-4" />
-                Quick Create
-            </button>
         </div>
     </x-slot>
     <div class="min-h-screen bg-[#F8F8FA]">
         {{-- Header Section --}}
         <div class="border-b border-[#E0E0E8] bg-white sticky top-0 z-40">
-            <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="mx-auto px-4 sm:px-6 lg:px-8 py-6">
                 <h1 class="text-2xl font-bold text-[#111118]">Profil Saya</h1>
             </div>
         </div>
 
         {{-- Main Content --}}
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="mx-auto px-4 sm:px-6 lg:px-8 py-8">
             {{-- Profile Section --}}
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
                 {{-- Left: Profile Card --}}
