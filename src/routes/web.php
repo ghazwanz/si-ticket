@@ -5,6 +5,10 @@ use App\Http\Controllers\MerchandiseController;
 use App\Http\Controllers\PesananController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ScannerController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\EventOversightController;
+use App\Http\Controllers\Admin\UserManagementController;
+use App\Http\Controllers\Admin\SettingsController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -114,6 +118,18 @@ Route::middleware(['auth', 'verified', 'role:user'])->group(function () {
         Route::get('/orders/{orderId}', [ProfileController::class, 'orderDetail'])->name('order-detail');
         Route::get('/orders/{orderId}/tickets', [ProfileController::class, 'ticketsQr'])->name('tickets-qr');
     });
+});
+
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/dashboard',   [DashboardController::class,      'index'])->name('dashboard');
+    Route::get('/users',       [UserManagementController::class, 'index'])->name('users');
+    Route::get('/events',      [EventOversightController::class, 'index'])->name('events');
+    Route::post('/events/{id}/approve', [EventOversightController::class, 'approve'])->name('events.approve');
+    Route::post('/events/{id}/reject',  [EventOversightController::class, 'reject'])->name('events.reject');
+    Route::get('/financials',  fn() => view('admin.financials'))->name('financials');
+    Route::get('/settings',    [SettingsController::class, 'index'])->name('settings');
+    Route::put('/settings/profile',  [SettingsController::class, 'updateProfile'])->name('settings.profile');
+    Route::put('/settings/password', [SettingsController::class, 'updatePassword'])->name('settings.password');
 });
 
 require __DIR__.'/auth.php';
