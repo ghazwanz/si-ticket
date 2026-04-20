@@ -20,12 +20,13 @@
 
     {{-- Navigation Links --}}
     <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-6">
+        @if(auth()->user()->role->value === 'admin' || auth()->user()->role->value === 'organizer')
         {{-- Home Section --}}
         <div>
             <p class="px-3 mb-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Home</p>
             <div class="space-y-0.5">
                 <a href="{{ route('dashboard') }}"
-                   class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors cursor-pointer {{ request()->routeIs('dashboard') ? 'bg-secondary text-foreground' : 'text-muted-foreground hover:text-foreground hover:bg-secondary' }}">
+                   class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors cursor-pointer {{ request()->routeIs('dashboard') || request()->routeIs('admin.dashboard') || request()->routeIs('organizer.dashboard') ? 'bg-secondary text-foreground' : 'text-muted-foreground hover:text-foreground hover:bg-secondary' }}">
                     <x-heroicon-o-squares-2x2 class="h-4 w-4 shrink-0" />
                     Dashboard
                 </a>
@@ -39,6 +40,7 @@
                     <x-heroicon-o-ticket class="h-4 w-4 shrink-0" />
                     Kategori Tiket
                 </a>
+                @if(auth()->user()->role->value === 'organizer')
                 <a href="{{ route('organizer.merchandise.index') }}"
                    class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer">
                     <x-heroicon-o-shopping-bag class="h-4 w-4 shrink-0" />
@@ -49,6 +51,7 @@
                     <x-heroicon-o-qr-code class="h-4 w-4 shrink-0" />
                     QR-Scanner
                 </a>
+                @endif
                 <a href="#"
                    class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer">
                     <x-heroicon-o-document-text class="h-4 w-4 shrink-0" />
@@ -56,6 +59,29 @@
                 </a>
             </div>
         </div>
+        @else
+        {{-- User Section --}}
+        <div>
+            <p class="px-3 mb-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider">My Profile</p>
+            <div class="space-y-0.5">
+                <a href="{{ route('profile.index') }}"
+                   class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors cursor-pointer {{ request()->routeIs('profile.index') || request()->routeIs('profile.edit') ? 'bg-secondary text-foreground' : 'text-muted-foreground hover:text-foreground hover:bg-secondary' }}">
+                    <x-heroicon-o-user class="h-4 w-4 shrink-0" />
+                    My Information
+                </a>
+                <a href="{{ route('pesanan.index') }}"
+                   class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors cursor-pointer {{ request()->routeIs('pesanan.index') || request()->routeIs('pesanan.show') ? 'bg-secondary text-foreground' : 'text-muted-foreground hover:text-foreground hover:bg-secondary' }}">
+                    <x-heroicon-o-shopping-bag class="h-4 w-4 shrink-0" />
+                    My Orders
+                </a>
+                <a href="{{ route('events.index') }}"
+                   class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors cursor-pointer {{ request()->routeIs('events.index') ? 'bg-secondary text-foreground' : 'text-muted-foreground hover:text-foreground hover:bg-secondary' }}">
+                    <x-heroicon-o-calendar class="h-4 w-4 shrink-0" />
+                    Browse Events
+                </a>
+            </div>
+        </div>
+        @endif
     </nav>
 
     {{-- Bottom section --}}

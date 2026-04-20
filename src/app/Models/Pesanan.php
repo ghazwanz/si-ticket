@@ -23,7 +23,7 @@ class Pesanan extends Model
 
     protected $casts = [
         'tanggal' => 'date',
-        'total'   => 'integer',
+        'total' => 'integer',
     ];
 
     public function user()

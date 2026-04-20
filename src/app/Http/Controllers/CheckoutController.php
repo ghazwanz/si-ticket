@@ -15,33 +15,33 @@ class CheckoutController extends Controller
     {
         // Contoh data pesanan — sesuaikan dengan logika cart/session Anda
         $tikets = collect([
-            (object)[
-                'nama'  => 'Festival (Standing)',
-                'qty'   => 1,
+            (object) [
+                'nama' => 'Festival (Standing)',
+                'qty' => 1,
                 'harga' => 750000,
             ],
         ]);
 
         $merchandises = collect([
-            (object)[
-                'nama'   => 'Kaos Official',
-                'qty'    => 1,
-                'harga'  => 249000,
+            (object) [
+                'nama' => 'Kaos Official',
+                'qty' => 1,
+                'harga' => 249000,
                 'varian' => 'Size L',
             ],
-            (object)[
-                'nama'   => 'Tote Bag',
-                'qty'    => 1,
-                'harga'  => 129000,
+            (object) [
+                'nama' => 'Tote Bag',
+                'qty' => 1,
+                'harga' => 129000,
                 'varian' => 'Black',
             ],
         ]);
 
-        $subtotal      = $tikets->sum(fn($t) => $t->harga * $t->qty)
-                       + $merchandises->sum(fn($m) => $m->harga * $m->qty);
+        $subtotal = $tikets->sum(fn ($t) => $t->harga * $t->qty)
+                       + $merchandises->sum(fn ($m) => $m->harga * $m->qty);
         $biaya_layanan = 15000;
-        $pajak         = (int) round($subtotal * 0.1);
-        $total         = $subtotal + $biaya_layanan + $pajak;
+        $pajak = (int) round($subtotal * 0.1);
+        $total = $subtotal + $biaya_layanan + $pajak;
 
         return view('checkout', compact(
             'tikets',
@@ -60,15 +60,15 @@ class CheckoutController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'nama_lengkap' => ['required', 'string', 'min:3', 'max:255'],
-            'email'        => ['required', 'email', 'max:255'],
-            'no_telepon'   => ['required', 'string', 'regex:/^[0-9\+\-\s]{8,20}$/'],
+            'email' => ['required', 'email', 'max:255'],
+            'no_telepon' => ['required', 'string', 'regex:/^[0-9\+\-\s]{8,20}$/'],
         ], [
             'nama_lengkap.required' => 'Nama lengkap wajib diisi.',
-            'nama_lengkap.min'      => 'Nama minimal 3 karakter.',
-            'email.required'        => 'Alamat email wajib diisi.',
-            'email.email'           => 'Format email tidak valid.',
-            'no_telepon.required'   => 'Nomor telepon wajib diisi.',
-            'no_telepon.regex'      => 'Format nomor telepon tidak valid.',
+            'nama_lengkap.min' => 'Nama minimal 3 karakter.',
+            'email.required' => 'Alamat email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'no_telepon.required' => 'Nomor telepon wajib diisi.',
+            'no_telepon.regex' => 'Format nomor telepon tidak valid.',
         ]);
 
         if ($validator->fails()) {
