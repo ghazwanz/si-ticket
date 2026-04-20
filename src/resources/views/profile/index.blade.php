@@ -1,208 +1,179 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between">
-            <h1 class="text-lg font-semibold text-foreground tracking-tight">
-                {{ __('Profil') }}
-            </h1>
-        </div>
+        <h2 class="text-xl font-semibold text-foreground tracking-tight">
+            {{ __('Profil Pengguna') }}
+        </h2>
     </x-slot>
-    <div class="min-h-screen bg-[#F8F8FA]">
-        {{-- Header Section --}}
-        <div class="border-b border-[#E0E0E8] bg-white sticky top-0 z-40">
-            <div class="mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                <h1 class="text-2xl font-bold text-[#111118]">Profil Saya</h1>
-            </div>
-        </div>
 
-        {{-- Main Content --}}
-        <div class="mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            {{-- Profile Section --}}
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-                {{-- Left: Profile Card --}}
-                <div class="lg:col-span-1">
-                    <div class="bg-white rounded-xl border border-[#E0E0E8] p-8">
-                        {{-- Avatar --}}
-                        <div class="flex justify-center mb-6">
-                            <div class="w-20 h-20 rounded-full bg-[#7C3AED] flex items-center justify-center">
-                                <span class="text-3xl font-bold text-white">BS</span>
-                            </div>
-                        </div>
+    <div class="py-6">
+        <div class="px-4 sm:px-6 lg:px-8 space-y-6 mx-auto">
 
-                        <h2 class="text-xl font-bold text-[#111118] text-center mb-1">Budi Santoso</h2>
-                        <p class="text-[#6B6B80] text-center text-sm mb-6">budi.santoso@email.com</p>
-
-                        {{-- Stats --}}
-                        <div class="border-t border-[#E0E0E8] pt-6 space-y-4">
-                            <div class="text-center">
-                                <p class="text-2xl font-bold text-[#111118]">5</p>
-                                <p class="text-sm text-[#6B6B80]">Pesanan Selesai</p>
-                            </div>
-                            <div class="border-t border-[#E0E0E8] pt-4">
-                                <p class="text-2xl font-bold text-[#111118]">12</p>
-                                <p class="text-sm text-[#6B6B80]">Tiket Digunakan</p>
-                            </div>
-                        </div>
-
-                        {{-- Actions --}}
-                        <button
-                            class="w-full mt-6 px-4 py-3 border border-[#7C3AED] text-[#7C3AED] font-medium rounded-lg hover:bg-[#EDE9FE] transition-colors">
-                            <a href="{{ route('profile.edit') }}" class="block w-full text-center">
-                                Edit Profil
-                            </a>
-                        </button>
-                        <button
-                            class="w-full mt-3 px-4 py-3 border border-[#E0E0E8] text-[#111118] font-medium rounded-lg hover:bg-[#F8F8FA] transition-colors">
-                            Ubah Kata Sandi
-                        </button>
-                        <button
-                            class="w-full mt-3 px-4 py-3 border border-[#DC2626] text-[#DC2626] font-medium rounded-lg hover:bg-red-50 transition-colors">
-                            Logout
-                        </button>
-                    </div>
+            {{-- 1. Kartu Informasi Profil Utama --}}
+            <div class="overflow-hidden rounded-3xl border border-border/60 bg-card shadow-sm">
+                <div class="relative h-32 bg-gradient-to-r from-violet-600 to-indigo-600">
+                    {{-- Hiasan latar aksen --}}
+                    <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-30"></div>
                 </div>
 
-                {{-- Middle: Profile Information --}}
-                <div class="lg:col-span-2">
-                    <div class="bg-white rounded-xl border border-[#E0E0E8] p-8 mb-8">
-                        <h3 class="text-lg font-bold text-[#111118] mb-6">Informasi Akun</h3>
-
-                        <div class="space-y-6">
-                            {{-- Name --}}
-                            <div>
-                                <label class="block text-sm font-medium text-[#111118] mb-2">Nama Lengkap</label>
-                                <p class="text-[#111118] py-2">Budi Santoso</p>
-                            </div>
-
-                            {{-- Email --}}
-                            <div>
-                                <label class="block text-sm font-medium text-[#111118] mb-2">Email</label>
-                                <p class="text-[#111118] py-2">budi.santoso@email.com</p>
-                                <p class="text-xs text-[#16A34A] mt-1">✓ Terverifikasi</p>
-                            </div>
-
-                            {{-- Phone --}}
-                            <div>
-                                <label class="block text-sm font-medium text-[#111118] mb-2">Nomor Telepon</label>
-                                <p class="text-[#111118] py-2">+62 812 3456 7890</p>
-                            </div>
-
-                            {{-- Member Since --}}
-                            <div>
-                                <label class="block text-sm font-medium text-[#111118] mb-2">Bergabung Sejak</label>
-                                <p class="text-[#111118] py-2">5 Januari 2025</p>
-                            </div>
-                        </div>
-
-                        <div class="border-t border-[#E0E0E8] mt-6 pt-6">
-                            <button
-                                class="px-6 py-2 border border-[#7C3AED] text-[#7C3AED] font-medium rounded-lg hover:bg-[#EDE9FE] transition-colors">
-                                Edit Informasi
-                            </button>
+                <div class="relative px-6 pb-6 pt-8 sm:px-8 sm:pb-8">
+                    {{-- Avatar --}}
+                    <div class="absolute -top-16 flex h-24 w-24 items-center justify-center rounded-2xl bg-white p-1.5 shadow-lg border border-border/40">
+                        <div class="flex h-full w-full items-center justify-center rounded-xl bg-violet-100 text-3xl font-bold text-violet-600">
+                            {{ substr($user->name, 0, 1) }}
                         </div>
                     </div>
 
-                    {{-- Payment Methods --}}
-                    <div class="bg-white rounded-xl border border-[#E0E0E8] p-8">
-                        <h3 class="text-lg font-bold text-[#111118] mb-6">Informasi Pembayaran</h3>
+                    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mt-8 sm:mt-0">
+                        <div>
+                            <h1 class="text-2xl font-extrabold tracking-tight text-card-foreground">
+                                {{ $user->name }}
+                            </h1>
+                            <p class="text-sm font-medium text-muted-foreground mt-1 flex items-center gap-2">
+                                <x-heroicon-s-envelope class="h-4 w-4 text-violet-500" />
+                                {{ $user->email }}
+                            </p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="inline-flex items-center rounded-full bg-violet-100 px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-widest text-violet-700 dark:bg-violet-500/20 dark:text-violet-400">
+                                {{ $user->role->label() }}
+                            </span>
+                            @if($user->is_active)
+                            <span class="inline-flex items-center rounded-full bg-emerald-100 px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-widest text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400">
+                                Aktif
+                            </span>
+                            @endif
+                        </div>
+                    </div>
 
-                        <div class="space-y-4">
-                            <div class="p-4 border border-[#E0E0E8] rounded-lg">
-                                <p class="text-sm text-[#6B6B80] mb-2">Metode Pembayaran Default</p>
-                                <p class="font-medium text-[#111118]">GoPay</p>
-                                <p class="text-xs text-[#6B6B80] mt-1">Diperbarui 3 Desember 2025</p>
-                            </div>
+                    <div class="border-t border-border/60 border-dashed mt-6 pt-6 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                        <div class="bg-secondary/50 rounded-2xl p-4 border border-border/30">
+                            <p class="text-muted-foreground mb-1 text-xs uppercase tracking-wider font-semibold">Total Order</p>
+                            <p class="text-lg font-extrabold text-foreground">{{ $recentOrders->count() }}</p>
+                        </div>
+                        <div class="bg-secondary/50 rounded-2xl p-4 border border-border/30">
+                            <p class="text-muted-foreground mb-1 text-xs uppercase tracking-wider font-semibold">Member Sejak</p>
+                            <p class="text-foreground font-semibold">{{ $user->created_at->format('M Y') }}</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {{-- Orders Section --}}
-            <div class="bg-white rounded-xl border border-[#E0E0E8] overflow-hidden">
-                <div class="border-b border-[#E0E0E8] px-8 py-6">
-                    <h2 class="text-lg font-bold text-[#111118]">Pesanan Saya</h2>
+            {{-- 2. Section Pesanan Saya (Aktifitas Pembelian Terakhir) --}}
+            <div class="rounded-3xl border border-border/60 bg-card p-6 shadow-sm sm:p-8">
+                <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold tracking-tight text-card-foreground">Aktivitas Pembelian Terakhir</h2>
+                        <p class="text-sm text-muted-foreground mt-1">Riwayat pesanan tiket event Anda akhir-akhir ini.</p>
+                    </div>
+                    <a href="{{ route('pesanan.index') }}" class="inline-flex items-center gap-2 rounded-xl bg-violet-50 px-4 py-2 text-sm font-semibold text-violet-700 transition hover:bg-violet-100 hover:text-violet-800 dark:bg-violet-500/10 dark:text-violet-400 dark:hover:bg-violet-500/20">
+                        Lihat Semua
+                        <x-heroicon-o-arrow-right class="h-4 w-4" />
+                    </a>
                 </div>
 
-                {{-- Tabs --}}
-                <div class="border-b border-[#E0E0E8] flex">
-                    <button
-                        class="flex-1 px-6 py-3 border-b-2 border-[#7C3AED] text-[#7C3AED] font-medium hover:bg-[#F8F8FA]">
-                        Semua Pesanan
-                    </button>
-                    <button
-                        class="flex-1 px-6 py-3 border-b-2 border-transparent text-[#6B6B80] font-medium hover:bg-[#F8F8FA]">
-                        Akan Datang
-                    </button>
-                    <button
-                        class="flex-1 px-6 py-3 border-b-2 border-transparent text-[#6B6B80] font-medium hover:bg-[#F8F8FA]">
-                        Selesai
-                    </button>
+                @if($recentOrders->isEmpty())
+                <div class="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border/80 bg-secondary/50 py-12 text-center">
+                    <div class="flex h-16 w-16 items-center justify-center rounded-full bg-violet-100 text-violet-500 dark:bg-violet-500/20 mb-4">
+                        <x-heroicon-o-ticket class="h-8 w-8" />
+                    </div>
+                    <h3 class="text-base font-bold text-foreground">Belum Ada Transaksi</h3>
+                    <p class="mt-2 max-w-sm text-sm text-muted-foreground">Anda belum melakukan pembelian tiket apapun. Temukan event menarik sekarang.</p>
+                    <a href="{{ route('events.index') }}" class="mt-5 inline-flex items-center justify-center rounded-xl bg-violet-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700">
+                        Jelajahi Event
+                    </a>
                 </div>
-
-                {{-- Orders List --}}
-                <div class="divide-y divide-[#E0E0E8]">
-                    @foreach(range(1, 4) as $i)
-                        <div class="p-8 hover:bg-[#F8F8FA] transition-colors">
-                            <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
-                                <div class="flex-1">
-                                    <div class="flex items-center gap-3 mb-3">
-                                        <h3 class="text-lg font-bold text-[#111118]">Soundwave Festival Jakarta</h3>
-                                        @if($i == 1)
-                                            <span
-                                                class="inline-flex items-center px-3 py-1 bg-[#EDE9FE] text-[#7C3AED] text-sm font-medium rounded-full">
-                                                Akan Datang
-                                            </span>
-                                        @elseif($i <= 2)
-                                            <span
-                                                class="inline-flex items-center px-3 py-1 bg-[#DEF7EC] text-[#16A34A] text-sm font-medium rounded-full">
-                                                Berhasil
-                                            </span>
-                                        @else
-                                            <span
-                                                class="inline-flex items-center px-3 py-1 bg-[#F2F2F7] text-[#6B6B80] text-sm font-medium rounded-full">
-                                                Selesai
-                                            </span>
-                                        @endif
-                                    </div>
-
-                                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                        <div>
-                                            <p class="text-xs text-[#6B6B80] mb-1">Nomor Pesanan</p>
-                                            <p class="font-medium text-[#111118]">#ORD-{{ 2026001230 + $i }}</p>
+                @else
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-muted-foreground">
+                        <thead class="border-b border-border/60 bg-secondary/30 text-xs uppercase text-muted-foreground">
+                            <tr>
+                                <th scope="col" class="px-4 py-3 font-semibold">Event</th>
+                                <th scope="col" class="px-4 py-3 font-semibold">Tanggal</th>
+                                <th scope="col" class="px-4 py-3 font-semibold">Status</th>
+                                <th scope="col" class="px-4 py-3 font-semibold">Total</th>
+                                <th scope="col" class="px-4 py-3 text-right font-semibold">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-border/60">
+                            @foreach($recentOrders as $order)
+                            @php
+                                $badgeClass = match(strtolower($order->status)) {
+                                    'paid', 'sukses', 'success' => 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400',
+                                    'pending' => 'bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-400',
+                                    'cancelled', 'batal' => 'bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-400',
+                                    default => 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
+                                };
+                            @endphp
+                            <tr class="transition-colors hover:bg-muted/50">
+                                <td class="px-4 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-secondary overflow-hidden">
+                                            @if($order->event?->banner_image)
+                                                <img src="{{ asset('img/' . $order->event->banner_image) }}" alt="" class="h-full w-full object-cover">
+                                            @else
+                                                <span class="text-lg">🎫</span>
+                                            @endif
                                         </div>
                                         <div>
-                                            <p class="text-xs text-[#6B6B80] mb-1">Tanggal</p>
-                                            <p class="font-medium text-[#111118]">12 Juli {{ 2026 + min($i, 0) }}</p>
-                                        </div>
-                                        <div>
-                                            <p class="text-xs text-[#6B6B80] mb-1">Total</p>
-                                            <p class="font-medium text-[#111118]">Rp
-                                                {{ number_format(350000 + ($i * 100000), 0, ',', '.') }}</p>
-                                        </div>
-                                        <div>
-                                            <p class="text-xs text-[#6B6B80] mb-1">Item</p>
-                                            <p class="font-medium text-[#111118]">{{ $i + 1 }} Tiket + Merchandise</p>
+                                            <div class="font-bold text-foreground line-clamp-1">{{ $order->event->name ?? 'Event Dihapus' }}</div>
+                                            <div class="text-xs text-muted-foreground font-mono mt-0.5">#{{ $order->midtrans_order_id ?? strtoupper(substr($order->id, 0, 8)) }}</div>
                                         </div>
                                     </div>
-                                </div>
+                                </td>
+                                <td class="whitespace-nowrap px-4 py-4">
+                                    {{ $order->created_at->translatedFormat('d M Y') }}
+                                </td>
+                                <td class="whitespace-nowrap px-4 py-4">
+                                    <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider {{ $badgeClass }}">
+                                        {{ $order->status }}
+                                    </span>
+                                </td>
+                                <td class="whitespace-nowrap px-4 py-4 font-semibold text-foreground">
+                                    Rp {{ number_format($order->total_amount, 0, ',', '.') }}
+                                </td>
+                                <td class="whitespace-nowrap px-4 py-4 text-right">
+                                    <a href="#" class="inline-flex items-center justify-center rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-semibold text-foreground shadow-sm transition-colors hover:bg-secondary hover:text-violet-600">
+                                        Detail
+                                    </a>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                @endif
+            </div>
 
-                                <div class="flex gap-2 md:flex-col">
-                                    <button
-                                        class="flex-1 md:flex-none px-4 py-2 border border-[#7C3AED] text-[#7C3AED] font-medium rounded-lg hover:bg-[#EDE9FE] transition-colors text-sm">
-                                        <a href="{{ route('profile.order-detail', $i) }}"
-                                            class="block w-full text-center">Lihat Detail</a>
-                                    </button>
-                                    <button
-                                        class="flex-1 md:flex-none px-4 py-2 bg-[#7C3AED] text-white font-medium rounded-lg hover:bg-[#6d28d9] transition-colors text-sm">
-                                        <a href="{{ route('profile.tickets-qr', $i) }}" class="block w-full text-center">
-                                            {{ $i == 1 ? 'Lihat Tiket' : 'Ulang' }}
-                                        </a>
-                                    </button>
-                                </div>
-                            </div>
+            {{-- 3. Pengaturan Akun Dasar (Shortcut) --}}
+            <div class="rounded-3xl border border-border/60 bg-card p-6 shadow-sm sm:p-8">
+                <div class="mb-6">
+                    <h2 class="text-xl font-bold tracking-tight text-card-foreground">Pengaturan Akun</h2>
+                    <p class="text-sm text-muted-foreground mt-1">Kelola data keamanan dan preferensi profil Anda.</p>
+                </div>
+
+                <div class="grid gap-4 sm:grid-cols-2">
+                    <a href="{{ route('profile.edit') }}" class="group flex items-start gap-4 rounded-2xl border border-border/60 bg-background p-4 transition-all hover:border-violet-300 hover:shadow-md hover:shadow-violet-500/5">
+                        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-violet-600 dark:bg-violet-500/20 dark:text-violet-400">
+                            <x-heroicon-o-user-circle class="h-5 w-5" />
                         </div>
-                    @endforeach
+                        <div>
+                            <h3 class="font-bold text-foreground group-hover:text-violet-600 transition-colors">Edit Informasi Akun</h3>
+                            <p class="mt-1 text-xs text-muted-foreground">Ubah nama, email, atau detail personal lainnya.</p>
+                        </div>
+                    </a>
+
+                    <a href="{{ route('profile.edit') }}#password" class="group flex items-start gap-4 rounded-2xl border border-border/60 bg-background p-4 transition-all hover:border-violet-300 hover:shadow-md hover:shadow-violet-500/5">
+                        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400">
+                            <x-heroicon-o-lock-closed class="h-5 w-5" />
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-foreground group-hover:text-emerald-600 transition-colors">Keamanan Password</h3>
+                            <p class="mt-1 text-xs text-muted-foreground">Perbarui kata sandi untuk menjaga keamanan akun.</p>
+                        </div>
+                    </a>
                 </div>
             </div>
+
         </div>
     </div>
 </x-app-layout>

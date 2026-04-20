@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\Order;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,7 +17,16 @@ class ProfileController extends Controller
      */
     public function index(): View
     {
-        return view('profile.index');
+        $user = Auth::user();
+        $recentOrders = Order::with('event')->where('user_id', $user->id)
+            ->latest()
+            ->take(5)
+            ->get();
+
+        return view('profile.index', [
+            'user' => $user,
+            'recentOrders' => $recentOrders,
+        ]);
     }
 
     /**

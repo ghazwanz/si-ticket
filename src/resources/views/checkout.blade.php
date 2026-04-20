@@ -1,11 +1,11 @@
-<x-app-layout>
+<x-store-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-semibold text-foreground tracking-tight">
-            {{ __('Checkout') }}
+        <h2 class="text-2xl font-extrabold text-foreground tracking-tight">
+            {{ __('Checkout Pesanan') }}
         </h2>
     </x-slot>
 
-    <div class="py-6">
+    <div class="py-10">
         <div class="mx-auto grid max-w-7xl gap-8 px-4 lg:grid-cols-[minmax(0,1fr)_380px] lg:px-8 text-foreground">
 
             <section class="space-y-4">
@@ -160,4 +160,4 @@
 
         </div>
     </div>
-</x-app-layout>
+</x-store-layout>

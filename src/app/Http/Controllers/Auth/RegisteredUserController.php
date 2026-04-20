@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\OrganizerProfile;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -34,13 +35,31 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'role' => ['required', 'in:user,organizer'],
+            'organization_name' => ['required_if:role,organizer', 'nullable', 'string', 'max:255'],
+            'phone' => ['required_if:role,organizer', 'nullable', 'string', 'max:20'],
+            'bank_name' => ['required_if:role,organizer', 'nullable', 'string', 'max:255'],
+            'bank_account_number' => ['required_if:role,organizer', 'nullable', 'string', 'max:50'],
+            'bank_account_name' => ['required_if:role,organizer', 'nullable', 'string', 'max:255'],
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role' => $request->role,
         ]);
+
+        if ($request->role === 'organizer') {
+            OrganizerProfile::create([
+                'user_id' => $user->id,
+                'organization_name' => $request->organization_name,
+                'phone' => $request->phone,
+                'bank_name' => $request->bank_name,
+                'bank_account_number' => $request->bank_account_number,
+                'bank_account_name' => $request->bank_account_name,
+            ]);
+        }
 
         event(new Registered($user));
 

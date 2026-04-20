@@ -21,16 +21,27 @@
                 </div>
             </div>
 
-            <nav class="hidden items-center gap-2 text-sm font-semibold md:flex">
-                <a href="#kategori"
-                    class="rounded-full px-3 py-2 text-violet-600 transition hover:bg-violet-50 hover:text-violet-700">Beranda</a>
-                <a href="{{ route('events.index') }}"
-                    class="rounded-full px-3 py-2 text-slate-600 transition hover:bg-slate-50 hover:text-violet-600">Jelajahi
-                    Event</a>
-                <a href="{{ route('login') }}"
-                    class="rounded-full px-3 py-2 text-slate-600 transition hover:bg-slate-50 hover:text-violet-600">Masuk</a>
-                <a href="{{ route('register') }}"
-                    class="inline-flex h-9 items-center justify-center rounded-full bg-violet-600 px-4 text-white transition hover:-translate-y-0.5 hover:bg-violet-700">Daftar</a>
+            <nav class="hidden items-stretch gap-6 text-sm font-semibold md:flex">
+                <x-nav-link href="{{ url('/') }}" :active="request()->is('/')">
+                    Beranda
+                </x-nav-link>
+                <x-nav-link :href="route('events.index')" :active="request()->routeIs('events.index') || request()->routeIs('events.show')">
+                    Jelajahi Event
+                </x-nav-link>
+
+                @auth
+                    <x-nav-link :href="url('/dashboard')" :active="request()->is('dashboard*') || request()->is('profile*')">
+                        Dashboard
+                    </x-nav-link>
+                @else
+                    <x-nav-link :href="route('login')" :active="request()->routeIs('login')">
+                        Masuk
+                    </x-nav-link>
+                    <div class="flex items-center ml-2">
+                        <a href="{{ route('register') }}"
+                            class="inline-flex h-9 items-center justify-center rounded-full bg-violet-600 px-4 text-white transition hover:-translate-y-0.5 hover:bg-violet-700">Daftar</a>
+                    </div>
+                @endauth
             </nav>
 
             <button @click="open = !open" type="button"
@@ -56,12 +67,18 @@
                 <x-responsive-nav-link :href="route('events.index')" :active="request()->routeIs('events.index')">
                     Jelajahi Event
                 </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('login')" :active="request()->routeIs('login')">
-                    Masuk
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('register')" :active="request()->routeIs('register')">
-                    Daftar
-                </x-responsive-nav-link>
+                @auth
+                    <x-responsive-nav-link :href="url('/dashboard')" :active="request()->is('dashboard*') || request()->is('profile*')">
+                        Dashboard
+                    </x-responsive-nav-link>
+                @else
+                    <x-responsive-nav-link :href="route('login')" :active="request()->routeIs('login')">
+                        Masuk
+                    </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('register')" :active="request()->routeIs('register')">
+                        Daftar
+                    </x-responsive-nav-link>
+                @endauth
             </div>
         </div>
     </div>

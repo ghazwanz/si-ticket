@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
 {
@@ -64,4 +66,15 @@ class User extends Authenticatable
             'is_active' => 'boolean',
         ];
     }
-}
+
+    /**
+     * Get the organizer profile associated with the user.
+     */
+    public function organizerProfile()
+    {
+        return $this->hasOne(OrganizerProfile::class);
+    }
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
+    }}
