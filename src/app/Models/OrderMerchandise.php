@@ -25,4 +25,9 @@ class OrderMerchandise extends Model
     {
         return $this->belongsTo(Order::class);
     }
+
+    public function merchandiseVariant(): BelongsTo
+    {
+        return $this->belongsTo(MerchandiseVariant::class);
+    }
 }
