@@ -79,6 +79,16 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
     Route::get('/', function () {
         return view('admin.dashboard');
     })->name('dashboard');
+
+    // User Management
+    Route::get('users', [\App\Http\Controllers\Admin\UserController::class, 'index'])->name('users.index');
+    Route::post('users', [\App\Http\Controllers\Admin\UserController::class, 'store'])->name('users.store');
+    Route::put('users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'update'])->name('users.update');
+    Route::delete('users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'destroy'])->name('users.destroy');
+
+    // Event Approval
+    Route::get('events', [\App\Http\Controllers\Admin\EventController::class, 'index'])->name('events.index');
+    Route::put('events/{event}/status', [\App\Http\Controllers\Admin\EventController::class, 'updateStatus'])->name('events.update-status');
 });
 
 // Organizer Routes
@@ -86,6 +96,9 @@ Route::middleware(['auth', 'verified', 'role:organizer'])->prefix('organizer')->
     Route::get('dashboard', function () {
         return view('organizer.dashboard');
     })->name('dashboard');
+
+    // Events CRUD
+    Route::resource('events', \App\Http\Controllers\Organizer\EventController::class)->except(['show']);
 
     // Merchandise CRUD
     Route::get('merchandise', [MerchandiseController::class, 'index'])->name('merchandise.index');
@@ -108,8 +121,10 @@ Route::middleware(['auth', 'verified', 'role:user'])->group(function () {
     Route::get('/pesanan', [PesananController::class, 'index'])->name('pesanan.index');
     Route::get('/pesanan/{id}', [PesananController::class, 'show'])->name('pesanan.show');
     Route::get('/pesanan/{id}/invoice', [PesananController::class, 'invoice'])->name('pesanan.invoice');
+});
 
-    // User Profile
+// Generic Authenticated Routes (Profiles for All Roles)
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('profile')->name('profile.')->group(function () {
         Route::get('/', [ProfileController::class, 'index'])->name('index');
         Route::get('/edit', [ProfileController::class, 'edit'])->name('edit');

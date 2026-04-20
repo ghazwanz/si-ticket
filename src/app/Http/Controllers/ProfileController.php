@@ -18,6 +18,27 @@ class ProfileController extends Controller
     public function index(): View
     {
         $user = Auth::user();
+
+        if ($user->role === \App\Enums\UserRole::Admin) {
+            return view('profile.admin', [
+                'user' => $user,
+            ]);
+        }
+
+        if ($user->role === \App\Enums\UserRole::Organizer) {
+            $user->load('organizerProfile');
+            $recentEvents = \App\Models\Event::where('organizer_id', $user->id)
+                ->latest()
+                ->take(5)
+                ->get();
+
+            return view('profile.eo', [
+                'user' => $user,
+                'recentEvents' => $recentEvents,
+            ]);
+        }
+
+        // For Regular Users
         $recentOrders = Order::with('event')->where('user_id', $user->id)
             ->latest()
             ->take(5)

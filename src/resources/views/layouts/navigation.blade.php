@@ -20,43 +20,73 @@
 
     {{-- Navigation Links --}}
     <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-6">
-        @if(auth()->user()->role->value === 'admin' || auth()->user()->role->value === 'organizer')
-        {{-- Home Section --}}
+        @if(auth()->user()->role->value === 'admin')
+        {{-- Admin Section --}}
         <div>
-            <p class="px-3 mb-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Home</p>
+            <p class="px-3 mb-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Admin Panel</p>
             <div class="space-y-0.5">
+                <a href="{{ route('profile.index') }}"
+                   class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors cursor-pointer {{ request()->routeIs('profile.index') || request()->routeIs('profile.edit') ? 'bg-secondary text-foreground' : 'text-muted-foreground hover:text-foreground hover:bg-secondary' }}">
+                    <x-heroicon-o-user class="h-4 w-4 shrink-0" />
+                    Profil Akun
+                </a>
                 <a href="{{ route('dashboard') }}"
-                   class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors cursor-pointer {{ request()->routeIs('dashboard') || request()->routeIs('admin.dashboard') || request()->routeIs('organizer.dashboard') ? 'bg-secondary text-foreground' : 'text-muted-foreground hover:text-foreground hover:bg-secondary' }}">
+                   class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors cursor-pointer {{ request()->routeIs('dashboard') || request()->routeIs('admin.dashboard') ? 'bg-secondary text-foreground' : 'text-muted-foreground hover:text-foreground hover:bg-secondary' }}">
                     <x-heroicon-o-squares-2x2 class="h-4 w-4 shrink-0" />
                     Dashboard
                 </a>
-                <a href="#"
+                <a href="{{ route('admin.users.index') }}"
+                   class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors cursor-pointer {{ request()->routeIs('admin.users.*') ? 'bg-secondary text-foreground' : 'text-muted-foreground hover:text-foreground hover:bg-secondary' }}">
+                    <x-heroicon-o-users class="h-4 w-4 shrink-0" />
+                    Kelola Pengguna
+                </a>
+                <a href="{{ route('admin.events.index') }}"
+                   class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors cursor-pointer {{ request()->routeIs('admin.events.*') ? 'bg-secondary text-foreground' : 'text-muted-foreground hover:text-foreground hover:bg-secondary' }}">
+                    <x-heroicon-o-calendar-days class="h-4 w-4 shrink-0" />
+                    Validasi Event
+                </a>
+                {{-- <a href="#"
                    class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer">
+                    <x-heroicon-o-document-text class="h-4 w-4 shrink-0" />
+                    Laporan
+                </a> --}}
+            </div>
+        </div>
+        @elseif(auth()->user()->role->value === 'organizer')
+        {{-- Organizer Section --}}
+        <div>
+            <p class="px-3 mb-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider">EO Panel</p>
+            <div class="space-y-0.5">
+                <a href="{{ route('profile.index') }}"
+                   class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors cursor-pointer {{ request()->routeIs('profile.index') || request()->routeIs('profile.edit') ? 'bg-secondary text-foreground' : 'text-muted-foreground hover:text-foreground hover:bg-secondary' }}">
+                    <x-heroicon-o-user class="h-4 w-4 shrink-0" />
+                    Profil Akun
+                </a>
+                <a href="{{ route('dashboard') }}"
+                   class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors cursor-pointer {{ request()->routeIs('dashboard') || request()->routeIs('organizer.dashboard') ? 'bg-secondary text-foreground' : 'text-muted-foreground hover:text-foreground hover:bg-secondary' }}">
+                    <x-heroicon-o-squares-2x2 class="h-4 w-4 shrink-0" />
+                    Dashboard
+                </a>
+                <a href="{{ route('organizer.events.index') }}"
+                   class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors cursor-pointer {{ request()->routeIs('organizer.events.*') ? 'bg-secondary text-foreground' : 'text-muted-foreground hover:text-foreground hover:bg-secondary' }}">
                     <x-heroicon-o-calendar class="h-4 w-4 shrink-0" />
-                    Event
+                    Manajemen Event & Tiket
                 </a>
-                <a href="#"
-                   class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer">
-                    <x-heroicon-o-ticket class="h-4 w-4 shrink-0" />
-                    Kategori Tiket
-                </a>
-                @if(auth()->user()->role->value === 'organizer')
                 <a href="{{ route('organizer.merchandise.index') }}"
-                   class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer">
+                   class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors cursor-pointer {{ request()->routeIs('organizer.merchandise.*') ? 'bg-secondary text-foreground' : 'text-muted-foreground hover:text-foreground hover:bg-secondary' }}">
                     <x-heroicon-o-shopping-bag class="h-4 w-4 shrink-0" />
                     Merchandise
                 </a>
                 <a href="{{ route('organizer.scanner.index') }}"
-                   class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer">
+                   class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors cursor-pointer {{ request()->routeIs('organizer.scanner.*') ? 'bg-secondary text-foreground' : 'text-muted-foreground hover:text-foreground hover:bg-secondary' }}">
                     <x-heroicon-o-qr-code class="h-4 w-4 shrink-0" />
                     QR-Scanner
                 </a>
-                @endif
-                <a href="#"
+                {{-- <a href="#"
                    class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer">
                     <x-heroicon-o-document-text class="h-4 w-4 shrink-0" />
                     Laporan
-                </a>
+                </a> --}}
             </div>
         </div>
         @else
