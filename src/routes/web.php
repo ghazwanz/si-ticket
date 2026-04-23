@@ -110,8 +110,12 @@ Route::middleware(['auth', 'verified', 'role:organizer'])->prefix('organizer')->
 
     // QR Scanner
     Route::get('scanner', [ScannerController::class, 'index'])->name('scanner.index');
-});
 
+    // ---ROUTE SETTINGS---
+    Route::get('settings', function () {
+        return view('organizer.settings');
+    })->name('settings');
+});
 // User Authenticated Routes
 Route::middleware(['auth', 'verified', 'role:user'])->group(function () {
     // Checkout & Orders
