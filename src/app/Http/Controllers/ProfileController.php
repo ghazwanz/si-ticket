@@ -91,8 +91,13 @@ class ProfileController extends Controller
      */
     public function ticketsQr(Request $request, string $orderId): View
     {
+        $order = Order::with(['event', 'tickets.ticketCategory', 'merchandise.merchandiseVariant.item'])->findOrFail($orderId);
+
+        // Pastikan hanya pemilik pesanan yang bisa melihat QR
+        abort_if($order->user_id !== Auth::id(), 403);
+
         return view('profile.tickets-qr', [
-            'orderId' => $orderId,
+            'order' => $order,
         ]);
     }
 

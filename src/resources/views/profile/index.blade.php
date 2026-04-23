@@ -132,7 +132,7 @@
                                     Rp {{ number_format($order->total_amount, 0, ',', '.') }}
                                 </td>
                                 <td class="whitespace-nowrap px-4 py-4 text-right">
-                                    <a href="#" class="inline-flex items-center justify-center rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-semibold text-foreground shadow-sm transition-colors hover:bg-secondary hover:text-violet-600">
+                                    <a href="{{ route('profile.order-detail', $order->id) }}" class="inline-flex items-center justify-center rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-semibold text-foreground shadow-sm transition-colors hover:bg-secondary hover:text-violet-600">
                                         Detail
                                     </a>
                                 </td>
