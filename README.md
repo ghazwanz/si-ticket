@@ -1,59 +1,56 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Platform Ticketing & Pre-Order Merchandise Malang (JoinFest)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Deskripsi Proyek
+Proyek ini dikembangkan sebagai bagian dari tugas *Project Based Learning* (PBL) di Jurusan Teknologi Informasi, Politeknik Negeri Malang. **JoinFest** adalah sebuah perangkat lunak yang dirancang untuk mengintegrasikan proses pembelian tiket acara dan sistem *pre-order* merchandise di wilayah Malang. Fokus utamanya adalah memungkinkan pengguna untuk melakukan transaksi tiket dan merchandise secara bersamaan dalam satu keranjang (*single cart transaction*), memberikan pengalaman yang lebih praktis dan efisien.
 
-## About Laravel
+## Scope MVP (Minimum Viable Product)
+Berdasarkan rancangan sistem (Use Case) dan desain antarmuka, cakupan fitur utama JoinFest meliputi:
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+1. **Manajemen Autentikasi & Profil:**
+   - Fitur Registrasi dan Login untuk akses pengguna (Customer).
+   - Pengelolaan informasi profil pengguna untuk menyimpan data transaksi.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+2. **E-Ticketing & Event Discovery:**
+   - Menampilkan daftar event berdasarkan kategori (Music, Sports, dll).
+   - Proses pemilihan tiket event dan pembelian secara digital.
+   - Fitur pencarian event untuk memudahkan pengguna menemukan acara tertentu.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+3. **Sistem Pre-Order Merchandise:**
+   - Integrasi katalog merchandise di dalam platform.
+   - Pemesanan produk merchandise sebagai bagian dari ekosistem event.
 
-## Learning Laravel
+4. **Multi-Role Dashboard:**
+   - **End User:** Akses ke halaman tiket saya, riwayat pesanan, dan pengaturan akun.
+   - **Event Organizer:** Manajemen postingan event dan pemantauan aktivitas penjualan.
+   - **Admin:** Kendali penuh terhadap manajemen user dan validasi data sistem.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+5. **Antarmuka Mobile-Optimized:**
+   - Navigasi utama menggunakan *Bottom Navigation Bar* (Home, My Ticket, Profile).
+   - Layout kartu event (*event card*) yang informatif dengan detail lokasi dan harga yang jelas.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Informasi Tim Pengembang
+**Kelompok:** 5
+**Kelas:** TI-2F
 
-## Laravel Sponsors
+### Anggota Tim:
+| No | Nama Lengkap | NIM | 
+|:---:|:---|:---:|
+| 1 | Ghazwan Ababil | 244107020151 |
+| 2 | Mufliha Hafsyah Shahieza | 244107020147 | 
+| 3 | Muhammad Fitra Adhim Nurrochman | 244107020089 | 
+| 4 | Rani Miftahus Sa'adah | 244107020057 | 
+| 5 | Rifo Anggi Barbara Danuarta | 244107020063 | 
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+---
+## Kontribusi Anggota & Progress Pengerjaan
 
-### Premium Partners
+| No | Nama Lengkap | NIM | Kontribusi & Progres Pengerjaan |
+|----|--------------|-----|---------------------------------|
+| 1 | Ghazwan Ababil | 244107020151 | — |
+| 2 | Mufliha Hafsyah Shahieza | 244107020147 | - **Mengerjakan tampilan Halaman Checkout**: menambahkan formulir data pemesan (nama lengkap, email, nomor telepon), ringkasan item pesanan mencakup tiket utama dan merchandise beserta varian dan harga, rincian biaya (subtotal, biaya layanan, pajak 10%, dan total bayar), serta tombol pembayaran dengan indikator keamanan transaksi. <br> - **Mengerjakan tampilan Halaman Riwayat Pesanan**: menambahkan tab filter untuk menyaring pesanan berdasarkan status (Semua, Pending, Paid, Cancelled, Failed), serta tampilan empty state ketika belum ada pesanan yang ditemukan. <br> - **Mengerjakan tampilan Dashboard Admin**: menambahkan banner notifikasi prioritas untuk event yang menunggu persetujuan dan EO baru yang perlu diverifikasi, empat kartu statistik platform (total pengguna, event review, event aktif, EO pending), tabel recent activity log, serta widget jumlah tiket terjual dalam 24 jam dan grafik distribusi event per kategori. <br> - **Mengerjakan tampilan Halaman User Management**: menambahkan tab untuk memilah pengguna berdasarkan peran (Pembeli/End User, Event Organizer, Admin & Tim Internal), serta tabel daftar pengguna yang menampilkan nama, email, nomor HP, tanggal registrasi, dan badge status akun (Active/Suspended). <br> - **Mengerjakan tampilan Halaman Event Oversight**: menambahkan banner review prioritas berisi jumlah event menunggu persetujuan hari ini, tabel daftar event dengan filter status publikasi (Semua, Menunggu Review, Aktif, Ditolak, Selesai), panel preview konten event yang dipilih, serta automated review checklist berbasis AI untuk memverifikasi kelayakan event — dilengkapi tombol Tolak dan Publikasikan Event. <br> - **Mengerjakan tampilan Halaman Profil Admin**: menambahkan form pengelolaan data akun administrator (nama, nomor HP, email) dengan badge role aktif, form pembaruan kata sandi. |
+| 3 | Muhammad Fitra Adhim Nurrochman | 244107020089 | — |
+| 4 | Rani Miftahus Sa'adah | 244107020057 | — |
+| 5 | Rifo Anggi Barbara Danuarta | 244107020063 | — |
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---
+*Proyek ini terintegrasi dengan mata kuliah Pemrograman Web Lanjut, Analisis dan Desain Berorientasi Objek, dan Bahasa Indonesia.*
