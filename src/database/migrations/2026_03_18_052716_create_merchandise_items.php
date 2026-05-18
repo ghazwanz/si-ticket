@@ -20,7 +20,7 @@ return new class extends Migration
             $table->unsignedBigInteger('base_price'); // stored in IDR
             $table->boolean('is_available')->default(true);
             $table->timestamps();
- 
+
             $table->index(['event_id', 'is_available']);
         });
     }

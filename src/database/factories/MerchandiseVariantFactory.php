@@ -1,0 +1,23 @@
+<?php
+
+namespace Database\Factories;
+
+use App\Models\MerchandiseItem;
+use App\Models\MerchandiseVariant;
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+class MerchandiseVariantFactory extends Factory
+{
+    protected $model = MerchandiseVariant::class;
+
+    public function definition(): array
+    {
+        return [
+            'merchandise_item_id' => MerchandiseItem::factory(),
+            'variant_group' => 'Size',
+            'variant_value' => $this->faker->unique()->word().' '.$this->faker->unique()->randomNumber(5),
+            'price_adjustment' => $this->faker->randomElement([0, 0, 0, 10000, 20000]),
+            'stock' => $this->faker->numberBetween(10, 100),
+        ];
+    }
+}

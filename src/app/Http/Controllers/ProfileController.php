@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\UserRole;
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\Event;
 use App\Models\Order;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -19,15 +21,15 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
 
-        if ($user->role === \App\Enums\UserRole::Admin) {
+        if ($user->role === UserRole::Admin) {
             return view('profile.admin', [
                 'user' => $user,
             ]);
         }
 
-        if ($user->role === \App\Enums\UserRole::Organizer) {
+        if ($user->role === UserRole::Organizer) {
             $user->load('organizerProfile');
-            $recentEvents = \App\Models\Event::where('organizer_id', $user->id)
+            $recentEvents = Event::where('organizer_id', $user->id)
                 ->latest()
                 ->take(5)
                 ->get();
@@ -73,7 +75,7 @@ class ProfileController extends Controller
 
         $request->user()->save();
 
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        return back()->with('status', 'profile-updated');
     }
 
     /**

@@ -109,25 +109,6 @@
 
         <x-home.footer />
 
-        <script>
-            document.addEventListener('DOMContentLoaded', () => {
-                const elements = document.querySelectorAll('[data-reveal]');
-                elements.forEach(el => el.classList.add('reveal-node'));
-                const observer = new IntersectionObserver((entries, observer) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            setTimeout(() => {
-                                entry.target.classList.add('revealed');
-                                entry.target.style.opacity = '1';
-                                entry.target.style.filter = 'blur(0)';
-                                entry.target.style.transform = 'translateY(0) scale(1)';
-                            }, 50);
-                            observer.unobserve(entry.target);
-                        }
-                    });
-                }, { root: null, rootMargin: '0px 0px -50px 0px', threshold: 0.1 });
-                elements.forEach(el => observer.observe(el));
-            });
-        </script>
+
     </body>
 </html>

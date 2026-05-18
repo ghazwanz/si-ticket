@@ -9,8 +9,27 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        <style>
+            [x-cloak] { display: none !important; }
+            .page-fade-in {
+                animation: fadeIn 0.4s ease-out;
+            }
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(8px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+        </style>
     </head>
-    <body class="font-sans antialiased text-foreground" x-data="{ sidebarOpen: false }">
+    <body class="font-sans antialiased text-foreground" 
+          x-data="{ 
+              sidebarOpen: false,
+              sidebarMini: localStorage.getItem('sidebarMini_app') === 'true'
+          }"
+          x-init="$watch('sidebarMini', val => localStorage.setItem('sidebarMini_app', val))">
+        {{-- SPA Loader --}}
+        <div id="spa-loader" class="fixed top-0 left-0 w-full h-1 z-[9999] hidden">
+            <div class="h-full bg-violet-600 animate-progress shadow-[0_0_10px_rgba(124,58,237,0.5)]"></div>
+        </div>
             <div class="min-h-screen bg-background">
             {{-- Mobile sidebar overlay --}}
             <div x-show="sidebarOpen" x-transition:enter="transition-opacity ease-linear duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition-opacity ease-linear duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 z-40 bg-black/50 md:hidden" @click="sidebarOpen = false" x-cloak></div>
@@ -29,22 +48,25 @@
                         </button>
 
                         {{-- Page Heading --}}
-                        @isset($header)
-                            <div class="flex-1 min-w-0">
+                        <div class="flex-1 min-w-0" id="spa-header">
+                            @isset($header)
                                 {{ $header }}
-                            </div>
-                        @endisset
+                            @endisset
+                        </div>
                     </div>
                 </header>
 
                 {{-- Page Content --}}
-                <main data-page-shell>
-                    <div data-reveal data-reveal-delay="80" class="opacity-0 translate-y-6 scale-[0.98] blur-sm transition-all duration-700 ease-out">
+                <main data-page-shell class="page-fade-in">
+                    <div data-reveal data-reveal-delay="80" class="transition-all duration-700 ease-out">
                         <!-- @yield('content') -->
                          {{ $slot }}
                     </div>
                 </main>
             </div>
+        </div>
+        <div id="spa-modals">
+            @stack('modals')
         </div>
     </body>
 </html>

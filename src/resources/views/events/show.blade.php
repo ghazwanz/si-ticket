@@ -81,7 +81,7 @@
                             </div>
 
                             <p class="max-w-3xl text-sm leading-7 text-slate-600">
-                                {{ $event['description'] }} Event ini dirancang untuk menghadirkan pengalaman yang tertata, visual yang kuat, dan alur masuk yang jelas untuk setiap pengunjung.
+                                {!! $event['description'] !!} Event ini dirancang untuk menghadirkan pengalaman yang tertata, visual yang kuat, dan alur masuk yang jelas untuk setiap pengunjung.
                             </p>
 
                             <div class="grid gap-3 sm:grid-cols-3">

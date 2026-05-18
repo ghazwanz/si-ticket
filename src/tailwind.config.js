@@ -9,25 +9,28 @@ export default {
         './resources/views/**/*.blade.php',
     ],
 
+    darkMode: 'class',
+
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Inter', ...defaultTheme.fontFamily.sans],
+                sans: ['Montserrat', ...defaultTheme.fontFamily.sans],
+                heading: ['Manrope', ...defaultTheme.fontFamily.sans],
                 mono: ['"JetBrains Mono"', ...defaultTheme.fontFamily.mono],
             },
             colors: {
-                border: 'hsl(220 13% 91%)',
-                input: 'hsl(220 13% 91%)',
+                border: 'hsl(var(--border))',
+                input: 'hsl(var(--border))',
                 ring: 'hsl(262 83% 58%)',
-                background: 'hsl(0 0% 100%)',
-                foreground: 'hsl(224 71% 4%)',
+                background: 'hsl(var(--background))',
+                foreground: 'hsl(var(--foreground))',
                 primary: {
                     DEFAULT: 'hsl(262 83% 58%)',
                     foreground: 'hsl(0 0% 100%)',
                 },
                 secondary: {
                     DEFAULT: 'hsl(220 14% 96%)',
-                    foreground: 'hsl(224 71% 4%)',
+                    foreground: 'hsl(var(--foreground))',
                 },
                 muted: {
                     DEFAULT: 'hsl(220 14% 96%)',
@@ -35,19 +38,19 @@ export default {
                 },
                 accent: {
                     DEFAULT: 'hsl(220 14% 96%)',
-                    foreground: 'hsl(224 71% 4%)',
+                    foreground: 'hsl(var(--foreground))',
                 },
                 destructive: {
                     DEFAULT: 'hsl(0 84% 60%)',
                     foreground: 'hsl(0 0% 100%)',
                 },
                 card: {
-                    DEFAULT: 'hsl(0 0% 100%)',
-                    foreground: 'hsl(224 71% 4%)',
+                    DEFAULT: 'hsl(var(--background))',
+                    foreground: 'hsl(var(--foreground))',
                 },
                 popover: {
-                    DEFAULT: 'hsl(0 0% 100%)',
-                    foreground: 'hsl(224 71% 4%)',
+                    DEFAULT: 'hsl(var(--background))',
+                    foreground: 'hsl(var(--foreground))',
                 },
                 chart: {
                     1: 'hsl(262 83% 58%)',

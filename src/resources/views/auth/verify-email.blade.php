@@ -1,22 +1,31 @@
 <x-guest-layout>
-    <p class="mb-1 text-xs font-semibold uppercase tracking-[0.2em] text-violet-600">JoinFest</p>
-    <h1 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Verify Email</h1>
-
-    <p class="mt-2 mb-6 text-sm text-slate-500">
-        Thanks for signing up. Please click the verification link we sent to your email.
-    </p>
+    <div class="text-center">
+        <p class="mb-1 text-xs font-bold uppercase tracking-widest text-violet-600">JoinFest</p>
+        <h1 class="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">Verify Email</h1>
+        <p class="mt-2 text-sm text-slate-500">Thanks for signing up. Please click the verification link we sent to your email.</p>
+    </div>
 
     @if (session('status') == 'verification-link-sent')
-        <div class="mb-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">A new verification link has been sent to your email.</div>
+        <div class="mt-6 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700 flex items-center gap-2">
+            <x-heroicon-s-check-circle class="w-5 h-5" />
+            <span>A new verification link has been sent to your email.</span>
+        </div>
     @endif
 
-    <form method="POST" action="{{ route('verification.send') }}">
-        @csrf
-        <button type="submit" class="inline-flex h-12 w-full items-center justify-center rounded-xl bg-gradient-to-r from-violet-600 to-violet-500 px-4 text-sm font-semibold text-white shadow-[0_12px_20px_rgba(109,40,217,0.25)] transition hover:-translate-y-0.5 hover:shadow-[0_16px_24px_rgba(109,40,217,0.3)]">Resend verification email</button>
-    </form>
+    <div class="mt-8 space-y-3">
+        <form method="POST" action="{{ route('verification.send') }}">
+            @csrf
+            <button type="submit" class="group relative flex w-full justify-center rounded-xl bg-violet-600 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 transition-all disabled:opacity-50">
+                Resend Verification Email
+                <x-heroicon-s-paper-airplane class="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+            </button>
+        </form>
 
-    <form method="POST" action="{{ route('logout') }}" class="mt-3">
-        @csrf
-        <button type="submit" class="inline-flex h-12 w-full items-center justify-center rounded-xl border border-slate-300 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">Log out</button>
-    </form>
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <button type="submit" class="flex w-full justify-center rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-200 transition-all">
+                Log Out
+            </button>
+        </form>
+    </div>
 </x-guest-layout>

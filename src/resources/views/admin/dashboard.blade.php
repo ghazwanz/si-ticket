@@ -1,148 +1,202 @@
-@extends('layouts.admin')
+<x-admin-layout>
+    <x-slot name="title">Dasbor - JoinFest Admin</x-slot>
+    <x-slot name="header">DASHBOARD OVERVIEW</x-slot>
 
-@section('title', 'Dashboard - JoinFest Admin')
-@section('search_placeholder', 'Cari data...')
+    <div class="space-y-6">
+        {{-- Page Header --}}
+        <div class="flex items-center justify-between">
+            <div>
+                <h2 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Selamat Datang, Admin</h2>
+                <p class="text-slate-500 dark:text-slate-400 mt-1 text-sm font-medium">Overview performa platform JoinFest hari ini.</p>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold uppercase tracking-wider border border-emerald-500/20">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    Live Updates
+                </span>
+            </div>
+        </div>
 
-@section('content')
-<div class="max-w-5xl mx-auto">
-
-    {{-- Page Header --}}
-    <div class="mb-6">
-        <h1 class="font-display text-3xl font-bold text-gray-900 dark:text-white">Selamat Datang, Admin</h1>
-        <p class="text-gray-500 dark:text-gray-400 mt-1 text-sm">Overview performa platform JoinFest hari ini.</p>
-    </div>
-
-    {{-- Alert Cards --}}
-    <div class="grid grid-cols-2 gap-4 mb-6">
-        {{-- Event Review Alert --}}
-        <div class="bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-900/50 rounded-2xl p-5 flex items-center justify-between">
-            <div class="flex items-start gap-4">
-                <div class="w-10 h-10 rounded-xl bg-orange-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <svg width="18" height="18" fill="none" stroke="#f97316" stroke-width="2" viewBox="0 0 24 24">
-                        <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
-                        <rect x="9" y="3" width="6" height="4" rx="1"/>
-                    </svg>
+        {{-- Stats Grid --}}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {{-- Total Pengguna --}}
+            <div class="glass-panel p-6 rounded-3xl relative overflow-hidden group">
+                <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <svg class="w-12 h-12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2m12-10a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
                 </div>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-1">Total Pengguna</p>
+                <h3 class="text-3xl font-bold text-slate-900 dark:text-white tabular-nums">{{ number_format($stats['total_pengguna']) }}</h3>
+                <div class="mt-4 flex items-center gap-2">
+                    <span class="text-[10px] font-bold text-emerald-500">+12% vs last month</span>
+                </div>
+            </div>
+
+            {{-- Event Tinjau --}}
+            <div class="glass-panel p-6 rounded-3xl relative overflow-hidden group border-orange-500/20">
+                <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <svg class="w-12 h-12 text-orange-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 00 2 2h10a2 2 0 00 2-2V7a2 2 0 00-2-2h-2"/></svg>
+                </div>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-1">Event Tinjau</p>
+                <h3 class="text-3xl font-bold text-slate-900 dark:text-white tabular-nums text-orange-500">{{ $stats['event_review'] }}</h3>
+                <div class="mt-4 flex items-center gap-2">
+                    <a href="{{ route('admin.events.index') }}" class="text-[10px] font-bold text-orange-600 dark:text-orange-400 hover:underline">Tinjau Sekarang &rarr;</a>
+                </div>
+            </div>
+
+            {{-- Acara Aktif --}}
+            <div class="glass-panel p-6 rounded-3xl relative overflow-hidden group">
+                <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <svg class="w-12 h-12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                </div>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-1">Event Aktif</p>
+                <h3 class="text-3xl font-bold text-slate-900 dark:text-white tabular-nums text-violet-500">{{ $stats['event_aktif'] }}</h3>
+                <div class="mt-4 flex items-center gap-2">
+                    <span class="text-[10px] font-bold text-slate-400">Sedang berlangsung</span>
+                </div>
+            </div>
+
+            {{-- Pending EO --}}
+            <div class="glass-panel p-6 rounded-3xl relative overflow-hidden group">
+                <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <svg class="w-12 h-12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                </div>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-1">EO Pending</p>
+                <h3 class="text-3xl font-bold text-slate-900 dark:text-white tabular-nums text-rose-500">{{ $stats['eo_pending'] }}</h3>
+                <div class="mt-4 flex items-center gap-2">
+                    <span class="text-[10px] font-bold text-rose-500">Verifikasi diperlukan</span>
+                </div>
+            </div>
+        </div>
+
+        {{-- Analitik Transaksi --}}
+        <div class="glass-panel rounded-[2rem] p-8">
+            <div class="flex items-center justify-between mb-8">
                 <div>
-                    <p class="font-bold text-gray-900 dark:text-white text-sm leading-snug">12 event menunggu persetujuanmu</p>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Tinjau sekarang sebelum batas waktu.</p>
+                    <h4 class="text-lg font-bold text-slate-900 dark:text-white">Wawasan Transaksi</h4>
+                    <p class="text-xs text-slate-500 font-medium">Histori volume dan nilai transaksi 30 hari terakhir.</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="flex items-center gap-1.5 text-[10px] font-bold text-violet-600 uppercase tracking-widest bg-violet-600/5 px-3 py-1.5 rounded-xl border border-violet-600/10">
+                        <span class="w-1.5 h-1.5 rounded-full bg-violet-600"></span>
+                        Pendapatan (Rp)
+                    </span>
+                    <span class="flex items-center gap-1.5 text-[10px] font-bold text-blue-500 uppercase tracking-widest bg-blue-500/5 px-3 py-1.5 rounded-xl border border-blue-500/10">
+                        <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                        Pesanan
+                    </span>
                 </div>
             </div>
-            <a href="{{ route('admin.events') }}" class="text-orange-600 dark:text-orange-400 text-xs font-bold whitespace-nowrap flex items-center gap-1 hover:gap-2 transition-all">
-                Tinjau Sekarang
-                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </a>
+            
+            <div x-data="{ 
+                revenue: @js($analytics['revenue']),
+                volume: @js($analytics['volume']),
+                labels: @js($analytics['labels']),
+                init() {
+                    const options = {
+                        series: [{
+                            name: 'Total Pendapatan',
+                            type: 'area',
+                            data: this.revenue
+                        }, {
+                            name: 'Order Volume',
+                            type: 'line',
+                            data: this.volume
+                        }],
+                        chart: {
+                            height: 350,
+                            type: 'line',
+                            toolbar: { show: false },
+                            animations: { enabled: true, easing: 'easeinout', speed: 800 }
+                        },
+                        colors: ['#7c3aed', '#3b82f6'],
+                        fill: {
+                            type: ['gradient', 'solid'],
+                            gradient: {
+                                shadeIntensity: 1,
+                                opacityFrom: 0.3,
+                                opacityTo: 0.05,
+                                stops: [0, 90, 100]
+                            }
+                        },
+                        stroke: { width: [3, 3], curve: 'smooth' },
+                        xaxis: {
+                            categories: this.labels,
+                            axisBorder: { show: false },
+                            axisTicks: { show: false },
+                            labels: { style: { colors: '#94a3b8', fontSize: '10px', fontWeight: 600 } }
+                        },
+                        yaxis: [
+                            { 
+                                title: { text: 'Pendapatan', style: { color: '#7c3aed', fontWeight: 700 } },
+                                labels: { 
+                                    style: { colors: '#94a3b8', fontSize: '10px' },
+                                    formatter: (val) => 'Rp ' + val.toLocaleString()
+                                } 
+                            },
+                            {
+                                opposite: true,
+                                title: { text: 'Pesanan', style: { color: '#3b82f6', fontWeight: 700 } },
+                                labels: { style: { colors: '#94a3b8', fontSize: '10px' } }
+                            }
+                        ],
+                        grid: { borderColor: 'rgba(148, 163, 184, 0.1)', strokeDashArray: 4 },
+                        tooltip: { theme: 'dark', x: { show: true } },
+                        legend: { show: false }
+                    };
+                    
+                    new ApexCharts(this.$refs.chart, options).render();
+                }
+            }" class="w-full">
+                <div x-ref="chart"></div>
+            </div>
         </div>
 
-        {{-- EO Verification Alert --}}
-        <div class="bg-violet-50 dark:bg-violet-950/30 border border-violet-200 dark:border-violet-900/50 rounded-2xl p-5 flex items-center justify-between">
-            <div class="flex items-start gap-4">
-                <div class="w-10 h-10 rounded-xl bg-violet-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <svg width="18" height="18" fill="none" stroke="#8b5cf6" stroke-width="2" viewBox="0 0 24 24">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                    </svg>
+        {{-- Content Grid --}}
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {{-- Activity Logs --}}
+            <div class="lg:col-span-2 glass-panel rounded-[2rem] p-8">
+                <div class="flex items-center justify-between mb-8">
+                    <h4 class="text-lg font-bold text-slate-900 dark:text-white">Aktivitas Terbaru</h4>
+                    <button class="text-xs font-bold text-violet-600 dark:text-violet-400 hover:underline">Lihat Semua</button>
                 </div>
-                <div>
-                    <p class="font-bold text-gray-900 dark:text-white text-sm leading-snug">8 EO baru menunggu verifikasi</p>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Pastikan kelengkapan dokumen legal.</p>
-                </div>
-            </div>
-            <a href="{{ route('admin.users') }}" class="text-violet-600 dark:text-violet-400 text-xs font-bold whitespace-nowrap flex items-center gap-1 hover:gap-2 transition-all">
-                Verifikasi EO
-                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </a>
-        </div>
-    </div>
-
-    {{-- Stat Cards --}}
-    <div class="grid grid-cols-4 gap-4 mb-6">
-        @php
-        $stats = [
-            ['label' => 'TOTAL PENGGUNA', 'value' => '12,842', 'badge' => '+12%', 'badge_color' => 'text-green-600 bg-green-100', 'icon_color' => '#6C47FF',
-             'icon' => '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>'],
-            ['label' => 'EVENT REVIEW', 'value' => '12', 'badge' => 'Tinjau', 'badge_color' => 'text-orange-600 bg-orange-100', 'icon_color' => '#f97316',
-             'icon' => '<path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>'],
-            ['label' => 'EVENT AKTIF', 'value' => '342', 'badge' => 'Live', 'badge_color' => 'text-blue-600 bg-blue-100', 'icon_color' => '#3b82f6',
-             'icon' => '<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>'],
-            ['label' => 'EO PENDING', 'value' => '08', 'badge' => 'New', 'badge_color' => 'text-purple-600 bg-purple-100', 'icon_color' => '#8b5cf6',
-             'icon' => '<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>'],
-        ];
-        @endphp
-        @foreach($stats as $stat)
-        <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-5">
-            <div class="flex items-center justify-between mb-4">
-                <svg width="22" height="22" fill="none" stroke="{{ $stat['icon_color'] }}" stroke-width="1.8" viewBox="0 0 24 24">{!! $stat['icon'] !!}</svg>
-                <span class="text-xs font-bold px-2 py-0.5 rounded-full {{ $stat['badge_color'] }}">{{ $stat['badge'] }}</span>
-            </div>
-            <div class="text-[11px] font-bold tracking-wider text-gray-400 mb-1">{{ $stat['label'] }}</div>
-            <div class="font-display text-2xl font-bold text-gray-900 dark:text-white">{{ $stat['value'] }}</div>
-        </div>
-        @endforeach
-    </div>
-
-    {{-- Bottom Row --}}
-    <div class="grid grid-cols-3 gap-4">
-        {{-- Activity Log --}}
-        <div class="col-span-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-5">
-            <div class="flex items-center justify-between mb-5">
-                <h3 class="font-display font-bold text-base">Recent Activity Log</h3>
-                <a href="#" class="text-brand text-xs font-bold hover:underline">Lihat Semua</a>
-            </div>
-            <div class="grid grid-cols-3 text-[10px] font-bold tracking-wider text-gray-400 pb-2 border-b border-gray-100 dark:border-gray-800 mb-1">
-                <span>ACTION</span><span>USER</span><span>TIMESTAMP</span>
-            </div>
-            @php
-            $logs = [
-                ['icon' => '✓', 'color' => 'bg-green-100 text-green-600', 'action' => 'Event "Jakarta Tech Expo" approved', 'user' => 'Admin Utama', 'time' => '2 mins ago'],
-                ['icon' => '👤', 'color' => 'bg-purple-100 text-purple-600', 'action' => 'New EO Registration: Stellar Creative', 'user' => 'System', 'time' => '15 mins ago'],
-                ['icon' => '⚑', 'color' => 'bg-red-100 text-red-600', 'action' => 'Flagged review on "Jazz Night"', 'user' => 'Moderator B', 'time' => '42 mins ago'],
-                ['icon' => '✎', 'color' => 'bg-blue-100 text-blue-600', 'action' => 'Updated system permissions', 'user' => 'Super Admin', 'time' => '1 hour ago'],
-            ];
-            @endphp
-            @foreach($logs as $log)
-            <div class="grid grid-cols-3 items-center py-3 border-b border-gray-50 dark:border-gray-800/50 last:border-0">
-                <div class="flex items-center gap-2.5">
-                    <span class="w-6 h-6 rounded-full {{ $log['color'] }} flex items-center justify-center text-[10px] font-bold flex-shrink-0">{{ $log['icon'] }}</span>
-                    <span class="text-xs text-gray-700 dark:text-gray-300">{{ $log['action'] }}</span>
-                </div>
-                <span class="text-xs text-gray-500">{{ $log['user'] }}</span>
-                <span class="text-xs text-gray-400">{{ $log['time'] }}</span>
-            </div>
-            @endforeach
-        </div>
-
-        {{-- Right Column --}}
-        <div class="flex flex-col gap-4">
-            {{-- Tiket Terjual --}}
-            <div class="bg-brand rounded-2xl p-5">
-                <div class="text-white/70 text-xs font-semibold mb-1">Tiket Terjual (24j)</div>
-                <div class="font-display text-3xl font-bold text-white mb-2">1,204</div>
-                <span class="bg-white/20 text-white text-xs font-bold px-3 py-1 rounded-full">↗ +18% Hari ini</span>
-            </div>
-
-            {{-- Distribusi Event --}}
-            <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-5 flex-1">
-                <h3 class="font-display font-bold text-sm mb-4">Distribusi Event</h3>
-                @php
-                $distribusi = [
-                    ['label' => 'Music & Concerts', 'pct' => 45, 'color' => 'bg-brand'],
-                    ['label' => 'Conferences', 'pct' => 30, 'color' => 'bg-blue-500'],
-                    ['label' => 'Sports', 'pct' => 25, 'color' => 'bg-gray-300 dark:bg-gray-600'],
-                ];
-                @endphp
-                @foreach($distribusi as $d)
-                <div class="mb-3 last:mb-0">
-                    <div class="flex justify-between text-xs mb-1">
-                        <span class="text-gray-600 dark:text-gray-400">{{ $d['label'] }}</span>
-                        <span class="font-semibold">{{ $d['pct'] }}%</span>
+                <div class="space-y-6">
+                    @foreach($logs as $log)
+                    <div class="flex items-start gap-4 group">
+                        <div class="w-10 h-10 rounded-2xl {{ $log['color'] }} flex items-center justify-center font-bold text-sm shrink-0 group-hover:scale-110 transition-transform">
+                            {{ $log['icon'] }}
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between">
+                                <p class="text-sm font-bold text-slate-900 dark:text-white">{{ $log['action'] }}</p>
+                                <span class="text-[10px] font-medium text-slate-400">{{ $log['time'] }}</span>
+                            </div>
+                            <p class="text-xs text-slate-500 mt-0.5">Oleh: <span class="text-slate-700 dark:text-slate-300">{{ $log['user'] }}</span></p>
+                        </div>
                     </div>
-                    <div class="h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full">
-                        <div class="h-full {{ $d['color'] }} rounded-full" style="width:{{ $d['pct'] }}%"></div>
-                    </div>
+                    @endforeach
                 </div>
-                @endforeach
+            </div>
+
+            {{-- Category Distribution --}}
+            <div class="glass-panel rounded-[2rem] p-8">
+                <h4 class="text-lg font-bold text-slate-900 dark:text-white mb-8">Distribusi Kategori</h4>
+                <div class="space-y-6">
+                    @foreach($distribusi as $item)
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-bold text-slate-600 dark:text-slate-400">{{ $item['label'] }}</span>
+                            <span class="text-xs font-bold text-slate-900 dark:text-white">{{ $item['pct'] }}%</span>
+                        </div>
+                        <div class="h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                            <div class="h-full {{ $item['color'] }} rounded-full" style="width: {{ $item['pct'] }}%"></div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+                <div class="mt-8 pt-8 border-t border-slate-100 dark:border-slate-800">
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center">Data real-time disinkronkan</p>
+                </div>
             </div>
         </div>
     </div>
-</div>
-@endsection
+</x-admin-layout>

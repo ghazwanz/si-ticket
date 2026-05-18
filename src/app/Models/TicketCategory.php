@@ -3,13 +3,15 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TicketCategory extends Model
 {
-    use HasUuids;
+    use HasFactory, HasUuids, SoftDeletes;
 
     protected $guarded = [];
 
@@ -19,6 +21,7 @@ class TicketCategory extends Model
             'sale_start_at' => 'datetime',
             'sale_end_at' => 'datetime',
             'is_active' => 'boolean',
+            'max_per_user' => 'integer',
         ];
     }
 

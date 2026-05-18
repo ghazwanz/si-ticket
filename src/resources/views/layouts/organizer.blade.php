@@ -1,55 +1,129 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}"
+      x-data="{
+          darkMode: localStorage.getItem('darkMode') === 'true',
+          sidebarOpen: window.innerWidth > 768,
+          sidebarMini: localStorage.getItem('organizerSidebarMini') === 'true',
+          scrolled: false
+      }"
+      x-init="
+          $watch('darkMode', value => localStorage.setItem('darkMode', value));
+          $watch('sidebarMini', value => localStorage.setItem('organizerSidebarMini', value));
+          if (window.innerWidth > 768 && window.innerWidth < 1024 && localStorage.getItem('organizerSidebarMini') === null) {
+              sidebarMini = true;
+          }
+      "
+      :class="{ 'dark': darkMode }"
+      @scroll.window="scrolled = window.pageYOffset > 20">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'JoinFest Organizer Console')</title>
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Syne:wght@600;700&display=swap" rel="stylesheet">
+    <meta name="description" content="Konsol penyelenggara JoinFest untuk mengelola acara, tiket, merchandise, dan pemindaian QR secara terpadu.">
+    <title>@yield('title', 'Konsol Penyelenggara JoinFest')</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        h1, h2, h3, .font-display { font-family: 'Syne', sans-serif; }
+        [x-cloak] { display: none !important; }
+        .page-fade-in { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
     @stack('styles')
 </head>
-<body class="bg-[#F8F9FC] text-gray-900 antialiased">
-
-    <div class="flex h-screen overflow-hidden">
-        <!-- SIDEBAR -->
-        <x-organizer.sidebar />
-
-        <!-- MAIN CONTENT -->
-        <div class="flex flex-col flex-1 overflow-hidden ml-64">
-            <!-- TOP BAR -->
-            <header class="bg-white border-b border-gray-200/70 h-16 flex items-center justify-between px-6 shadow-sm">
-                <div class="flex items-center gap-3">
-                    <h1 class="text-lg font-semibold text-gray-800">@yield('page-title', 'Dashboard')</h1>
-                </div>
-                <div class="flex items-center gap-4">
-                    <button class="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
-                    </button>
-                    <div class="flex items-center gap-2 border-l pl-4">
-                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-purple-600 to-indigo-800 flex items-center justify-center text-white text-xs font-bold">KC</div>
-                        <div class="hidden sm:block">
-                            <p class="text-sm font-medium text-gray-700">Karsa Creative</p>
-                            <p class="text-xs text-gray-500">Organizer Terverifikasi</p>
-                        </div>
-                    </div>
-                </div>
-            </header>
-
-            <!-- PAGE CONTENT -->
-            <main class="flex-1 overflow-y-auto p-6">
-                @yield('content')
-            </main>
-        </div>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans antialiased selection:bg-violet-500/30">
+    <div id="spa-loader" class="fixed top-0 left-0 w-full h-1 z-[9999] hidden">
+        <div class="h-full bg-violet-600 animate-progress shadow-[0_0_10px_rgba(124,58,237,0.5)]"></div>
     </div>
 
+    <x-organizer.sidebar />
+
+    <div :class="[
+            sidebarMini ? 'lg:pl-20' : 'lg:pl-64',
+            sidebarOpen ? '' : 'pl-0'
+        ]" class="sidebar-transition min-h-screen flex flex-col">
+        <header :class="scrolled ? 'glass-panel shadow-sm py-2' : 'bg-transparent py-4'"
+                class="sticky top-0 z-40 px-6 flex items-center justify-between transition-all duration-300">
+            <div class="flex items-center gap-4">
+                <button type="button" @click="if (window.innerWidth > 1024) { sidebarMini = !sidebarMini } else { sidebarOpen = !sidebarOpen }" class="p-2 rounded-xl text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    <x-heroicon-o-bars-3 class="w-6 h-6" />
+                </button>
+                <div class="hidden md:block" id="spa-header">
+                    <h1 class="text-sm font-bold text-slate-400 uppercase tracking-widest">
+                        @yield('page-title', 'Ringkasan Penyelenggara')
+                    </h1>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <div class="relative hidden sm:block">
+                    <input type="text" placeholder="Cari cepat..."
+                           class="w-64 pl-10 pr-4 py-2 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/20 transition-all">
+                    <x-heroicon-o-magnifying-glass class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                </div>
+
+                <button type="button" @click="darkMode = !darkMode" class="p-2 rounded-xl text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    <x-heroicon-o-moon x-show="!darkMode" class="w-5 h-5" />
+                    <x-heroicon-o-sun x-show="darkMode" class="w-5 h-5" />
+                </button>
+
+                <button type="button" class="p-2 rounded-xl text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors relative">
+                    <x-heroicon-o-bell class="w-5 h-5" />
+                    <span class="absolute top-2 right-2 w-2 h-2 bg-emerald-500 rounded-full border-2 border-white dark:border-slate-950"></span>
+                </button>
+
+                <div class="relative ml-2" x-data="{ open: false }" @click.away="open = false">
+                    <button type="button" @click="open = !open" class="flex items-center gap-3 p-1 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                        <div class="w-8 h-8 rounded-xl bg-violet-500 flex items-center justify-center font-bold text-white text-xs">
+                            {{ substr(Auth::user()->name, 0, 1) }}
+                        </div>
+                        <div class="hidden sm:block text-left">
+                            <div class="text-[11px] font-bold text-slate-900 dark:text-white leading-none">{{ Auth::user()->name }}</div>
+                            <div class="text-[10px] text-slate-400 font-medium mt-0.5 uppercase tracking-tighter">Penyelenggara</div>
+                        </div>
+                        <x-heroicon-m-chevron-down class="w-4 h-4 text-slate-400" />
+                    </button>
+
+                    <div x-show="open" x-cloak
+                         x-transition:enter="transition ease-out duration-200"
+                         x-transition:enter-start="opacity-0 scale-95 translate-y-2"
+                         x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                         class="absolute right-0 mt-3 w-52 glass-panel rounded-2xl shadow-xl py-2 z-50">
+                        <a href="{{ route('profile.index') }}" data-link class="flex items-center gap-3 px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:bg-violet-500 hover:text-white transition-colors">
+                            <x-heroicon-o-user class="w-4 h-4" />
+                            Profil Saya
+                        </a>
+                        <a href="{{ route('organizer.settings') }}" data-link class="flex items-center gap-3 px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:bg-violet-500 hover:text-white transition-colors">
+                            <x-heroicon-o-cog-6-tooth class="w-4 h-4" />
+                            Pengaturan
+                        </a>
+                        <div class="border-t border-slate-100 dark:border-slate-800 my-1"></div>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="w-full flex items-center gap-3 px-4 py-2 text-sm text-rose-500 hover:bg-rose-500 hover:text-white transition-colors">
+                                <x-heroicon-o-arrow-right-on-rectangle class="w-4 h-4" />
+                                Keluar
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-1 p-6 page-fade-in">
+            @yield('content')
+        </main>
+
+        <footer class="px-6 py-4 border-t border-slate-100 dark:border-slate-800 text-center">
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest italic">&copy; {{ date('Y') }} Ekosistem JoinFest. Dibangun untuk penyelenggaraan acara yang presisi.</p>
+        </footer>
+    </div>
+
+    <div id="spa-modals">
+        @stack('modals')
+    </div>
     @stack('scripts')
 </body>
 </html>

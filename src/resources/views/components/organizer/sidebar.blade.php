@@ -1,35 +1,55 @@
-<aside class="w-64 bg-gradient-to-b from-[#2D1B69] to-[#1A0A3E] text-white flex flex-col fixed inset-y-0 left-0 z-50 shadow-2xl">
-    <div class="px-6 py-6 border-b border-white/10">
-        <h1 class="text-2xl font-bold tracking-tight bg-gradient-to-r from-purple-300 to-pink-200 bg-clip-text text-transparent">
-            JoinFest
-        </h1>
-        <p class="text-xs text-purple-300 mt-1">ORGANIZER CONSOLE</p>
+<aside x-cloak
+       :class="[
+           sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
+           sidebarMini ? 'lg:w-20' : 'lg:w-64'
+       ]"
+       class="fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-slate-950 border-r border-slate-200 dark:border-slate-800 sidebar-transition lg:translate-x-0 flex flex-col">
+    <div class="h-16 flex items-center px-6 border-b border-slate-100 dark:border-slate-800 overflow-hidden">
+        <div class="flex items-center gap-3 shrink-0">
+            <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-violet-600 to-fuchsia-600 flex items-center justify-center shadow-lg shadow-violet-600/20">
+                <x-heroicon-s-sparkles class="w-5 h-5 text-white" />
+            </div>
+            <span x-show="!sidebarMini" x-transition.opacity class="font-bold tracking-tight text-slate-900 dark:text-white whitespace-nowrap">
+                JoinFest <span class="text-violet-600 dark:text-violet-400">Organizer</span>
+            </span>
+        </div>
+        <button type="button" @click="sidebarOpen = false" class="lg:hidden ml-auto text-slate-400 hover:text-slate-900 dark:hover:text-white">
+            <x-heroicon-o-x-mark class="w-5 h-5" />
+        </button>
     </div>
 
-    <nav class="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
-        <x-organizer.nav-link href="{{ route('organizer.dashboard') }}" icon="dashboard" :active="request()->routeIs('organizer.dashboard')">
-            Dashboard
+    <nav class="flex-1 p-4 space-y-1 overflow-y-auto overflow-x-hidden custom-scrollbar">
+        <div x-show="!sidebarMini" class="px-3 mb-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Konsol Penyelenggara</div>
+
+        <x-organizer.nav-link href="{{ route('organizer.dashboard') }}" icon="squares-2x2" :active="request()->routeIs('organizer.dashboard')" :title="request()->routeIs('organizer.dashboard') ? 'Dasbor' : 'Dasbor'">
+            Dasbor
         </x-organizer.nav-link>
-        <x-organizer.nav-link href="{{ route('organizer.events.index') }}" icon="events" :active="request()->routeIs('organizer.events.*')">
-            Events
+
+        <x-organizer.nav-link href="{{ route('organizer.events.index') }}" icon="calendar-days" :active="request()->routeIs('organizer.events.*')" title="Acara">
+            Acara
         </x-organizer.nav-link>
-        <x-organizer.nav-link href="{{ route('organizer.merchandise.index') }}" icon="merchandise" :active="request()->routeIs('organizer.merchandise.*')">
+
+        <x-organizer.nav-link href="{{ route('organizer.merchandise.index') }}" icon="shopping-bag" :active="request()->routeIs('organizer.merchandise.*')" title="Merchandise">
             Merchandise
         </x-organizer.nav-link>
-        <x-organizer.nav-link href="{{ route('organizer.scanner.index') }}" icon="scanner" :active="request()->routeIs('organizer.scanner.*')">
-            QR Scanner
+
+        <x-organizer.nav-link href="{{ route('organizer.scanner.index') }}" icon="qr-code" :active="request()->routeIs('organizer.scanner.*')" title="Pemindai QR">
+            Pemindai QR
         </x-organizer.nav-link>
-        <x-organizer.nav-link href="{{ route('organizer.settings') }}" icon="settings" :active="request()->routeIs('organizer.settings')">
-            Settings
+
+        <div x-show="!sidebarMini" class="pt-4 px-3 mb-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Akun</div>
+
+        <x-organizer.nav-link href="{{ route('organizer.settings') }}" icon="cog-6-tooth" :active="request()->routeIs('organizer.settings')" title="Pengaturan">
+            Pengaturan
         </x-organizer.nav-link>
     </nav>
 
-    <div class="px-4 py-4 border-t border-white/10">
+    <div class="mt-auto p-4 border-t border-slate-100 dark:border-slate-800 overflow-hidden">
         <form method="POST" action="{{ route('logout') }}">
             @csrf
-            <button type="submit" class="flex items-center w-full px-4 py-2.5 text-sm text-purple-200 hover:bg-white/10 rounded-xl transition-colors">
-                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
-                Logout
+            <button type="submit" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-rose-500 hover:text-rose-600 hover:bg-rose-500/10 transition-all" :title="sidebarMini ? 'Keluar' : ''">
+                <x-heroicon-o-arrow-right-on-rectangle class="w-5 h-5 shrink-0" />
+                <span x-show="!sidebarMini" x-transition.opacity class="whitespace-nowrap">Keluar</span>
             </button>
         </form>
     </div>

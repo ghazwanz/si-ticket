@@ -25,10 +25,10 @@ return new class extends Migration
             $table->date('event_date');
             $table->time('start_time');
             $table->time('end_time');
-            $table->enum('status', ['draft', 'published', 'completed', 'cancelled'])->default('draft');
+            $table->enum('status', ['draft', 'awaiting_approval', 'published', 'completed', 'cancelled'])->default('draft');
             $table->boolean('is_featured')->default(false);
             $table->timestamps();
- 
+
             $table->index('status');
             $table->index('event_date');
             $table->index('city');

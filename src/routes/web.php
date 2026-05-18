@@ -1,14 +1,17 @@
 <?php
 
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\EventCategoryController;
+use App\Http\Controllers\Admin\EventController;
+use App\Http\Controllers\Admin\PayoutController;
+use App\Http\Controllers\Admin\SettingsController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\MerchandiseController;
+use App\Http\Controllers\Organizer\DashboardController as OrganizerDashboardController;
 use App\Http\Controllers\PesananController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ScannerController;
-use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\EventOversightController;
-use App\Http\Controllers\Admin\UserManagementController;
-use App\Http\Controllers\Admin\SettingsController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -76,29 +79,44 @@ Route::get('/dashboard', function () {
 
 // Admin Routes
 Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/', function () {
-        return view('admin.dashboard');
-    })->name('dashboard');
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
     // User Management
-    Route::get('users', [\App\Http\Controllers\Admin\UserController::class, 'index'])->name('users.index');
-    Route::post('users', [\App\Http\Controllers\Admin\UserController::class, 'store'])->name('users.store');
-    Route::put('users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'update'])->name('users.update');
-    Route::delete('users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'destroy'])->name('users.destroy');
+    Route::get('users', [UserController::class, 'index'])->name('users.index');
+    Route::get('users/{user}', [UserController::class, 'show'])->name('users.show');
+    Route::post('users', [UserController::class, 'store'])->name('users.store');
+    Route::put('users/{user}', [UserController::class, 'update'])->name('users.update');
+    Route::patch('users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
+    Route::delete('users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
 
-    // Event Approval
-    Route::get('events', [\App\Http\Controllers\Admin\EventController::class, 'index'])->name('events.index');
-    Route::put('events/{event}/status', [\App\Http\Controllers\Admin\EventController::class, 'updateStatus'])->name('events.update-status');
+    // Event Approval & Intelligence
+    Route::get('events', [EventController::class, 'index'])->name('events.index');
+    Route::get('events/{event}', [EventController::class, 'show'])->name('events.show');
+    Route::put('events/{event}/status', [EventController::class, 'updateStatus'])->name('events.update-status');
+
+    // Payout Management
+    Route::get('payouts', [PayoutController::class, 'index'])->name('payouts.index');
+    Route::get('payouts/{payout}', [PayoutController::class, 'show'])->name('payouts.show');
+    Route::post('payouts/initialize/{event}', [PayoutController::class, 'initialize'])->name('payouts.initialize');
+    Route::put('payouts/{payout}/approve', [PayoutController::class, 'approve'])->name('payouts.approve');
+    Route::put('payouts/{payout}/confirm', [PayoutController::class, 'confirm'])->name('payouts.confirm');
+
+    // Category Registry
+    Route::get('event-categories', [EventCategoryController::class, 'index'])->name('event-categories.index');
+    Route::post('event-categories', [EventCategoryController::class, 'store'])->name('event-categories.store');
+    Route::put('event-categories/{event_category}', [EventCategoryController::class, 'update'])->name('event-categories.update');
+    Route::delete('event-categories/{event_category}', [EventCategoryController::class, 'destroy'])->name('event-categories.destroy');
+
+    // System Settings (Profile Settings)
+    Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
 });
 
 // Organizer Routes
 Route::middleware(['auth', 'verified', 'role:organizer'])->prefix('organizer')->name('organizer.')->group(function () {
-    Route::get('dashboard', function () {
-        return view('organizer.dashboard');
-    })->name('dashboard');
+    Route::get('dashboard', [OrganizerDashboardController::class, 'index'])->name('dashboard');
 
     // Events CRUD
-    Route::resource('events', \App\Http\Controllers\Organizer\EventController::class)->except(['show']);
+    Route::resource('events', App\Http\Controllers\Organizer\EventController::class)->except(['show']);
 
     // Merchandise CRUD
     Route::get('merchandise', [MerchandiseController::class, 'index'])->name('merchandise.index');
@@ -108,14 +126,14 @@ Route::middleware(['auth', 'verified', 'role:organizer'])->prefix('organizer')->
     Route::put('merchandise/{id}', [MerchandiseController::class, 'update'])->name('merchandise.update');
     Route::delete('merchandise/{id}', [MerchandiseController::class, 'destroy'])->name('merchandise.destroy');
 
-    // QR Scanner
-    Route::get('scanner', [ScannerController::class, 'index'])->name('scanner.index');
-
-    // ---ROUTE SETTINGS---
     Route::get('settings', function () {
         return view('organizer.settings');
     })->name('settings');
+
+    // QR Scanner
+    Route::get('scanner', [ScannerController::class, 'index'])->name('scanner.index');
 });
+
 // User Authenticated Routes
 Route::middleware(['auth', 'verified', 'role:user'])->group(function () {
     // Checkout & Orders
@@ -137,18 +155,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/orders/{orderId}', [ProfileController::class, 'orderDetail'])->name('order-detail');
         Route::get('/orders/{orderId}/tickets', [ProfileController::class, 'ticketsQr'])->name('tickets-qr');
     });
-});
-
-Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/dashboard',   [DashboardController::class,      'index'])->name('dashboard');
-    Route::get('/users',       [UserManagementController::class, 'index'])->name('users');
-    Route::get('/events',      [EventOversightController::class, 'index'])->name('events');
-    Route::post('/events/{id}/approve', [EventOversightController::class, 'approve'])->name('events.approve');
-    Route::post('/events/{id}/reject',  [EventOversightController::class, 'reject'])->name('events.reject');
-    Route::get('/financials',  fn() => view('admin.financials'))->name('financials');
-    Route::get('/settings',    [SettingsController::class, 'index'])->name('settings');
-    Route::put('/settings/profile',  [SettingsController::class, 'updateProfile'])->name('settings.profile');
-    Route::put('/settings/password', [SettingsController::class, 'updatePassword'])->name('settings.password');
 });
 
 require __DIR__.'/auth.php';

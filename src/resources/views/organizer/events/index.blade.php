@@ -1,118 +1,116 @@
 @extends('layouts.organizer')
-@section('title', 'Manajemen Event')
-@section('page-title', 'Manajemen Event')
+@section('title', 'Manajemen Acara')
+@section('page-title', 'Manajemen Acara')
 
 @section('content')
 <div class="space-y-6">
-    {{-- Summary Cards --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="rounded-2xl bg-white p-5 shadow-sm border border-gray-100">
-            <p class="text-sm text-gray-500">Total Event</p>
-            <p class="text-2xl font-bold text-gray-900 mt-2">24</p>
-            <p class="text-xs text-gray-400 mt-1">+3 bulan ini</p>
-        </div>
-        <div class="rounded-2xl bg-white p-5 shadow-sm border border-gray-100">
-            <p class="text-sm text-gray-500">Tiket Terjual</p>
-            <p class="text-2xl font-bold text-gray-900 mt-2">12.4k</p>
-            <p class="text-xs text-green-600 mt-1">18% vs minggu lalu</p>
-        </div>
-        <div class="rounded-2xl bg-white p-5 shadow-sm border border-gray-100">
-            <p class="text-sm text-gray-500">Pendapatan Kotor</p>
-            <p class="text-2xl font-bold text-gray-900 mt-2">Rp 842M</p>
-            <p class="text-xs text-gray-400 mt-1">Estimasi total omset</p>
-        </div>
-        <div class="rounded-2xl bg-white p-5 shadow-sm border border-gray-100">
-            <p class="text-sm text-gray-500">Event Mendatang</p>
-            <p class="text-2xl font-bold text-gray-900 mt-2">3</p>
-            <p class="text-xs text-gray-400 mt-1">Dalam 30 hari</p>
-        </div>
+        <x-organizer.stat-card label="Total Acara" value="24" meta="Bertambah 3 acara bulan ini" icon="calendar-days" tone="violet" />
+        <x-organizer.stat-card label="Tiket Terjual" value="12,4 Ribu" meta="Naik 18% dibanding minggu lalu" icon="ticket" tone="emerald" />
+        <x-organizer.stat-card label="Pendapatan Kotor" value="Rp 842 Juta" meta="Estimasi omzet seluruh acara" icon="banknotes" tone="sky" />
+        <x-organizer.stat-card label="Acara Mendatang" value="3" meta="Dalam 30 hari ke depan" icon="clock" tone="amber" />
     </div>
 
-    {{-- Daftar Event --}}
-    <div class="rounded-2xl bg-white shadow-sm border border-gray-100 overflow-hidden">
-        <div class="p-6 border-b border-gray-100 flex items-center justify-between">
-            <h3 class="text-lg font-semibold text-gray-900">Daftar Event</h3>
-            <a href="{{ route('organizer.events.create') }}" class="inline-flex items-center gap-1.5 px-3 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-sm font-medium rounded-xl hover:from-purple-700 hover:to-indigo-700 transition-all shadow-sm">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                Buat Event Baru
+    <div class="glass-panel rounded-2xl shadow-sm border border-white/60 dark:border-white/10 overflow-hidden">
+        <div class="p-6 border-b border-slate-100 dark:border-slate-800 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+                <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400">Katalog Acara</p>
+                <h3 class="mt-1 text-lg font-extrabold tracking-tight text-slate-950 dark:text-white">Daftar Acara</h3>
+            </div>
+            <a href="{{ route('organizer.events.create') }}" data-link class="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white text-sm font-bold rounded-xl hover:from-violet-700 hover:to-indigo-700 transition-all shadow-sm">
+                <x-heroicon-o-plus class="w-4 h-4" />
+                Buat Acara Baru
             </a>
         </div>
 
         @if(session('status'))
-            <div class="mx-6 mt-4 p-4 bg-emerald-50 text-emerald-700 rounded-xl border border-emerald-200">
+            <div class="mx-6 mt-4 p-4 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 rounded-xl border border-emerald-500/20">
                 {{ session('status') }}
             </div>
         @endif
 
         <div class="overflow-x-auto">
             <table class="w-full text-left text-sm">
-                <thead class="bg-gray-50 text-gray-500 text-xs uppercase">
+                <thead class="bg-slate-50 dark:bg-slate-900/60 text-slate-500 text-xs uppercase tracking-widest">
                     <tr>
-                        <th class="px-6 py-3 font-medium">Event</th>
-                        <th class="px-6 py-3 font-medium">Tanggal & Waktu</th>
-                        <th class="px-6 py-3 font-medium">Lokasi</th>
-                        <th class="px-6 py-3 font-medium">Okupansi</th>
-                        <th class="px-6 py-3 font-medium">Status</th>
-                        <th class="px-6 py-3 text-right font-medium">Aksi</th>
+                        <th class="px-6 py-3 font-bold">Acara</th>
+                        <th class="px-6 py-3 font-bold">Tanggal & Waktu</th>
+                        <th class="px-6 py-3 font-bold">Lokasi</th>
+                        <th class="px-6 py-3 font-bold">Okupansi</th>
+                        <th class="px-6 py-3 font-bold">Status</th>
+                        <th class="px-6 py-3 text-right font-bold">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100">
+                <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
                     @forelse($events as $event)
-                    <tr class="hover:bg-gray-50 transition-colors">
+                    <tr class="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
                         <td class="px-6 py-4">
-                            <div class="font-medium text-gray-900">{{ $event->name }}</div>
-                            <div class="text-xs text-gray-500 mt-0.5">Dibuat: {{ $event->created_at->format('d M Y') }}</div>
+                            <div class="font-bold text-slate-900 dark:text-white">{{ $event->name }}</div>
+                            <div class="text-xs text-slate-500 mt-0.5">Dibuat: {{ $event->created_at->format('d M Y') }}</div>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
+                        <td class="px-6 py-4 whitespace-nowrap text-slate-600 dark:text-slate-300">
                             {{ \Carbon\Carbon::parse($event->event_date)->format('d M Y') }}<br>
-                            <span class="text-xs text-gray-500">{{ substr($event->start_time, 0, 5) }} - {{ substr($event->end_time, 0, 5) }}</span>
+                            <span class="text-xs text-slate-500">{{ substr($event->start_time, 0, 5) }} - {{ substr($event->end_time, 0, 5) }}</span>
                         </td>
-                        <td class="px-6 py-4">
+                        <td class="px-6 py-4 text-slate-600 dark:text-slate-300">
                             <div>{{ $event->venue_name }}</div>
-                            <div class="text-xs text-gray-500">{{ $event->city }}</div>
+                            <div class="text-xs text-slate-500">{{ $event->city }}</div>
                         </td>
                         <td class="px-6 py-4">
                             <div class="flex items-center gap-2">
-                                <div class="h-1.5 w-16 bg-gray-200 rounded-full overflow-hidden">
-                                    <div class="h-full bg-purple-600 rounded-full" style="width: {{ rand(40, 100) }}%"></div>
+                                <div class="h-1.5 w-16 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+                                    <div class="h-full bg-violet-600 rounded-full" style="width: {{ rand(40, 100) }}%"></div>
                                 </div>
-                                <span class="text-xs text-gray-500">85%</span>
+                                <span class="text-xs text-slate-500">85%</span>
                             </div>
                         </td>
                         <td class="px-6 py-4">
                             @php
                                 $badgeClasses = [
-                                    'published' => 'bg-emerald-100 text-emerald-700',
-                                    'draft' => 'bg-gray-100 text-gray-700',
-                                    'completed' => 'bg-blue-100 text-blue-700',
-                                    'cancelled' => 'bg-red-100 text-red-700',
+                                    'published' => 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
+                                    'draft' => 'bg-slate-500/10 text-slate-600 dark:text-slate-300',
+                                    'completed' => 'bg-sky-500/10 text-sky-600 dark:text-sky-400',
+                                    'cancelled' => 'bg-rose-500/10 text-rose-600 dark:text-rose-400',
                                 ];
                                 $statusLabel = [
-                                    'published' => 'Aktif',
-                                    'draft' => 'Draft',
+                                    'published' => 'Terbit',
+                                    'draft' => 'Draf',
                                     'completed' => 'Selesai',
                                     'cancelled' => 'Dibatalkan',
                                 ];
-                                $badge = $badgeClasses[$event->status] ?? 'bg-gray-100 text-gray-700';
+                                $badge = $badgeClasses[$event->status] ?? 'bg-slate-500/10 text-slate-600 dark:text-slate-300';
                                 $label = $statusLabel[$event->status] ?? $event->status;
                             @endphp
-                            <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold {{ $badge }}">
+                            <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold {{ $badge }}">
                                 {{ $label }}
                             </span>
                         </td>
                         <td class="px-6 py-4 text-right">
-                            <a href="#" class="text-purple-600 hover:text-purple-800 font-medium">Edit</a>
+                            <div class="inline-flex items-center justify-end gap-3">
+                                <a href="{{ route('organizer.events.edit', $event) }}" data-link class="inline-flex items-center justify-end gap-1 text-violet-600 hover:text-violet-800 dark:text-violet-400 dark:hover:text-violet-300 font-bold">
+                                    <x-heroicon-o-pencil-square class="w-4 h-4" />
+                                    Edit
+                                </a>
+                                <x-organizer.confirm-delete
+                                    :id="$event->id"
+                                    :action="route('organizer.events.destroy', $event)"
+                                    :name="$event->name"
+                                />
+                            </div>
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="px-6 py-8 text-center text-gray-400">Belum ada event terdaftar.</td>
+                        <td colspan="6" class="px-6 py-12 text-center">
+                            <x-heroicon-o-calendar-days class="mx-auto h-12 w-12 text-slate-300" />
+                            <p class="mt-3 text-sm font-bold text-slate-500">Belum ada acara terdaftar.</p>
+                        </td>
                     </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
-        <div class="p-4 border-t border-gray-100">
+        <div class="p-4 border-t border-slate-100 dark:border-slate-800">
             {{ $events->links() }}
         </div>
     </div>

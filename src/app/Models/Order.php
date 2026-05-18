@@ -3,13 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Order extends Model
 {
-    use HasUuids;
+    use HasFactory, HasUuids;
 
     protected $guarded = [];
 
@@ -17,6 +18,9 @@ class Order extends Model
     {
         return [
             'paid_at' => 'datetime',
+            'failed_at' => 'datetime',
+            'cancelled_at' => 'datetime',
+            'stock_reserved_until' => 'datetime',
         ];
     }
 
