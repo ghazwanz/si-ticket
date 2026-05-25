@@ -31,7 +31,7 @@
             <div class="absolute top-[40%] -left-20 w-[400px] h-[400px] rounded-full bg-emerald-600/5 dark:bg-emerald-600/5 blur-3xl"></div>
         </div>
 
-        {{-- SPA Loader --}}
+        {{-- SPA Loader --}} 
         <div id="spa-loader" class="fixed top-0 left-0 w-full h-1 z-[9999] hidden">
             <div class="h-full bg-violet-600 animate-progress shadow-[0_0_10px_rgba(124,58,237,0.5)]"></div>
         </div>
