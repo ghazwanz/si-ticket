@@ -98,20 +98,30 @@ const mainElement = document.querySelector('main');
 const loader = document.getElementById('spa-loader');
 
 function updateActiveLinks(newDoc) {
-    const currentSidebarLinks = document.querySelectorAll('aside a[data-link]');
-    const newSidebarLinks = newDoc.querySelectorAll('aside a[data-link]');
+    const containers = ['aside', 'nav', '#mobile-menu'];
     
-    // Create a map of href -> classes from the new document
-    const linkMap = new Map();
-    newSidebarLinks.forEach(link => {
-        linkMap.set(link.getAttribute('href'), link.getAttribute('class'));
-    });
-
-    // Update existing sidebar links
-    currentSidebarLinks.forEach(link => {
-        const href = link.getAttribute('href');
-        if (linkMap.has(href)) {
-            link.setAttribute('class', linkMap.get(href));
+    containers.forEach(selector => {
+        const currentContainer = document.querySelector(selector);
+        const newContainer = newDoc.querySelector(selector);
+        
+        if (currentContainer && newContainer) {
+            const currentLinks = currentContainer.querySelectorAll('a[data-link]');
+            const newLinks = newContainer.querySelectorAll('a[data-link]');
+            
+            const linkMap = new Map();
+            newLinks.forEach(link => {
+                const href = link.getAttribute('href');
+                if (href) {
+                    linkMap.set(href, link.getAttribute('class'));
+                }
+            });
+            
+            currentLinks.forEach(link => {
+                const href = link.getAttribute('href');
+                if (href && linkMap.has(href)) {
+                    link.setAttribute('class', linkMap.get(href));
+                }
+            });
         }
     });
 }
@@ -129,6 +139,18 @@ window.loadPage = function loadPage(url, push = true) {
         .then(html => {
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
+
+            // Detect layout mismatch between current DOM and new DOM
+            const hasSidebarCurrent = !!document.querySelector('aside');
+            const hasSidebarNew = !!doc.querySelector('aside');
+            const hasHeaderCurrent = !!document.querySelector('[data-site-header]');
+            const hasHeaderNew = !!doc.querySelector('[data-site-header]');
+
+            if (hasSidebarCurrent !== hasSidebarNew || hasHeaderCurrent !== hasHeaderNew) {
+                window.location.href = url;
+                return;
+            }
+
             const newContent = doc.querySelector('main')?.innerHTML;
             const newModals = doc.querySelector('#spa-modals')?.innerHTML;
             const newHeader = doc.querySelector('#spa-header')?.innerHTML;

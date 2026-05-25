@@ -24,7 +24,7 @@
         </style>
         @stack('head')
     </head>
-    <body class="font-sans antialiased bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-300 relative justify-center items-center">
+    <body class="font-sans antialiased bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-300">
         {{-- Background Ambient Glows --}}
         <div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none" aria-hidden="true">
             <div class="absolute -top-40 right-0 w-[500px] h-[500px] rounded-full bg-violet-600/5 dark:bg-violet-600/10 blur-3xl"></div>
@@ -36,31 +36,20 @@
             <div class="h-full bg-violet-600 animate-progress shadow-[0_0_10px_rgba(124,58,237,0.5)]"></div>
         </div>
 
-        {{-- Dark Mode Toggle --}}
-        <div class="absolute top-6 right-6">
-            <button @click="darkMode = !darkMode" type="button"
-                class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 transition hover:border-violet-200 dark:hover:border-violet-800 hover:text-violet-600 dark:hover:text-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-500/30"
-                aria-label="Toggle Dark Mode">
-                <x-heroicon-o-moon x-show="!darkMode" class="w-5 h-5" />
-                <x-heroicon-o-sun x-show="darkMode" class="w-5 h-5" />
-            </button>
-        </div>
-
-        {{-- Back to Home Link --}}
-        <div class="absolute top-6 left-6">
-            <a href="{{ url('/') }}" data-link class="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors">
-                <x-heroicon-o-arrow-left class="w-4 h-4" />
-                Kembali ke Beranda
-            </a>
-        </div>
+        {{-- Header --}}
+        <x-home.header />
 
         {{-- Main Page Content --}}
-        <main data-page-shell class="w-full max-w-2xl px-4 py-12 sm:px-6 lg:px-8 page-fade-in">
-            <section class="w-full rounded-[2rem] border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900/40 backdrop-blur-xl p-8 shadow-xl sm:p-12 transition-colors duration-300">
+        <main data-page-shell class="flex-1 page-fade-in">
+            <div data-reveal data-reveal-delay="80" class="transition-all duration-700 ease-out">
                 {{ $slot }}
-            </section>
+            </div>
         </main>
 
+        {{-- Footer --}}
+        <x-home.footer />
+
+        {{-- Modals and Scripts --}}
         <div id="spa-modals">
             @stack('modals')
         </div>
