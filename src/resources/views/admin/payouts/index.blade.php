@@ -7,7 +7,7 @@
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
                 <h2 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Manajemen Pencairan Dana</h2>
-                <p class="text-slate-500 dark:text-slate-400 mt-1 text-sm font-medium">Tinjau and process event payouts to organizers.</p>
+                <p class="text-slate-500 dark:text-slate-400 mt-1 text-sm font-medium">Tinjau dan proses pencairan dana acara kepada penyelenggara.</p>
             </div>
             <div class="flex items-center gap-2">
                 <span class="inline-flex items-center px-4 py-2 rounded-2xl glass-panel text-xs font-bold text-slate-600 dark:text-slate-300">
@@ -30,7 +30,7 @@
                 </a>
                 <a href="{{ route('admin.payouts.index', array_merge(request()->except('page'), ['status' => 'processing'])) }}" data-link
                    class="px-5 py-2.5 rounded-2xl text-xs font-bold transition-all whitespace-nowrap {{ $status === 'processing' ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'glass-panel text-slate-500 hover:text-slate-800 dark:hover:text-white' }}">
-                    Processing
+                    Diproses
                 </a>
                 <a href="{{ route('admin.payouts.index', array_merge(request()->except('page'), ['status' => 'completed'])) }}" data-link
                    class="px-5 py-2.5 rounded-2xl text-xs font-bold transition-all whitespace-nowrap {{ $status === 'completed' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/20' : 'glass-panel text-slate-500 hover:text-slate-800 dark:hover:text-white' }}">
@@ -83,7 +83,7 @@
                             <x-table-header label="Penyelenggara" />
                             <x-table-header label="Net Jumlah" sort="net_amount" />
                             <x-table-header label="Status" sort="status" />
-                            <th class="px-8 py-5 text-[10px] font-bold tracking-[0.2em] text-slate-400 uppercase text-right">Action</th>
+                            <th class="px-8 py-5 text-[10px] font-bold tracking-[0.2em] text-slate-400 uppercase text-right">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100 dark:divide-slate-800/50">

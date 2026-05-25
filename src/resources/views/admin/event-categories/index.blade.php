@@ -83,12 +83,29 @@
                     </thead>
                     <tbody class="divide-y divide-slate-100 dark:divide-slate-800/50">
                         @forelse($categories as $category)
+                        @php
+                            $colorClasses = [
+                                'violet' => 'from-violet-500/20 to-fuchsia-500/20 text-violet-600 dark:text-violet-400',
+                                'sky' => 'from-sky-500/20 to-blue-500/20 text-sky-600 dark:text-sky-400',
+                                'emerald' => 'from-emerald-500/20 to-teal-500/20 text-emerald-600 dark:text-emerald-400',
+                                'rose' => 'from-rose-500/20 to-red-500/20 text-rose-600 dark:text-rose-400',
+                                'amber' => 'from-amber-500/20 to-orange-500/20 text-amber-600 dark:text-amber-400',
+                                'fuchsia' => 'from-fuchsia-500/20 to-pink-500/20 text-fuchsia-600 dark:text-fuchsia-400',
+                                'cyan' => 'from-cyan-500/20 to-teal-500/20 text-cyan-600 dark:text-cyan-400',
+                                'indigo' => 'from-indigo-500/20 to-violet-500/20 text-indigo-600 dark:text-indigo-400',
+                            ];
+                            $activeColor = $colorClasses[$category->color] ?? $colorClasses['violet'];
+                        @endphp
                         <tr class="group hover:bg-slate-50/80 dark:hover:bg-slate-900/50 transition-colors">
                             <td class="px-8 py-5">
                                 <div class="flex items-center gap-4">
-                                    <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-violet-500/10 to-fuchsia-500/10 text-violet-600 flex items-center justify-center font-bold group-hover:scale-110 transition-transform">
-                                        <x-heroicon-o-tag class="w-5 h-5" />
-                                    </div>
+                                    @if($category->image)
+                                        <img src="{{ $category->image_url }}" alt="{{ $category->name }}" class="w-10 h-10 rounded-2xl object-cover border border-slate-200/50 dark:border-slate-800/50 group-hover:scale-110 transition-transform">
+                                    @else
+                                        <div class="w-10 h-10 rounded-2xl bg-gradient-to-br {{ $activeColor }} flex items-center justify-center font-bold group-hover:scale-110 transition-transform border border-slate-200/50 dark:border-slate-800/50">
+                                            <x-heroicon-o-tag class="w-5 h-5" />
+                                        </div>
+                                    @endif
                                     <span class="text-sm font-bold text-slate-900 dark:text-white">{{ $category->name }}</span>
                                 </div>
                             </td>
@@ -127,7 +144,9 @@
                                 </div>
 
                                 @unless($category->trashed())
-                                    @include('admin.event-categories.partials.modals', ['category' => $category])
+                                    @push('modals')
+                                        @include('admin.event-categories.partials.modals', ['category' => $category])
+                                    @endpush
                                 @endunless
                             </td>
                         </tr>
@@ -156,5 +175,7 @@
     </div>
 
     {{-- Create Modal --}}
-    @include('admin.event-categories.partials.create-modal')
+    @push('modals')
+        @include('admin.event-categories.partials.create-modal')
+    @endpush
 </x-admin-layout>

@@ -27,6 +27,9 @@ class UpdateEventCategoryRequest extends FormRequest
                 'max:255',
                 Rule::unique('event_categories', 'name')->ignore($this->route('event_category')),
             ],
+            'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:1024'],
+            'color' => ['nullable', 'string', 'in:violet,sky,emerald,rose,amber,fuchsia,cyan,indigo'],
+            'remove_image' => ['nullable', 'boolean'],
         ];
     }
 }

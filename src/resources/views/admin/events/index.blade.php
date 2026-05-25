@@ -12,7 +12,7 @@
             <div class="flex items-center gap-2">
                 <span class="inline-flex items-center px-4 py-2 rounded-2xl glass-panel text-xs font-bold text-slate-600 dark:text-slate-300">
                     <x-heroicon-o-clock class="w-4 h-4 mr-2 text-violet-500" />
-                    Awaiting: {{ $events->where('status', 'pending')->count() }}
+                    Awaiting: {{ $events->where('status', 'awaiting_approval')->count() }}
                 </span>
             </div>
         </div>
@@ -24,15 +24,20 @@
                 
                 <a href="{{ route('admin.events.index', array_merge(request()->except('page'), ['status' => 'all'])) }}" data-link
                    class="px-5 py-2.5 rounded-2xl text-xs font-bold transition-all whitespace-nowrap {{ $activeStatus === 'all' ? 'bg-violet-600 text-white shadow-lg shadow-violet-600/20' : 'glass-panel text-slate-500 hover:text-slate-800 dark:hover:text-white' }}">
-                    All History
+                    Semua Riwayat
                 </a>
-                <a href="{{ route('admin.events.index', array_merge(request()->except('page'), ['status' => 'pending'])) }}" data-link
-                   class="px-5 py-2.5 rounded-2xl text-xs font-bold transition-all whitespace-nowrap {{ $activeStatus === 'pending' ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/20' : 'glass-panel text-slate-500 hover:text-slate-800 dark:hover:text-white' }}">
+                <a href="{{ route('admin.events.index', array_merge(request()->except('page'), ['status' => 'awaiting_approval'])) }}" data-link
+                   class="px-5 py-2.5 rounded-2xl text-xs font-bold transition-all whitespace-nowrap {{ $activeStatus === 'awaiting_approval' ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/20' : 'glass-panel text-slate-500 hover:text-slate-800 dark:hover:text-white' }}">
                     Menunggu Tinjauan
                 </a>
                 <a href="{{ route('admin.events.index', array_merge(request()->except('page'), ['status' => 'published'])) }}" data-link
                    class="px-5 py-2.5 rounded-2xl text-xs font-bold transition-all whitespace-nowrap {{ $activeStatus === 'published' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/20' : 'glass-panel text-slate-500 hover:text-slate-800 dark:hover:text-white' }}">
                     Acara Disetujui
+                </a>
+
+                <a href="{{ route('admin.events.index', array_merge(request()->except('page'), ['status' => 'cancelled'])) }}" data-link
+                   class="px-5 py-2.5 rounded-2xl text-xs font-bold transition-all whitespace-nowrap {{ $activeStatus === 'cancelled' ? 'bg-rose-600 text-white shadow-lg shadow-rose-600/20' : 'glass-panel text-slate-500 hover:text-slate-800 dark:hover:text-white' }}">
+                    Dibatalkan
                 </a>
             </div>
 
@@ -72,8 +77,8 @@
                         <tr class="border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
                             <x-table-header label="Konten Acara" sort="name" />
                             <x-table-header label="Penyelenggara" />
-                            <x-table-header label="Classification" />
-                            <x-table-header label="Verification" sort="status" />
+                            <x-table-header label="Kategori" />
+                            <x-table-header label="Status" sort="status" />
                             <th class="px-8 py-5 text-[10px] font-bold tracking-[0.2em] text-slate-400 uppercase text-right">Tinjau</th>
                         </tr>
                     </thead>
@@ -109,11 +114,44 @@
                                 </span>
                             </td>
                             <td class="px-8 py-5">
-                                <span class="inline-flex items-center px-3 py-1 rounded-xl text-[10px] font-bold uppercase tracking-wider border
-                                    {{ $event->status === 'published' ? 'bg-emerald-100 text-emerald-600 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20' : 
-                                       ($event->status === 'pending' ? 'bg-amber-100 text-amber-600 border-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20' : 
-                                       'bg-rose-100 text-rose-600 border-rose-200 dark:bg-rose-500/10 dark:text-rose-400 dark:border-rose-500/20') }}">
-                                    {{ ucfirst($event->status) }}
+                                @php
+                                    $statusMap = [
+                                        'draft' => [
+                                            'class' => 'bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-800/30 dark:text-slate-400 dark:border-slate-700/50',
+                                            'label' => 'Draf'
+                                        ],
+                                        'awaiting_approval' => [
+                                            'class' => 'bg-amber-100 text-amber-600 border-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20',
+                                            'label' => 'Menunggu Tinjauan'
+                                        ],
+                                        'pending' => [
+                                            'class' => 'bg-amber-100 text-amber-600 border-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20',
+                                            'label' => 'Menunggu Tinjauan'
+                                        ],
+                                        'published' => [
+                                            'class' => 'bg-emerald-100 text-emerald-600 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20',
+                                            'label' => 'Disetujui'
+                                        ],
+                                        'awaiting_cancellation' => [
+                                            'class' => 'bg-orange-100 text-orange-600 border-orange-200 dark:bg-orange-500/10 dark:text-orange-400 dark:border-orange-500/20',
+                                            'label' => 'Menunggu Pembatalan'
+                                        ],
+                                        'cancelled' => [
+                                            'class' => 'bg-rose-100 text-rose-600 border-rose-200 dark:bg-rose-500/10 dark:text-rose-400 dark:border-rose-500/20',
+                                            'label' => 'Dibatalkan'
+                                        ],
+                                        'completed' => [
+                                            'class' => 'bg-blue-100 text-blue-600 border-blue-200 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/20',
+                                            'label' => 'Selesai'
+                                        ],
+                                    ];
+                                    $statusData = $statusMap[$event->status] ?? [
+                                        'class' => 'bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700',
+                                        'label' => $event->status
+                                    ];
+                                @endphp
+                                <span class="inline-flex items-center px-3 py-1 rounded-xl text-[10px] font-bold uppercase tracking-wider border {{ $statusData['class'] }}">
+                                    {{ $statusData['label'] }}
                                 </span>
                             </td>
                             <td class="px-8 py-5 text-right">
@@ -123,7 +161,12 @@
                                        title="Lihat Intelijen">
                                         <x-heroicon-o-eye class="w-4 h-4" />
                                     </a>
-                                    @if($event->status !== 'completed')
+                                    @if($event->status === 'cancelled')
+                                        <a href="{{ route('admin.events.show', $event) }}" data-link
+                                           class="px-4 py-2 rounded-xl glass-panel text-[11px] font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-600 hover:text-white transition-all">
+                                            Lihat Detail
+                                        </a>
+                                    @elseif(!in_array($event->status, ['completed', 'awaiting_cancellation']))
                                         <button x-data="" x-on:click.prevent="$dispatch('open-panel', 'review-event-{{ $event->id }}')" 
                                                 class="px-4 py-2 rounded-xl glass-panel text-[11px] font-bold text-violet-600 dark:text-violet-400 hover:bg-violet-600 hover:text-white transition-all">
                                             Audit Acara

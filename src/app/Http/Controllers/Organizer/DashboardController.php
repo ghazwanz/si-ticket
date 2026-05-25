@@ -39,6 +39,16 @@ class DashboardController extends Controller
                 ->where('organizer_id', $organizerId)
                 ->whereIn('status', ['draft', 'awaiting_approval'])
                 ->count(),
+            'total_checkin' => OrderTicket::query()
+                ->whereHas('order', function ($query) use ($eventIds): void {
+                    $query->whereIn('event_id', $eventIds);
+                })
+                ->where('is_checked_in', true)
+                ->count(),
+            'siap_cair' => Event::query()
+                ->where('organizer_id', $organizerId)
+                ->where('status', 'completed')
+                ->count(),
         ];
 
         $days = collect(range(29, 0))->map(fn (int $day): string => now()->subDays($day)->format('Y-m-d'));

@@ -32,7 +32,7 @@ $maxWidthClass = [
     x-on:close.stop="close()"
     x-on:keydown.escape.window="close()"
     x-show="show"
-    class="fixed inset-0 z-[60] overflow-hidden"
+    class="fixed inset-0 z-[90] overflow-hidden"
     x-cloak
 >
     {{-- Latar belakang panel --}}

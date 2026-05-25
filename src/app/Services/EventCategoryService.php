@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Models\EventCategory;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
 
@@ -43,6 +45,10 @@ class EventCategoryService
     {
         $data['slug'] = Str::slug($data['name']);
 
+        if (isset($data['image']) && $data['image'] instanceof UploadedFile) {
+            $data['image'] = $data['image']->store('categories', 'public');
+        }
+
         return EventCategory::create($data);
     }
 
@@ -52,6 +58,22 @@ class EventCategoryService
     public function updateCategory(EventCategory $category, array $data): EventCategory
     {
         $data['slug'] = Str::slug($data['name']);
+
+        if (! empty($data['remove_image'])) {
+            if ($category->image) {
+                Storage::disk('public')->delete($category->image);
+            }
+            $data['image'] = null;
+        }
+
+        if (isset($data['image']) && $data['image'] instanceof UploadedFile) {
+            if ($category->image) {
+                Storage::disk('public')->delete($category->image);
+            }
+            $data['image'] = $data['image']->store('categories', 'public');
+        }
+
+        unset($data['remove_image']);
 
         $category->update($data);
 
@@ -64,7 +86,7 @@ class EventCategoryService
     public function deleteCategory(EventCategory $category): void
     {
         if ($category->events()->exists()) {
-            throw new InvalidArgumentException('Cannot archive category because it is currently assigned to one or more events.');
+            throw new InvalidArgumentException('Tidak bisa menghapus kategori karena masih terdapat acara di dalamnya.');
         }
 
         $category->delete();

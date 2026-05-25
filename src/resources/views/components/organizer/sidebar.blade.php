@@ -22,16 +22,14 @@
         <div x-show="!sidebarMini" class="px-3 mb-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Konsol Penyelenggara</div>
 
         <x-organizer.nav-link href="{{ route('organizer.dashboard') }}" icon="squares-2x2" :active="request()->routeIs('organizer.dashboard')" :title="request()->routeIs('organizer.dashboard') ? 'Dasbor' : 'Dasbor'">
-            Dasbor
+            Panel Kontrol
         </x-organizer.nav-link>
 
         <x-organizer.nav-link href="{{ route('organizer.events.index') }}" icon="calendar-days" :active="request()->routeIs('organizer.events.*')" title="Acara">
             Acara
         </x-organizer.nav-link>
 
-        <x-organizer.nav-link href="{{ route('organizer.merchandise.index') }}" icon="shopping-bag" :active="request()->routeIs('organizer.merchandise.*')" title="Merchandise">
-            Merchandise
-        </x-organizer.nav-link>
+
 
         <x-organizer.nav-link href="{{ route('organizer.scanner.index') }}" icon="qr-code" :active="request()->routeIs('organizer.scanner.*')" title="Pemindai QR">
             Pemindai QR

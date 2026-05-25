@@ -1,178 +1,281 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>{{ config('app.name', 'JoinFest') }}</title>
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    </head>
-    <body class="min-h-screen bg-[radial-gradient(circle_at_10%_10%,_#f8f4ff,_transparent_30%),_linear-gradient(180deg,_#f8fafc_0%,_#eef2ff_100%)] font-[Plus_Jakarta_Sans,sans-serif] text-slate-900">
-        <x-home.header />
+<x-public-layout title="Pengalaman Acara Masa Depan">
+    <div class="px-4 py-6 md:px-6 md:py-10">
+        <div class="max-w-7xl w-full mx-auto lg:space-y-40 sm:space-y-32 space-y-16">
+            <!-- Hero Section -->
+            <section class="overflow-hidden rounded-[2rem] border border-slate-800 dark:border-white/10 backdrop-blur-xl shadow-xl" data-reveal data-reveal-delay="0">
+                <div class="relative isolate min-h-[500px] overflow-hidden" data-hero>
+                    <img src="{{ asset('img/eobanner.png') }}" alt="JoinFest hero" class="absolute inset-0 h-full w-full object-cover transition-transform duration-300 will-change-transform" data-parallax="0.07">
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-slate-950/20 to-transparent"></div>
+                    <div class="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-slate-950/30 to-transparent"></div>
 
-        <main class=" px-4 py-6 md:px-6 md:py-10">
-            <div class="max-w-7xl w-full mx-auto lg:space-y-40 sm:space-y-32 space-y-16">
-                <section class="overflow-hidden rounded-[26px] border border-slate-200 bg-slate-900 shadow-[0_20px_40px_rgba(18,23,34,0.14)]" data-reveal data-reveal-delay="0">
-                    <div class="relative isolate min-h-[500px] overflow-hidden" data-hero>
-                        <img src="{{ asset('img/eobanner.png') }}" alt="JoinFest hero" class="absolute inset-0 h-full w-full object-cover opacity-90 transition-transform duration-300 will-change-transform" data-parallax="0.07">
-                        <div class="absolute inset-0 bg-[linear-gradient(95deg,rgba(4,6,15,0.9)_0%,rgba(4,6,15,0.45)_48%,rgba(4,6,15,0.2)_100%)]"></div>
-                        <div class="absolute inset-0 bg-[radial-gradient(circle_at_75%_35%,rgba(167,139,250,0.25),transparent_25%)]" data-parallax="0.03"></div>
-
-                        <div class="relative z-10 flex min-h-[380px] items-end p-6 sm:p-8 lg:p-12">
-                            <div class="max-w-2xl text-white">
-                                <div class="inline-flex rounded-full border border-violet-300/40 bg-violet-500/20 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-violet-100 opacity-0 blur-sm transition-all duration-700 ease-out translate-y-6 scale-[0.98]" data-reveal data-reveal-delay="80">{{ config('app.name') }} Platform</div>
-                                <h1 class="mt-4 text-3xl font-extrabold leading-tight tracking-tight sm:text-5xl lg:text-6xl opacity-0 blur-sm transition-all duration-700 ease-out translate-y-6 scale-[0.98]" data-reveal data-reveal-delay="140">Homepage Profesional, Modern, dan Minimalis untuk Event Experience</h1>
-                                <p class="mt-4 max-w-xl text-sm leading-7 text-white/80 sm:text-base opacity-0 blur-sm transition-all duration-700 ease-out translate-y-6 scale-[0.98]" data-reveal data-reveal-delay="220">Temukan konser, festival, hingga seminar premium dalam satu tempat dengan alur pemesanan yang cepat, rapi, dan nyaman di semua perangkat.</p>
-                                <div class="mt-6 flex flex-wrap items-center gap-3 opacity-0 blur-sm transition-all duration-700 ease-out translate-y-6 scale-[0.98]" data-reveal data-reveal-delay="300">
-                                    <a href="{{ route('events.index') }}" class="inline-flex h-12 items-center justify-center rounded-2xl bg-violet-600 px-5 text-sm font-semibold text-white shadow-[0_16px_28px_rgba(109,40,217,0.32)] transition hover:-translate-y-0.5 hover:bg-violet-700">Jelajahi Event</a>
-                                    <a href="{{ route('register') }}" class="inline-flex h-12 items-center justify-center rounded-2xl border border-white/30 bg-white/10 px-5 text-sm font-semibold text-white transition hover:bg-white/20">Buat Akun</a>
-                                </div>
+                    <div class="relative z-10 flex min-h-[500px] items-center p-6 sm:p-12 lg:p-16">
+                        <div class="max-w-3xl">
+                            <div class="inline-flex items-center gap-2 rounded-full border border-violet-500/30 bg-violet-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-violet-400 opacity-0 blur-sm transition-all duration-700 ease-out translate-y-6 scale-[0.98]" data-reveal data-reveal-delay="80">
+                                <span class="h-1.5 w-1.5 rounded-full bg-violet-400 animate-pulse"></span>
+                                {{ config('app.name') }}
                             </div>
-                        </div>
-                    </div>
-                </section>
-
-                <section id="kategori" data-reveal data-reveal-delay="90" class="lg:space-y-16 space-y-8">
-                    <div class="mb-5 flex items-center gap-3">
-                        <span class="h-6 w-1 rounded-full bg-violet-600"></span>
-                        <h2 class="lg:text-4xl text-2xl font-semibold tracking-tight text-slate-900">Kategori Event</h2>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-                        @php
-                            $categories = [
-                                ['name' => 'Konser', 'image' => 'img/eobanner.png'],
-                                ['name' => 'Seminar', 'image' => 'img/EOLogo.png'],
-                                ['name' => 'Olahraga', 'image' => 'img/Tiket.png'],
-                                ['name' => 'Teater', 'image' => 'img/KaosOfficial.png'],
-                                ['name' => 'Seni', 'image' => 'img/ToteBag.png'],
-                                ['name' => 'Film', 'image' => 'img/JoinFestBubble.png'],
-                            ];
-                        @endphp
-
-                        @foreach ($categories as $category)
-                            <article class="group relative overflow-hidden rounded-2xl border border-slate-200 bg-slate-900 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-[0_16px_24px_rgba(15,23,42,0.15)] opacity-0 blur-sm translate-y-6 scale-[0.98]" data-reveal data-reveal-delay="{{ $loop->index * 70 + 120 }}">
-                                <a href="{{ route('events.index') }}">
-                                    <img src="{{ asset($category['image']) }}" alt="{{ $category['name'] }}" class="h-52 w-full object-cover opacity-80 transition duration-300 group-hover:scale-105">
-                                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
-                                    <div class="absolute inset-x-0 bottom-0 p-3">
-                                        <p class="text-sm font-semibold text-white">{{ $category['name'] }}</p>
-                                    </div>
+                            <h1 class="mt-6 text-4xl font-extrabold leading-tight tracking-tight text-white sm:text-5xl lg:text-7xl opacity-0 blur-sm transition-all duration-700 ease-out translate-y-6 scale-[0.98]" data-reveal data-reveal-delay="140">
+                                Pengalaman Acara <span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 via-violet-400 to-sky-400">Masa Depan</span>
+                            </h1>
+                            <p class="mt-6 max-w-xl text-sm leading-relaxed text-slate-300 sm:text-base opacity-0 blur-sm transition-all duration-700 ease-out translate-y-6 scale-[0.98]" data-reveal data-reveal-delay="220">
+                                Temukan konser, festival, hingga seminar premium dalam satu tempat dengan alur pemesanan yang cepat, rapi, dan nyaman.
+                            </p>
+                            <div class="mt-8 flex flex-wrap items-center gap-4 opacity-0 blur-sm transition-all duration-700 ease-out translate-y-6 scale-[0.98]" data-reveal data-reveal-delay="300">
+                                <a href="{{ route('events.index') }}" data-link class="inline-flex h-12 items-center justify-center rounded-xl bg-violet-600 px-6 text-sm font-bold text-white shadow-lg shadow-violet-600/25 transition-all hover:-translate-y-0.5 hover:bg-violet-700 hover:shadow-violet-700/30">
+                                    Jelajahi Acara
                                 </a>
-                            </article>
-                        @endforeach
-                    </div>
-                </section>
-
-                <section data-reveal data-reveal-delay="110" class="lg:space-y-16 space-y-8">
-                    <div class="mb-5 flex items-end justify-between gap-4">
-                        <div>
-                            <h2 class="lg:text-4xl text-2xl font-semibold tracking-tight text-slate-900">Acara Populer</h2>
-                            <p class="text-sm text-slate-500">Pilihan event yang paling diminati minggu ini.</p>
+                                <a href="{{ route('register') }}" data-link class="inline-flex h-12 items-center justify-center rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 px-6 text-sm font-bold text-white transition-all">
+                                    Buat Akun
+                                </a>
+                            </div>
                         </div>
-                        <a href="{{ route('events.index') }}" class="text-sm font-semibold text-violet-600 transition hover:text-violet-700">Lihat Semua</a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Popular Events Section -->
+            <section data-reveal data-reveal-delay="110" class="lg:space-y-12 space-y-8">
+                <div class="mb-5 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+                    <div>
+                        <div class="inline-flex items-center gap-2 mb-3">
+                            <span class="h-px w-8 bg-violet-500"></span>
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-violet-600 dark:text-violet-400">Populer</span>
+                        </div>
+                        <h2 class="lg:text-4xl text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">Acara Populer</h2>
+                    </div>
+                    <a href="{{ route('events.index') }}" data-link class="group inline-flex items-center gap-2 text-sm font-bold text-slate-500 dark:text-slate-400 transition hover:text-slate-800 dark:hover:text-white">
+                        Lihat Semua
+                        <x-heroicon-o-arrow-right class="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    </a>
+                </div>
+
+                <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+                    @forelse ($popularEvents as $event)
+                        <a href="{{ route('events.show', $event->slug) }}" data-link class="group relative overflow-hidden rounded-[2rem] border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900/40 backdrop-blur-xl transition-all duration-500 hover:-translate-y-1 hover:border-violet-500/30 hover:shadow-2xl hover:shadow-violet-900/10 opacity-0 blur-sm translate-y-6 scale-[0.98]" data-reveal data-reveal-delay="{{ $loop->index * 90 + 130 }}">
+                            <div class="relative h-56 overflow-hidden">
+                                <img src="{{ $event->image_path ? Storage::url($event->image_path) : asset('img/eobanner.png') }}" alt="{{ $event->name }}" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" style="view-transition-name: event-img-{{ $event->id }};">
+                                <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/20 to-transparent"></div>
+                                <div class="absolute left-4 top-4 inline-flex rounded-xl border border-white/10 bg-black/30 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-white backdrop-blur-md">
+                                    {{ $event->category?->name ?? 'Event' }}
+                                </div>
+                            </div>
+                            <div class="relative p-6">
+                                <h3 class="text-lg font-bold text-slate-900 dark:text-white line-clamp-1 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">{{ $event->name }}</h3>
+                                <div class="mt-4 grid gap-2 text-xs font-medium text-slate-500 dark:text-slate-400">
+                                    <div class="flex items-center gap-2">
+                                        <x-heroicon-s-calendar class="h-4 w-4 text-violet-500" />
+                                        {{ $event->event_date->translatedFormat('d M Y') }}
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <x-heroicon-s-map-pin class="h-4 w-4 text-sky-500" />
+                                        <span class="line-clamp-1">{{ $event->venue_name }}, {{ $event->city }}</span>
+                                    </div>
+                                </div>
+                                <div class="mt-6 flex items-center justify-between border-t border-slate-100 dark:border-white/5 pt-4">
+                                    <span class="text-xs font-medium text-slate-400 dark:text-slate-550">Mulai dari</span>
+                                    <span class="text-sm font-extrabold text-emerald-600 dark:text-emerald-400">Lihat Tiket &rarr;</span>
+                                </div>
+                            </div>
+                        </a>
+                    @empty
+                        <div class="col-span-full py-12 text-center text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-900/40 rounded-[2rem] border border-slate-200 dark:border-white/10 shadow-sm">
+                            Belum ada acara publik yang tersedia saat ini.
+                        </div>
+                    @endforelse
+                </div>
+            </section>
+
+            <!-- Categories Section (Dynamic) -->
+            <section id="kategori" data-reveal data-reveal-delay="90" class="lg:space-y-12 space-y-8">
+                <div class="mb-5 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+                    <div>
+                        <div class="inline-flex items-center gap-2 mb-3">
+                            <span class="h-px w-8 bg-sky-500"></span>
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-sky-600 dark:text-sky-400">Eksplorasi</span>
+                        </div>
+                        <h2 class="lg:text-4xl text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">Kategori Acara</h2>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-4">
+                    @php
+                        $colorMaps = [
+                            'violet' => [
+                                'gradient' => 'from-slate-950/90 via-violet-950/20 to-transparent',
+                                'glow' => 'hover:shadow-[0_0_20px_rgba(139,92,246,0.15)] hover:border-violet-500/30',
+                            ],
+                            'sky' => [
+                                'gradient' => 'from-slate-950/90 via-sky-950/20 to-transparent',
+                                'glow' => 'hover:shadow-[0_0_20px_rgba(14,165,233,0.15)] hover:border-sky-500/30',
+                            ],
+                            'emerald' => [
+                                'gradient' => 'from-slate-950/90 via-emerald-950/20 to-transparent',
+                                'glow' => 'hover:shadow-[0_0_20px_rgba(16,185,129,0.15)] hover:border-emerald-500/30',
+                            ],
+                            'rose' => [
+                                'gradient' => 'from-slate-950/90 via-rose-950/20 to-transparent',
+                                'glow' => 'hover:shadow-[0_0_20px_rgba(244,63,94,0.15)] hover:border-rose-500/30',
+                            ],
+                            'amber' => [
+                                'gradient' => 'from-slate-950/90 via-amber-950/20 to-transparent',
+                                'glow' => 'hover:shadow-[0_0_20px_rgba(245,158,11,0.15)] hover:border-amber-500/30',
+                            ],
+                            'fuchsia' => [
+                                'gradient' => 'from-slate-950/90 via-fuchsia-950/20 to-transparent',
+                                'glow' => 'hover:shadow-[0_0_20px_rgba(217,70,239,0.15)] hover:border-fuchsia-500/30',
+                            ],
+                            'cyan' => [
+                                'gradient' => 'from-slate-950/90 via-cyan-950/20 to-transparent',
+                                'glow' => 'hover:shadow-[0_0_20px_rgba(6,182,212,0.15)] hover:border-cyan-500/30',
+                            ],
+                            'indigo' => [
+                                'gradient' => 'from-slate-950/90 via-indigo-950/20 to-transparent',
+                                'glow' => 'hover:shadow-[0_0_20px_rgba(99,102,241,0.15)] hover:border-indigo-500/30',
+                            ],
+                        ];
+                    @endphp
+
+                    @forelse ($eventCategories as $category)
+                        @php
+                            $color = $colorMaps[$category->color] ?? $colorMaps['violet'];
+                            $isLarge = $loop->first || $loop->last;
+                        @endphp
+                        <a href="{{ route('events.index', ['category' => $category->slug]) }}" data-link
+                           class="group relative overflow-hidden rounded-[2rem] border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 flex flex-col justify-end transition-all duration-300 hover:-translate-y-1 opacity-0 blur-sm translate-y-6 scale-[0.98] {{ $color['glow'] }} {{ $isLarge ? 'sm:col-span-4 col-span-2 min-h-80' : 'col-span-2 min-h-80' }}"
+                           data-reveal
+                           data-reveal-delay="{{ $loop->index * 70 + 120 }}">
+                            <img src="{{ $category->image_url }}" alt="{{ $category->name }}" class="absolute inset-0 h-full w-full object-cover opacity-80 transition duration-500 group-hover:scale-110 group-hover:opacity-95">
+                            <div class="absolute inset-0 bg-gradient-to-t {{ $color['gradient'] }}"></div>
+                            <h3 class="relative z-10 font-extrabold tracking-tight text-white transition-transform duration-300 group-hover:translate-y-0 translate-y-0.5 {{ $isLarge ? 'text-lg sm:text-2xl p-8' : 'text-sm sm:text-base p-5' }}">{{ $category->name }}</h3>
+                        </a>
+                    @empty
+                        <div class="col-span-full py-12 text-center text-slate-500 dark:text-slate-400">
+                            Belum ada kategori yang dikonfigurasi.
+                        </div>
+                    @endforelse
+                </div>
+            </section>
+
+            <!-- How It Works Section -->
+            <section data-reveal data-reveal-delay="100" class="lg:space-y-12 space-y-8">
+                <div class="mb-5 flex flex-col items-center text-center">
+                    <div class="inline-flex items-center gap-2 mb-3">
+                        <span class="h-px w-8 bg-violet-500"></span>
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-violet-650 dark:text-violet-400">Proses</span>
+                        <span class="h-px w-8 bg-violet-500"></span>
+                    </div>
+                    <h2 class="lg:text-4xl text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">Cara Pemesanan Tiket</h2>
+                </div>
+
+                <div class="grid gap-8 md:grid-cols-3">
+                    <div class="relative overflow-hidden rounded-[2rem] border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900/40 p-8 shadow-sm transition-all duration-300 hover:border-violet-500/20">
+                        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-500/10 dark:bg-violet-500/20 text-violet-600 dark:text-violet-400 mb-6">
+                            <x-heroicon-o-magnifying-glass class="w-6 h-6" />
+                        </div>
+                        <div class="absolute right-6 top-6 text-6xl font-black text-slate-100 dark:text-slate-800/20 select-none">01</div>
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white">1. Pilih Acara</h3>
+                        <p class="mt-3 text-sm leading-relaxed text-slate-500 dark:text-slate-400">Cari konser, seminar, atau festival favoritmu dari daftar acara terkurasi.</p>
                     </div>
 
-                    <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                    <div class="relative overflow-hidden rounded-[2rem] border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900/40 p-8 shadow-sm transition-all duration-300 hover:border-sky-500/20">
+                        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-500/10 dark:bg-sky-500/20 text-sky-600 dark:text-sky-400 mb-6">
+                            <x-heroicon-o-credit-card class="w-6 h-6" />
+                        </div>
+                        <div class="absolute right-6 top-6 text-6xl font-black text-slate-100 dark:text-slate-800/20 select-none">02</div>
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white">2. Bayar Tiket</h3>
+                        <p class="mt-3 text-sm leading-relaxed text-slate-500 dark:text-slate-400">Pilih kategori tiket, isi detail pesanan, dan bayar aman dengan Midtrans.</p>
+                    </div>
+
+                    <div class="relative overflow-hidden rounded-[2rem] border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900/40 p-8 shadow-sm transition-all duration-300 hover:border-emerald-500/20">
+                        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 mb-6">
+                            <x-heroicon-o-qr-code class="w-6 h-6" />
+                        </div>
+                        <div class="absolute right-6 top-6 text-6xl font-black text-slate-100 dark:text-slate-800/20 select-none">03</div>
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white">3. Tunjukkan QR</h3>
+                        <p class="mt-3 text-sm leading-relaxed text-slate-500 dark:text-slate-400">Terima tiket dalam bentuk kode QR, lalu pindai di lokasi masuk.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Stats / Social Proof Bar Section -->
+            <section data-reveal data-reveal-delay="110">
+                <div class="rounded-[2.5rem] border border-slate-200 dark:border-white/10 bg-white/70 dark:bg-slate-900/30 backdrop-blur-xl p-8 lg:p-12 shadow-md">
+                    <div class="grid grid-cols-2 gap-8 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-slate-200 dark:divide-white/5">
+                        <div class="text-center pt-4 md:pt-0">
+                            <div class="text-4xl lg:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-indigo-650 dark:from-violet-400 dark:to-indigo-400">120+</div>
+                            <div class="mt-2 text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-550">Acara Tersedia</div>
+                        </div>
+                        <div class="text-center pt-4 md:pt-0 md:pl-4">
+                            <div class="text-4xl lg:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-sky-600 to-teal-600 dark:from-sky-400 dark:to-teal-400">15.4K+</div>
+                            <div class="mt-2 text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-550">Tiket Terjual</div>
+                        </div>
+                        <div class="text-center pt-4 md:pt-0 md:pl-4">
+                            <div class="text-4xl lg:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-605 dark:from-emerald-400 dark:to-teal-400">45+</div>
+                            <div class="mt-2 text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-550">Penyelenggara Terdaftar</div>
+                        </div>
+                        <div class="text-center pt-4 md:pt-0 md:pl-4">
+                            <div class="text-4xl lg:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-rose-600 to-pink-600 dark:from-rose-400 dark:to-pink-400">99.8%</div>
+                            <div class="mt-2 text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-550">Tingkat Kepuasan</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Features Section -->
+            <section class="lg:space-y-12 space-y-8 rounded-[3rem] border border-slate-200 dark:border-white/10 bg-white/50 dark:bg-slate-900/30 backdrop-blur-xl p-6 lg:p-12 shadow-sm" data-reveal data-reveal-delay="130">
+                <div class="grid gap-8 lg:grid-cols-[1.2fr_1fr]">
+                    <div class="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-violet-600 to-indigo-700 p-8 text-white shadow-2xl opacity-0 blur-sm translate-y-6 scale-[0.98]" data-reveal data-reveal-delay="170">
+                        <div class="absolute -right-12 -top-12 h-64 w-64 rounded-full bg-white/10 blur-3xl"></div>
+                        <h3 class="text-3xl font-extrabold tracking-tight">Pengalaman Tiket Modern</h3>
+                        <p class="mt-4 max-w-md text-sm leading-relaxed text-violet-100">Semua fitur penting untuk transaksi acara modern: proses cepat, informasi jelas, dan dukungan pengguna yang responsif.</p>
+                        <div class="mt-8 grid gap-4 text-sm font-medium text-white">
+                            <p class="inline-flex items-center gap-3"><span class="flex h-6 w-6 items-center justify-center rounded-full bg-white/20"><x-heroicon-s-check class="h-4 w-4" /></span>Elektronik-tiket langsung tersedia</p>
+                            <p class="inline-flex items-center gap-3"><span class="flex h-6 w-6 items-center justify-center rounded-full bg-white/20"><x-heroicon-s-check class="h-4 w-4" /></span>Status pesanan real-time</p>
+                        </div>
+                    </div>
+
+                    <div class="grid gap-4 sm:grid-cols-2 content-center">
                         @php
-                            $popularEvents = [
-                                ['title' => 'Neon Nights World Tour', 'location' => 'Sleman City Hall', 'date' => '4 Desember 2026', 'price' => 'Rp 150.000', 'image' => 'img/eobanner.png', 'tag' => 'Populer'],
-                                ['title' => 'Future Tech Summit 2026', 'location' => 'Bandung Convention Center', 'date' => '10 November 2026', 'price' => 'Rp 750.000', 'image' => 'img/Tiket.png', 'tag' => 'Tech'],
-                                ['title' => 'The Grand Open Harnet', 'location' => 'JoinFest Arena', 'date' => '26 Oktober 2026', 'price' => 'Rp 425.000', 'image' => 'img/KaosOfficial.png', 'tag' => 'Live'],
+                            $features = [
+                                ['title' => 'Pemesanan Instan', 'desc' => 'Checkout singkat dengan alur yang jelas.', 'icon' => 'bolt'],
+                                ['title' => 'E-Tiket Aman', 'desc' => 'Tiket digital tersimpan rapi di akun.', 'icon' => 'shield-check'],
+                                ['title' => 'Pembayaran Fleksibel', 'desc' => 'Metode pembayaran modern dan tepercaya.', 'icon' => 'credit-card'],
+                                ['title' => 'Dukungan 24/7', 'desc' => 'Tim support siap membantu kapan saja.', 'icon' => 'chat-bubble-left-right'],
                             ];
                         @endphp
 
-                        @foreach ($popularEvents as $event)
-                            <article class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_8px_24px_rgba(15,23,42,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_16px_30px_rgba(15,23,42,0.12)] opacity-0 blur-sm translate-y-6 scale-[0.98]" data-reveal data-reveal-delay="{{ $loop->index * 90 + 130 }}">
-                            <a href="{{ route('events.show', 'joinfest-nights-world-tour') }}">
-                            <div class="relative">
-                                    <img src="{{ asset($event['image']) }}" alt="{{ $event['title'] }}" class="h-52 w-full object-cover">
-                                    <div class="absolute left-3 top-3 inline-flex rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-slate-700">{{ $event['tag'] }}</div>
-                                </div>
-                                <div class="p-4">
-                                    <h3 class="text-sm font-semibold text-slate-900">{{ $event['title'] }}</h3>
-                                    <div class="mt-2 grid gap-1 text-xs text-slate-500">
-                                        <div class="flex items-center gap-2"><span class="h-1.5 w-1.5 rounded-full bg-violet-600"></span>{{ $event['date'] }}</div>
-                                        <div class="flex items-center gap-2"><span class="h-1.5 w-1.5 rounded-full bg-slate-300"></span>{{ $event['location'] }}</div>
-                                    </div>
-                                    <div class="mt-4 flex items-center justify-between gap-3">
-                                        <span class="text-sm font-semibold text-violet-600">{{ $event['price'] }}</span>
-                                    </div>
-                                </div>
-                            </a>
-                            </article>
+                        @foreach ($features as $feature)
+                            <div class="rounded-[1.5rem] border border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-white/5 p-5 shadow-sm opacity-0 blur-sm translate-y-6 scale-[0.98] transition-all duration-700 ease-out" data-reveal data-reveal-delay="{{ $loop->index * 80 + 230 }}">
+                                <x-dynamic-component :component="'heroicon-o-' . $feature['icon']" class="h-6 w-6 text-violet-600 dark:text-violet-400" />
+                                <h3 class="mt-4 text-sm font-bold text-slate-900 dark:text-white">{{ $feature['title'] }}</h3>
+                                <p class="mt-2 text-xs leading-relaxed text-slate-550 dark:text-slate-400">{{ $feature['desc'] }}</p>
+                            </div>
                         @endforeach
                     </div>
-                </section>
+                </div>
+            </section>
 
-                <section class="lg:space-y-16 space-y-8 rounded-[24px] border border-slate-200 bg-white p-5 shadow-[0_10px_30px_rgba(15,23,42,0.06)] lg:p-8" data-reveal data-reveal-delay="130">
-                    <div class="space-y-4 text-center">
-                        <h2 class="lg:text-4xl text-2xl font-semibold tracking-tight text-slate-900">Fitur yang Membuatmu Nyaman</h2>
-                        <p class="text-sm text-slate-500">Fitur yang membuatmu nyaman dalam bertransaksi event: proses cepat, informasi jelas, dan dukungan pengguna yang responsif.</p>
-                    </div>
-                    <div class="grid gap-4 lg:grid-cols-[1.1fr_1fr]">
-                        <article class="rounded-2xl bg-gradient-to-br min-h-[50vh] from-violet-600 to-violet-500 p-6 text-white shadow-[0_20px_40px_rgba(109,40,217,0.25)] opacity-0 blur-sm translate-y-6 scale-[0.98]" data-reveal data-reveal-delay="170">
-                            <h3 class="text-2xl font-semibold tracking-tight">Pengalaman Tiket Tanpa Ribet</h3>
-                            <p class="mt-3 max-w-md text-sm leading-7 text-white/80">Semua fitur penting untuk transaksi event modern: proses cepat, informasi jelas, dan dukungan pengguna yang responsif.</p>
-                            <div class="mt-6 grid gap-2 text-sm text-white/80">
-                                <p class="inline-flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-white/80"></span>E-tiket langsung tersedia setelah pembayaran</p>
-                                <p class="inline-flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-white/80"></span>Status pesanan real-time dan mudah dipantau</p>
-                            </div>
-                        </article>
+            <!-- CTA Banner Section -->
+            <section data-reveal data-reveal-delay="120">
+                <div class="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-tr from-violet-700 via-violet-600 to-indigo-800 text-white shadow-2xl p-8 sm:p-12 lg:p-16">
+                    <div class="absolute -right-24 -top-24 h-96 w-96 rounded-full bg-white/10 blur-3xl"></div>
+                    <div class="absolute -left-20 -bottom-20 h-64 w-64 rounded-full bg-sky-500/20 blur-3xl"></div>
 
-                        <div class="grid gap-3 sm:grid-cols-2">
-                            @php
-                                $features = [
-                                    ['title' => 'Pemesanan Instan', 'desc' => 'Checkout singkat dengan alur yang jelas.'],
-                                    ['title' => 'E-Tiket Aman', 'desc' => 'Tiket digital tersimpan rapi di akun.'],
-                                    ['title' => 'Pembayaran Aman', 'desc' => 'Metode pembayaran modern dan tepercaya.'],
-                                    ['title' => 'Dukungan 24/7', 'desc' => 'Tim support siap membantu kapan saja.'],
-                                ];
-                            @endphp
-
-                            @foreach ($features as $feature)
-                                <article class="rounded-2xl border border-slate-200 bg-slate-50 p-4 opacity-0 blur-sm translate-y-6 scale-[0.98] transition-all duration-700 ease-out" data-reveal data-reveal-delay="{{ $loop->index * 80 + 230 }}">
-                                    <div class="h-2 w-10 rounded-full bg-violet-500"></div>
-                                    <h3 class="mt-3 text-sm font-semibold text-slate-900">{{ $feature['title'] }}</h3>
-                                    <p class="mt-1 text-sm leading-6 text-slate-500">{{ $feature['desc'] }}</p>
-                                </article>
-                            @endforeach
+                    <div class="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8">
+                        <div class="max-w-2xl text-center lg:text-left">
+                            <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight">Ingin Menyelenggarakan Acara Sendiri?</h2>
+                            <p class="mt-4 text-violet-100 text-sm sm:text-base leading-relaxed">
+                                Buat acara pertamamu sekarang! Kelola penjualan tiket, souvenir, <i>scanner gate</i>, hingga pencairan dana penjualan dengan mudah dan transparan.
+                            </p>
+                        </div>
+                        <div class="shrink-0">
+                            <a href="{{ route('register') }}" data-link class="inline-flex h-14 items-center justify-center rounded-2xl bg-white px-8 text-sm font-bold text-violet-700 shadow-xl transition-all hover:-translate-y-0.5 hover:bg-slate-50 hover:shadow-white/20">
+                                Daftar Sebagai Penyelenggara
+                            </a>
                         </div>
                     </div>
-                </section>
-
-                <section data-reveal data-reveal-delay="150" class="lg:space-y-16 space-y-8">
-                        <div class="mb-6 text-center space-y-4">
-                            <h2 class="lg:text-4xl text-2xl font-semibold tracking-tight text-slate-900">Pertanyaan Umum</h2>
-                            <p class="mx-auto max-w-xl text-sm text-slate-500">Informasi cepat seputar pemesanan tiket di {{ config('app.name') }}.</p>
-                        </div>
-
-                        <div class="mx-auto grid max-w-5xl gap-3">
-                            @php
-                                $faqs = [
-                                    ['question' => 'Bagaimana cara mendapatkan e-tiket setelah pembayaran?', 'answer' => 'E-tiket akan muncul otomatis di akun pengguna setelah pembayaran berhasil diverifikasi.'],
-                                    ['question' => 'Apakah saya bisa mengubah data pemesanan?', 'answer' => 'Perubahan data mengikuti kebijakan event dan dapat dilakukan sebelum pembayaran final.'],
-                                    ['question' => 'Metode pembayaran apa saja yang tersedia?', 'answer' => 'Metode pembayaran menyesuaikan gateway aktif di halaman checkout.'],
-                                    ['question' => 'Bagaimana jika saya kehilangan akses tiket?', 'answer' => 'Silakan login kembali untuk mengakses tiket di halaman pesanan atau hubungi dukungan.'],
-                                ];
-                            @endphp
-
-                            @foreach ($faqs as $faq)
-                                <details class="group rounded-2xl border border-slate-200 bg-slate-50 p-4 opacity-0 blur-sm translate-y-6 scale-[0.98] transition-all duration-700 ease-out" data-reveal data-reveal-delay="{{ $loop->index * 80 + 180 }}">
-                                    <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-sm font-semibold text-slate-900">
-                                        <span>{{ $faq['question'] }}</span>
-                                        <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-violet-100 text-violet-600 transition group-open:rotate-45">+</span>
-                                    </summary>
-                                    <p class="mt-3 text-sm leading-7 text-slate-500">{{ $faq['answer'] }}</p>
-                                </details>
-                            @endforeach
-                        </div>
-                </section>
-            </div>
-        </main>
-
-        <x-home.footer />
-    </body>
-</html>
+                </div>
+            </section>
+        </div>
+    </div>
+</x-public-layout>

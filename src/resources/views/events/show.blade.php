@@ -1,266 +1,444 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>{{ $event['title'] }} - {{ config('app.name', 'JoinFest') }}</title>
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
+@php
+    $isSuspended = $event->status === 'awaiting_cancellation';
+    $isCancelled = $event->status === 'cancelled';
 
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    </head>
-    <body class="min-h-screen bg-[radial-gradient(circle_at_8%_4%,_#f8f4ff,_transparent_28%),_linear-gradient(180deg,_#f8fafc_0%,_#eef2ff_100%)] font-[Plus_Jakarta_Sans,sans-serif] text-slate-900">
-        @php
-            $ticketPrice = (int) preg_replace('/[^0-9]/', '', $event['price']);
-            $serviceFee = 25000;
-            $taxRate = 0.11;
+    $merchVariantsJson = $event->merchandiseItems->flatMap(fn($item) => 
+        $item->variants->map(fn($v) => [
+            'id' => $v->id,
+            'merchandise_item_id' => $item->id,
+            'name' => $item->name . ' (' . $v->variant_value . ')',
+            'price' => (int) ($item->base_price + $v->price_adjustment)
+        ])
+    )->values()->toJson();
+@endphp
 
-            $merchandise = [
-                [
-                    'name' => config('app.name') . ' Official Tee',
-                    'price' => 'Rp 250.000',
-                    'image' => 'img/KaosOfficial.png',
-                    'cta' => 'Tambah ke Pesanan',
-                ],
-                [
-                    'name' => config('app.name') . ' Hoodie',
-                    'price' => 'Rp 450.000',
-                    'image' => 'img/ToteBag.png',
-                    'cta' => 'Tambah ke Pesanan',
-                ],
-                [
-                    'name' => 'Festival Tote Bag',
-                    'price' => 'Rp 90.000',
-                    'image' => 'img/Tiket.png',
-                    'cta' => 'Tambah ke Pesanan',
-                ],
-            ];
+<x-public-layout :title="$event->name">
+    <div class="px-4 py-8 md:px-6 lg:py-12 relative">
+        @if($isCancelled)
+            <!-- Cancelled Watermark -->
+            <div class="absolute inset-0 pointer-events-none z-50 flex items-center justify-center overflow-hidden">
+                <div class="text-[12rem] font-black text-rose-500/10 -rotate-12 select-none border-y-8 border-rose-500/10 py-8 whitespace-nowrap">
+                    CANCELLED
+                </div>
+            </div>
+        @endif
 
-            $rules = [
-                'Tiket hanya berlaku untuk tanggal dan sesi yang tertera pada pesanan.',
-                'Pembeli wajib menunjukkan e-tiket dan identitas yang sesuai saat masuk area acara.',
-                'Dilarang membawa barang berbahaya, minuman keras, dan benda terlarang lainnya.',
-                'Organizer berhak menolak masuk jika ketentuan event tidak dipatuhi.',
-            ];
+        <div class="grid gap-8 mx-auto w-full max-w-7xl lg:grid-cols-[1fr_380px] xl:gap-12 relative z-10 {{ $isCancelled ? 'ring-4 ring-rose-500/50 rounded-[2rem] p-2 bg-rose-500/5' : '' }}"
+             x-data='checkoutApp({{ $event->ticketCategories->toJson() }}, {{ $merchVariantsJson }}, {{ $isSuspended ? "true" : "false" }}, {{ $isCancelled ? "true" : "false" }})'
+        >
 
-            $faqShort = [
-                ['q' => 'Bagaimana saya menerima e-tiket?', 'a' => 'E-tiket akan tersedia di akun setelah pembayaran berhasil.'],
-                ['q' => 'Apakah merchandise bisa dibeli terpisah?', 'a' => 'Bisa, merchandise dapat ditambahkan ke pesanan tiket sebelum checkout.'],
-            ];
-        @endphp
+            <!-- Kiri: Info Event & Hero -->
+            <div class="space-y-8">
+                <!-- Image Banner with View Transition -->
+                <section class="opacity-0 blur-sm transition-all duration-700 ease-out translate-y-6 scale-[0.98]" data-reveal data-reveal-delay="0">
+                    <div class="relative overflow-hidden rounded-[2rem] border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900/40 backdrop-blur-xl shadow-md">
+                        <div class="relative isolate h-[320px] w-full md:h-[400px]">
+                            <!-- The view-transition-name matches the catalog card -->
+                            <img src="{{ $event->image_path ? Storage::url($event->image_path) : asset('img/eobanner.png') }}" alt="{{ $event->name }}" class="absolute inset-0 h-full w-full object-cover opacity-60 {{ $isSuspended ? 'grayscale' : '' }}" style="view-transition-name: event-img-{{ $event->id }};" />
+                            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
 
-        <x-home.header />
+                            <div class="absolute inset-x-0 bottom-0 p-6 md:p-8">
+                                <div class="flex flex-wrap items-center gap-2 mb-3">
+                                    <span class="inline-flex rounded-xl border border-white/10 bg-black/30 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-white backdrop-blur-md">
+                                        {{ $event->category?->name ?? 'Event' }}
+                                    </span>
+                                    @if($isNearlySoldOut)
+                                        <span class="inline-flex rounded-xl border border-amber-500/30 bg-amber-500/20 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-amber-300 backdrop-blur-md animate-pulse">
+                                            Nearly Sold Out
+                                        </span>
+                                    @endif
+                                    @if($isSuspended)
+                                        <span class="inline-flex rounded-xl border border-amber-500/30 bg-amber-500/20 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-amber-300 backdrop-blur-md">
+                                            Sales Paused
+                                        </span>
+                                    @endif
+                                    @if($isCancelled)
+                                        <span class="inline-flex rounded-xl border border-rose-500/30 bg-rose-500/20 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-rose-300 backdrop-blur-md">
+                                            Event Cancelled
+                                        </span>
+                                    @endif
+                                </div>
+                                <h1 class="text-3xl font-extrabold tracking-tight text-white md:text-5xl lg:text-6xl">{{ $event->name }}</h1>
+                            </div>
+                        </div>
+                    </div>
+                </section>
 
-        <main class="px-4 py-8 md:px-6 lg:py-12">
-            <div class="grid gap-8 mx-auto w-full max-w-7xl lg:grid-cols-[1fr_360px] xl:gap-12">
+                <section class="opacity-0 blur-sm transition-all duration-700 ease-out translate-y-6 scale-[0.98] grid gap-6 rounded-[2rem] border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900/40 backdrop-blur-xl p-6 lg:p-8 shadow-md" data-reveal data-reveal-delay="100">
+                    <div class="flex items-center gap-3">
+                        <span class="h-6 w-1 rounded-full bg-violet-500"></span>
+                        <h2 class="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">Tentang Event</h2>
+                    </div>
 
-                <!-- Kiri: Info Event & Hero -->
-                <div class="space-y-8">
-                    <!-- Image Banner -->
-                    <section class="opacity-0 blur-sm transition-all duration-700 ease-out translate-y-6 scale-[0.98]" data-reveal data-reveal-delay="0">
-                        <div class="relative overflow-hidden rounded-[24px] bg-slate-900 shadow-[0_16px_34px_rgba(15,23,42,0.12)]">
-                            <div class="relative isolate h-[320px] w-full md:h-[400px]">
-                                <img src="{{ asset($event['image']) }}" alt="{{ $event['title'] }}" class="absolute inset-0 h-full w-full object-cover opacity-80" />
-                                <div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent"></div>
+                    <div class="max-w-3xl text-sm leading-relaxed text-slate-650 dark:text-slate-400 prose dark:prose-invert">
+                        {!! nl2br(e($event->description)) !!}
+                    </div>
 
-                                <div class="absolute inset-x-0 bottom-0 p-6 md:p-8">
-                                    <div class="flex flex-wrap items-center gap-2 text-[11px] font-bold uppercase tracking-[0.15em] text-white/80">
-                                        <span class="inline-flex rounded-md border border-white/20 bg-white/10 px-2.5 py-1 backdrop-blur-sm">{{ $event['category'] }}</span>
+                    <div class="grid gap-4 sm:grid-cols-3 mt-4">
+                        <div class="rounded-2xl bg-slate-50 dark:bg-white/5 p-5 border border-slate-200 dark:border-white/10 shadow-sm">
+                            <p class="text-[10px] font-bold uppercase tracking-widest text-violet-600 dark:text-violet-400">Tanggal</p>
+                            <p class="mt-2 text-sm font-bold text-slate-900 dark:text-white">{{ $event->event_date->translatedFormat('d M Y') }}</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-450">{{ \Carbon\Carbon::parse($event->start_time)->format('H:i') }} - {{ \Carbon\Carbon::parse($event->end_time)->format('H:i') }}</p>
+                        </div>
+                        <div class="rounded-2xl bg-slate-50 dark:bg-white/5 p-5 border border-slate-200 dark:border-white/10 shadow-sm">
+                            <p class="text-[10px] font-bold uppercase tracking-widest text-sky-600 dark:text-sky-400">Lokasi</p>
+                            <p class="mt-2 text-sm font-bold text-slate-900 dark:text-white">{{ $event->venue_name }}</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-450">{{ $event->city }}</p>
+                        </div>
+                        <div class="rounded-2xl bg-slate-50 dark:bg-white/5 p-5 border border-slate-200 dark:border-white/10 shadow-sm">
+                            <p class="text-[10px] font-bold uppercase tracking-widest text-fuchsia-605 dark:text-fuchsia-400">Penyelenggara</p>
+                            <p class="mt-2 text-sm font-bold text-slate-900 dark:text-white">{{ $event->organizer->name }}</p>
+                        </div>
+                    </div>
+                </section>
+
+                @if($event->merchandiseItems->count() > 0)
+                <section class="opacity-0 blur-sm transition-all duration-700 ease-out translate-y-6 scale-[0.98] space-y-6" data-reveal data-reveal-delay="150">
+                    <div class="flex items-center justify-between gap-4">
+                        <div class="flex items-center gap-3">
+                            <span class="h-6 w-1 rounded-full bg-fuchsia-500"></span>
+                            <h2 class="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">Merchandise Resmi</h2>
+                        </div>
+                    </div>
+
+                    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                        @foreach ($event->merchandiseItems as $item)
+                            @php
+                                $prices = $item->variants->map(fn($v) => $item->base_price + $v->price_adjustment);
+                                $minPrice = $prices->min();
+                            @endphp
+                            <article class="relative overflow-hidden rounded-[2rem] border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900/40 backdrop-blur-xl shadow-md transition-all duration-300 hover:-translate-y-1 hover:border-fuchsia-500/30 flex flex-col h-full">
+                                <div class="relative h-48 w-full bg-slate-100 dark:bg-white/5">
+                                    @if($item->image)
+                                        <img src="{{ Storage::url($item->image) }}" alt="{{ $item->name }}" class="h-full w-full object-cover">
+                                    @else
+                                        <div class="flex h-full items-center justify-center text-slate-400 dark:text-slate-600">
+                                            <x-heroicon-o-shopping-bag class="h-12 w-12" />
+                                        </div>
+                                    @endif
+                                    <div class="absolute left-3 top-3 rounded-full border border-white/10 bg-black/50 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-widest text-white shadow-sm backdrop-blur-md">Official</div>
+                                    
+                                    {{-- Selection summary pill --}}
+                                    <div x-show="getMerchItemTotal('{{ $item->id }}') > 0"
+                                         x-cloak
+                                         class="absolute right-3 top-3 rounded-full border border-fuchsia-500/30 bg-fuchsia-500/20 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-fuchsia-600 dark:text-fuchsia-300 shadow-sm backdrop-blur-md animate-pulse">
+                                         Terpilih: <span x-text="getMerchItemTotal('{{ $item->id }}')"></span>
                                     </div>
-                                    <h1 class="mt-3 text-3xl font-extrabold tracking-tight text-white md:text-4xl lg:text-5xl">{{ $event['title'] }}</h1>
+                                </div>
+                                <div class="p-5 flex flex-col flex-1 justify-between">
+                                    <h3 class="text-base font-bold text-slate-900 dark:text-white leading-tight min-h-[2.5rem] line-clamp-2">{{ $item->name }}</h3>
+                                    
+                                    <div class="mt-4 pt-4 flex items-center justify-between border-t border-slate-100 dark:border-white/5">
+                                        <div class="flex flex-col">
+                                            <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">Mulai dari</span>
+                                            <span class="text-sm font-extrabold text-emerald-600 dark:text-emerald-450">Rp {{ number_format($minPrice, 0, ',', '.') }}</span>
+                                        </div>
+                                        <button type="button" @click="activeMerchModalId = '{{ $item->id }}'"
+                                                class="rounded-xl border border-fuchsia-500/30 bg-fuchsia-500/10 px-4 py-2 text-xs font-bold text-fuchsia-600 dark:text-fuchsia-400 hover:bg-fuchsia-600 hover:text-white transition shadow-sm cursor-pointer">
+                                            Lihat Detail
+                                        </button>
+                                    </div>
+                                </div>
+                            </article>
+                        @endforeach
+                    </div>
+                </section>
+                @endif
+            </div>
+
+            <!-- Kanan: Checkout Card Sticky -->
+            <aside class="opacity-0 blur-sm transition-all duration-700 ease-out translate-y-6 scale-[0.98] lg:sticky lg:top-28 h-max" data-reveal data-reveal-delay="200">
+                <div class="rounded-[2rem] border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900/40 backdrop-blur-xl p-6 lg:p-8 shadow-md relative overflow-hidden">
+                    <!-- Glow effect inside card -->
+                    <div class="absolute -right-20 -top-20 h-40 w-40 rounded-full bg-violet-500/20 blur-3xl pointer-events-none"></div>
+
+                    @if($isSuspended || $isCancelled)
+                        <div class="absolute inset-0 z-10 bg-white/80 dark:bg-slate-950/80 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center">
+                            <x-heroicon-o-no-symbol class="h-12 w-12 text-rose-500 mb-4" />
+                            <h3 class="text-lg font-bold text-slate-900 dark:text-white">Penjualan Ditutup</h3>
+                            <p class="text-sm text-slate-650 dark:text-slate-300 mt-2">
+                                {{ $isCancelled ? 'Event ini telah dibatalkan.' : 'Ticket sales are temporarily suspended.' }}
+                            </p>
+                        </div>
+                    @endif
+
+                    <div class="mb-6">
+                        <h3 class="text-xl font-extrabold tracking-tight text-slate-900 dark:text-white">Pilih Tiket</h3>
+                        <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Pilih kategori dan jumlah maksimal 5 tiket per transaksi.</p>
+                    </div>
+
+                    <form action="{{ route('checkout.index') }}" method="GET">
+                        <!-- Hidden inputs for selected tickets -->
+                        <template x-for="item in getActiveTickets()" :key="'ticket-' + item.id">
+                            <input type="hidden" :name="'tickets[' + item.id + ']'" :value="item.qty">
+                        </template>
+
+                        <!-- Hidden inputs for selected merchandise -->
+                        <template x-for="item in getActiveMerch()" :key="'merch-' + item.id">
+                            <input type="hidden" :name="'merchandise[' + item.id + ']'" :value="item.qty">
+                        </template>
+
+                        <div class="space-y-4 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                            @foreach($event->ticketCategories as $cat)
+                                @php
+                                    $stock = $cat->quota - $cat->sold_count;
+                                    $isOos = $stock <= 0;
+                                @endphp
+                                <div class="rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 p-4 transition-colors hover:border-slate-300 dark:hover:border-white/20">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <div>
+                                            <h4 class="text-sm font-bold text-slate-900 dark:text-white">{{ $cat->name }}</h4>
+                                            <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">{{ $cat->description }}</p>
+                                        </div>
+                                        <div class="text-right">
+                                            <div class="text-sm font-extrabold text-emerald-600 dark:text-emerald-450">Rp {{ number_format($cat->price, 0, ',', '.') }}</div>
+                                            @if($isOos)
+                                                <div class="text-[10px] font-bold text-rose-500 uppercase tracking-widest mt-1">Habis</div>
+                                            @else
+                                                <div class="text-[10px] text-slate-500 mt-1">Sisa {{ $stock }}</div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    
+                                    @if(!$isOos)
+                                    <div class="flex items-center justify-between border-t border-slate-100 dark:border-white/10 pt-3">
+                                        <span class="text-xs font-semibold text-slate-500 dark:text-slate-455">Jumlah</span>
+                                        <div class="flex items-center gap-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-black/20 p-1">
+                                            <button type="button" @click="updateQty('{{ $cat->id }}', -1)" class="flex h-7 w-7 items-center justify-center rounded-lg bg-white dark:bg-white/5 border border-slate-205 dark:border-transparent text-slate-800 dark:text-white hover:bg-slate-50 dark:hover:bg-white/20 disabled:opacity-50 transition" :disabled="getQty('{{ $cat->id }}') <= 0 || isSuspended || isCancelled">−</button>
+                                            <span class="text-sm font-bold text-slate-900 dark:text-white min-w-[20px] text-center" x-text="getQty('{{ $cat->id }}')">0</span>
+                                            <button type="button" @click="updateQty('{{ $cat->id }}', 1)" class="flex h-7 w-7 items-center justify-center rounded-lg bg-white dark:bg-white/5 border border-slate-205 dark:border-transparent text-slate-800 dark:text-white hover:bg-slate-50 dark:hover:bg-white/20 disabled:opacity-50 transition" :disabled="getQty('{{ $cat->id }}') >= Math.min({{ $cat->max_per_user ?? 5 }}, {{ $stock }}) || totalTickets >= 5 || isSuspended || isCancelled">+</button>
+                                        </div>
+                                    </div>
+                                    @endif
+                                </div>
+                            @endforeach
+                        </div>
+
+                        <!-- Selected Summary -->
+                        <div x-show="totalTickets > 0 || totalMerch > 0" class="mt-6 space-y-2 rounded-2xl bg-slate-50 dark:bg-white/5 p-4 border border-slate-200 dark:border-white/5 text-xs">
+                            <span class="font-bold text-slate-900 dark:text-white block mb-2 uppercase tracking-wider text-[10px] text-slate-400">Item Terpilih</span>
+                            
+                            <!-- Tickets -->
+                            <template x-for="item in getActiveTickets()" :key="'summary-ticket-' + item.id">
+                                <div class="flex items-center justify-between gap-4 text-slate-650 dark:text-slate-400 py-1 border-b border-dashed border-slate-100 dark:border-white/5 last:border-0 last:pb-0">
+                                    <span x-text="categories.find(c => c.id === item.id)?.name">Tiket</span>
+                                    <span class="font-bold text-slate-900 dark:text-white" x-text="item.qty + 'x'"></span>
+                                </div>
+                            </template>
+
+                            <!-- Merchandise -->
+                            <template x-for="item in getActiveMerch()" :key="'summary-merch-' + item.id">
+                                <div class="flex items-center justify-between gap-4 text-slate-650 dark:text-slate-400 py-1 border-b border-dashed border-slate-100 dark:border-white/5 last:border-0 last:pb-0">
+                                    <span x-text="merchVariants.find(mv => mv.id === item.id)?.name">Merch Varian</span>
+                                    <span class="font-bold text-slate-900 dark:text-white" x-text="item.qty + 'x'"></span>
+                                </div>
+                            </template>
+                        </div>
+
+                        <div class="mt-6 space-y-3 rounded-2xl bg-slate-100 dark:bg-black/20 p-5 text-sm text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-white/5">
+                            <div class="flex items-center justify-between gap-4">
+                                <span>Total Tiket</span>
+                                <span class="font-bold text-slate-900 dark:text-white" x-text="totalTickets">0</span>
+                            </div>
+                            <div class="border-t border-slate-200 dark:border-white/10 pt-3 flex items-center justify-between gap-4">
+                                <span class="font-bold text-slate-900 dark:text-white">Estimasi Subtotal</span>
+                                <span class="text-lg font-extrabold tracking-tight text-violet-600 dark:text-violet-400" x-text="'Rp ' + format(totalPrice)">Rp 0</span>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="mt-6 inline-flex h-12 w-full items-center justify-center rounded-xl bg-violet-600 px-4 text-sm font-bold text-white shadow-lg shadow-violet-600/25 transition-all hover:-translate-y-0.5 hover:bg-violet-750 focus:outline-none focus:ring-4 focus:ring-violet-500/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0" :disabled="totalTickets === 0">
+                            Lanjut ke Pembayaran
+                        </button>
+
+                    </form>
+                </div>
+            </aside>
+
+            @foreach ($event->merchandiseItems as $item)
+                <template x-teleport="#spa-modals">
+                    <div x-show="activeMerchModalId === '{{ $item->id }}'"
+                         x-cloak
+                         x-transition:enter="transition ease-out duration-300"
+                         x-transition:enter-start="opacity-0"
+                         x-transition:enter-end="opacity-100"
+                         x-transition:leave="transition ease-in duration-200"
+                         x-transition:leave-start="opacity-100"
+                         x-transition:leave-end="opacity-0"
+                         class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm"
+                         @keydown.escape.window="if(activeMerchModalId === '{{ $item->id }}') activeMerchModalId = null"
+                    >
+                        <div @click.away="activeMerchModalId = null"
+                             x-show="activeMerchModalId === '{{ $item->id }}'"
+                             x-transition:enter="transition ease-out duration-300"
+                             x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                             x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                             x-transition:leave="transition ease-in duration-200"
+                             x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                             x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                             class="relative w-full max-w-3xl overflow-hidden rounded-[2rem] border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 shadow-2xl transition-all duration-300 max-h-[90vh] flex flex-col md:flex-row"
+                        >
+                            <button @click="activeMerchModalId = null" class="absolute right-4 top-4 z-50 p-2 rounded-xl text-slate-400 hover:text-slate-900 dark:hover:text-white bg-slate-100 dark:bg-slate-900 transition shadow-sm" aria-label="Close modal">
+                                <x-heroicon-o-x-mark class="w-5 h-5" />
+                            </button>
+                            <div class="w-full md:w-1/2 bg-slate-50 dark:bg-slate-900/50 flex items-center justify-center h-48 md:h-auto md:min-h-[300px] border-b md:border-b-0 md:border-r border-slate-200 dark:border-slate-800 relative shrink-0">
+                                @if($item->image)
+                                    <img src="{{ Storage::url($item->image) }}" alt="{{ $item->name }}" class="absolute inset-0 h-full w-full object-cover">
+                                @else
+                                    <div class="flex h-full items-center justify-center text-slate-400 dark:text-slate-600">
+                                        <x-heroicon-o-shopping-bag class="h-20 w-20" />
+                                    </div>
+                                @endif
+                            </div>
+                            <div class="w-full md:w-1/2 p-6 md:p-8 flex flex-col justify-between overflow-y-auto max-h-[60vh] md:max-h-[80vh] custom-scrollbar bg-white dark:bg-slate-950">
+                                <div>
+                                    <div class="inline-flex rounded-xl border border-fuchsia-500/30 bg-fuchsia-500/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-fuchsia-600 dark:text-fuchsia-400 mb-3 w-max">Official Merch</div>
+                                    <h2 class="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">{{ $item->name }}</h2>
+                                    <div class="mt-4 text-sm leading-relaxed text-slate-600 dark:text-slate-400 prose dark:prose-invert">
+                                        {!! nl2br(e($item->description)) !!}
+                                    </div>
+                                </div>
+                                <div class="mt-8 border-t border-slate-200 dark:border-slate-800 pt-6 bg-white dark:bg-slate-950">
+                                    <h4 class="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-4">Pilih Varian & Jumlah</h4>
+                                    <div class="space-y-4">
+                                        @foreach($item->variants as $variant)
+                                            @php
+                                                $stock = $variant->stock - $variant->sold_count;
+                                                $isOos = $stock <= 0;
+                                                $price = $item->base_price + $variant->price_adjustment;
+                                            @endphp
+                                            <div class="flex items-center justify-between rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-white/5 p-4 transition-colors hover:border-slate-200 dark:hover:border-slate-700">
+                                                <div class="flex flex-col">
+                                                    <span class="text-sm font-bold text-slate-900 dark:text-white">{{ $variant->variant_group }}: {{ $variant->variant_value }}</span>
+                                                    @if($isOos)
+                                                        <span class="text-[10px] font-bold text-rose-500 uppercase tracking-widest mt-1">Habis</span>
+                                                    @else
+                                                        <span class="text-[10px] text-slate-500 dark:text-slate-400 mt-1">Sisa {{ $stock }}</span>
+                                                    @endif
+                                                </div>
+                                                <div class="flex items-center gap-3">
+                                                    @if(!$isOos)
+                                                        <span class="text-sm font-extrabold text-emerald-600 dark:text-emerald-450 mr-2">Rp {{ number_format($price, 0, ',', '.') }}</span>
+                                                        <div class="flex items-center gap-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-black/20 p-1">
+                                                            <button type="button" @click="updateMerchQty('{{ $variant->id }}', -1)" class="flex h-7 w-7 items-center justify-center rounded-lg bg-white dark:bg-white/5 border border-slate-200 dark:border-transparent text-slate-800 dark:text-white hover:bg-slate-50 dark:hover:bg-white/20 disabled:opacity-50 transition" :disabled="getMerchQty('{{ $variant->id }}') <= 0 || isSuspended || isCancelled">−</button>
+                                                            <span class="text-sm font-bold text-slate-900 dark:text-white min-w-[20px] text-center" x-text="getMerchQty('{{ $variant->id }}')">0</span>
+                                                            <button type="button" @click="updateMerchQty('{{ $variant->id }}', 1)" class="flex h-7 w-7 items-center justify-center rounded-lg bg-white dark:bg-white/5 border border-slate-200 dark:border-transparent text-slate-800 dark:text-white hover:bg-slate-50 dark:hover:bg-white/20 disabled:opacity-50 transition" :disabled="getMerchQty('{{ $variant->id }}') >= {{ $stock }} || isSuspended || isCancelled">+</button>
+                                                        </div>
+                                                    @else
+                                                        <span class="text-sm font-bold text-rose-500">Habis</span>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </section>
-
-                        <section class="opacity-0 blur-sm transition-all duration-700 ease-out translate-y-6 scale-[0.98] grid gap-4 rounded-[22px] border border-slate-200 bg-white p-5 shadow-[0_10px_24px_rgba(15,23,42,0.05)]" data-reveal data-reveal-delay="100">
-                            <div class="flex items-center gap-3">
-                                <span class="h-6 w-1 rounded-full bg-violet-600"></span>
-                                <h2 class="text-lg font-semibold tracking-tight text-slate-900">Tentang Event</h2>
-                            </div>
-
-                            <p class="max-w-3xl text-sm leading-7 text-slate-600">
-                                {!! $event['description'] !!} Event ini dirancang untuk menghadirkan pengalaman yang tertata, visual yang kuat, dan alur masuk yang jelas untuk setiap pengunjung.
-                            </p>
-
-                            <div class="grid gap-3 sm:grid-cols-3">
-                                <div class="rounded-2xl bg-violet-50/50 p-4 border border-violet-100/50">
-                                    <p class="text-[11px] font-bold uppercase tracking-[0.16em] text-violet-600">Tanggal</p>
-                                    <p class="mt-2 text-sm font-semibold text-slate-900">{{ $event['date'] }}</p>
-                                </div>
-                                <div class="rounded-2xl bg-violet-50/50 p-4 border border-violet-100/50">
-                                    <p class="text-[11px] font-bold uppercase tracking-[0.16em] text-violet-600">Lokasi</p>
-                                    <p class="mt-2 text-sm font-semibold text-slate-900">{{ $event['location'] }}</p>
-                                </div>
-                                <div class="rounded-2xl bg-violet-50/50 p-4 border border-violet-100/50">
-                                    <p class="text-[11px] font-bold uppercase tracking-[0.16em] text-violet-600">Kategori</p>
-                                    <p class="mt-2 text-sm font-semibold text-slate-900">{{ $event['category'] }}</p>
-                                </div>
-                            </div>
-                        </section>
-
-                        <section class="opacity-0 blur-sm transition-all duration-700 ease-out translate-y-6 scale-[0.98] space-y-4" data-reveal data-reveal-delay="150">
-                            <div class="flex items-center justify-between gap-4">
-                                <div>
-                                    <h2 class="text-lg font-semibold tracking-tight text-slate-900">Merchandise Resmi</h2>
-                                    <p class="text-sm text-slate-500">Lengkapi pengalaman event dengan koleksi resmi.</p>
-                                </div>
-                            </div>
-
-                            <div class="grid gap-4 md:grid-cols-3">
-                                @foreach ($merchandise as $item)
-                                    <article class="opacity-0 blur-sm transition-all duration-700 ease-out translate-y-6 scale-[0.98] overflow-hidden rounded-[20px] border border-slate-200 bg-white shadow-[0_10px_24px_rgba(15,23,42,0.05)] hover:-translate-y-1 hover:shadow-[0_16px_30px_rgba(15,23,42,0.10)]" data-reveal data-reveal-delay="{{ $loop->index * 80 + 150 }}">
-                                        <div class="relative">
-                                            <img src="{{ asset($item['image']) }}" alt="{{ $item['name'] }}" class="h-48 w-full object-cover">
-                                            <div class="absolute left-3 top-3 rounded-full bg-white/95 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-700 shadow-sm backdrop-blur-sm">Official</div>
-                                        </div>
-                                        <div class="p-4">
-                                            <h3 class="text-sm font-semibold text-slate-900">{{ $item['name'] }}</h3>
-                                            <p class="mt-1 text-sm font-bold text-violet-600">{{ $item['price'] }}</p>
-                                            <button type="button" class="mt-4 inline-flex h-9 w-full items-center justify-center rounded-xl border border-violet-200 bg-violet-50 text-sm font-semibold text-violet-600 transition hover:border-violet-600 hover:bg-violet-600 hover:text-white">{{ $item['cta'] }}</button>
-                                        </div>
-                                    </article>
-                                @endforeach
-                            </div>
-                        </section>
-
-                        <section class="opacity-0 blur-sm transition-all duration-700 ease-out translate-y-6 scale-[0.98] space-y-4" data-reveal data-reveal-delay="200">
-                            <div class="flex items-center gap-3">
-                                <span class="h-6 w-1 rounded-full bg-violet-600"></span>
-                                <h2 class="text-lg font-semibold tracking-tight text-slate-900">Syarat & Ketentuan</h2>
-                            </div>
-
-                            <div class="grid gap-3">
-                                @foreach ($rules as $rule)
-                                    <div class="flex items-start gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_8px_22px_rgba(15,23,42,0.04)]">
-                                        <span class="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-violet-600/10 text-violet-600 font-bold">•</span>
-                                        <p class="text-sm leading-6 text-slate-600">{{ $rule }}</p>
-                                    </div>
-                                @endforeach
-                            </div>
-                        </section>
-
-                        <section class="opacity-0 blur-sm transition-all duration-700 ease-out translate-y-6 scale-[0.98] space-y-4" data-reveal data-reveal-delay="250">
-                            <div class="flex items-center gap-3">
-                                <span class="h-6 w-1 rounded-full bg-violet-600"></span>
-                                <h2 class="text-lg font-semibold tracking-tight text-slate-900">Peta Lokasi</h2>
-                            </div>
-
-                            <div class="overflow-hidden rounded-[22px] border border-slate-200 bg-slate-200 shadow-[0_10px_24px_rgba(15,23,42,0.05)]">
-                                <div class="relative min-h-[240px] bg-[linear-gradient(135deg,#e2e8f0_0%,#cbd5e1_100%)]">
-                                    <div class="absolute inset-0 opacity-40 [background-image:radial-gradient(circle_at_1px_1px,white_1px,transparent_0)] [background-size:20px_20px]"></div>
-                                    <div class="absolute inset-x-0 top-1/2 h-px bg-white/40"></div>
-                                    <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-[20px] border border-white/60 bg-white/95 px-5 py-4 text-center shadow-[0_14px_26px_rgba(15,23,42,0.12)] backdrop-blur-md">
-                                        <p class="text-sm font-bold text-slate-900">{{ $event['location'] }}</p>
-                                        <p class="mt-1 text-xs text-slate-500">{{ $event['date'] }}</p>
-                                        <a href="#" class="mt-3 inline-flex text-[13px] font-bold text-violet-600 hover:text-violet-700 transition">Buka di Maps &rarr;</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
-
-                        <section class="opacity-0 blur-sm transition-all duration-700 ease-out translate-y-6 scale-[0.98] space-y-4" data-reveal data-reveal-delay="300">
-                            <div class="flex items-center gap-3">
-                                <span class="h-6 w-1 rounded-full bg-violet-600"></span>
-                                <h2 class="text-lg font-semibold tracking-tight text-slate-900">Pertanyaan Singkat</h2>
-                            </div>
-
-                            <div class="grid gap-3 md:grid-cols-2">
-                                @foreach ($faqShort as $faq)
-                                    <article class="rounded-[20px] border border-slate-200 bg-white p-4 shadow-[0_8px_20px_rgba(15,23,42,0.03)] hover:shadow-md transition">
-                                        <h3 class="text-[13px] font-bold text-slate-900">{{ $faq['q'] }}</h3>
-                                        <p class="mt-2 text-[13px] leading-6 text-slate-600">{{ $faq['a'] }}</p>
-                                    </article>
-                                @endforeach
-                            </div>
-                        </section>
                     </div>
+                </template>
+            @endforeach
+        </div>
+    </div>
+</x-public-layout>
 
-                    <!-- Kanan: Checkout Card Sticky -->
-                    <aside class="opacity-0 blur-sm transition-all duration-700 ease-out translate-y-6 scale-[0.98] lg:sticky lg:top-24 h-max" data-reveal data-reveal-delay="200">
-                        <form action="{{ route('checkout.index') }}" method="GET"
-                            x-data="{
-                                qty: 1,
-                                ticketType: 'standard',
-                                price: {{ $ticketPrice }},
-                                serviceFee: {{ $serviceFee }},
-                                taxRate: {{ $taxRate }},
-                                format(value) {
-                                    return new Intl.NumberFormat('id-ID').format(value)
-                                },
-                                get multiplier() {
-                                    return this.ticketType === 'vip' ? 1.35 : 1
-                                },
-                                get subtotal() {
-                                    return Math.round(this.price * this.qty * this.multiplier)
-                                },
-                                get tax() {
-                                    return Math.round((this.subtotal + this.serviceFee) * this.taxRate)
-                                },
-                                get total() {
-                                    return this.subtotal + this.serviceFee + this.tax
-                                },
-                            }"
-                            class="rounded-[24px] border border-slate-200 bg-white p-5 shadow-[0_14px_32px_rgba(15,23,42,0.08)]"
-                        >
-                            <div class="mb-4">
-                                <p class="text-sm font-semibold text-slate-900">Pesan Tiket</p>
-                                <p class="mt-1 text-xs text-slate-500">Pilih kategori tiket dan jumlah pesanan.</p>
-                            </div>
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('checkoutApp', (categories, merchVariants, isSuspended, isCancelled) => ({
+            cart: {},
+            merchCart: {},
+            categories: categories,
+            merchVariants: merchVariants,
+            isSuspended: isSuspended,
+            isCancelled: isCancelled,
+            activeMerchModalId: null,
+            getMerchItemTotal(itemId) {
+                let total = 0;
+                this.merchVariants.forEach(mv => {
+                    if (mv.merchandise_item_id === itemId) {
+                        total += this.merchCart[mv.id] || 0;
+                    }
+                });
+                return total;
+            },
+            init() {
+                this.categories.forEach(c => {
+                    this.cart[c.id] = 0;
+                });
+                this.merchVariants.forEach(mv => {
+                    this.merchCart[mv.id] = 0;
+                });
+                this.$watch('activeMerchModalId', value => {
+                    if (value) {
+                        document.body.classList.add('overflow-y-hidden');
+                    } else {
+                        document.body.classList.remove('overflow-y-hidden');
+                    }
+                });
+            },
+            getQty(id) {
+                return this.cart[id] || 0;
+            },
+            updateQty(id, delta) {
+                let current = this.cart[id] || 0;
+                let next = current + delta;
+                if (next >= 0) {
+                    this.cart[id] = next;
+                }
+            },
+            getMerchQty(id) {
+                return this.merchCart[id] || 0;
+            },
+            updateMerchQty(id, delta) {
+                let current = this.merchCart[id] || 0;
+                let next = current + delta;
+                if (next >= 0) {
+                    this.merchCart[id] = next;
+                }
+            },
+            get totalTickets() {
+                return Object.values(this.cart).reduce((a, b) => a + b, 0);
+            },
+            get totalMerch() {
+                return Object.values(this.merchCart).reduce((a, b) => a + b, 0);
+            },
+            get totalPrice() {
+                let total = 0;
+                this.categories.forEach(c => {
+                    total += (this.cart[c.id] || 0) * c.price;
+                });
+                this.merchVariants.forEach(mv => {
+                    total += (this.merchCart[mv.id] || 0) * mv.price;
+                });
+                return total;
+            },
+            getActiveTickets() {
+                return Object.entries(this.cart)
+                    .filter(([_, qty]) => qty > 0)
+                    .map(([id, qty]) => ({ id: id, qty: qty }));
+            },
+            getActiveMerch() {
+                return Object.entries(this.merchCart)
+                    .filter(([_, qty]) => qty > 0)
+                    .map(([id, qty]) => ({ id: id, qty: qty }));
+            },
+            format(value) {
+                return new Intl.NumberFormat('id-ID').format(value);
+            }
+        }))
+    })
+</script>
 
-                            <div class="space-y-4">
-                                <label class="block text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
-                                    Jenis Tiket
-                                    <select x-model="ticketType" class="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none transition focus:border-violet-500 focus:bg-white focus:ring-4 focus:ring-violet-500/10">
-                                        <option value="standard">Standard - {{ $event['price'] }}</option>
-                                        <option value="vip">VIP Access - {{ $event['price'] }}</option>
-                                    </select>
-                                </label>
-
-                                <div>
-                                    <p class="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">Jumlah Tiket</p>
-                                    <div class="mt-2 flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-2">
-                                        <button type="button" @click="qty = Math.max(1, qty - 1)" class="flex h-10 w-10 items-center justify-center rounded-lg bg-white text-lg font-semibold text-slate-700 transition hover:bg-violet-50 hover:text-violet-700">−</button>
-                                        <span class="text-sm font-semibold text-slate-900" x-text="qty"></span>
-                                        <button type="button" @click="qty = qty + 1" class="flex h-10 w-10 items-center justify-center rounded-lg bg-white text-lg font-semibold text-slate-700 transition hover:bg-violet-50 hover:text-violet-700">+</button>
-                                    </div>
-                                </div>
-
-                                <div class="space-y-2 rounded-2xl bg-slate-50 p-4 text-sm text-slate-600">
-                                    <div class="flex items-center justify-between gap-4">
-                                        <span>Subtotal Tiket</span>
-                                        <span class="font-semibold text-slate-900" x-text="'Rp ' + format(subtotal)"></span>
-                                    </div>
-                                    <div class="flex items-center justify-between gap-4">
-                                        <span>Biaya Layanan</span>
-                                        <span class="font-semibold text-slate-900">Rp {{ number_format($serviceFee, 0, ',', '.') }}</span>
-                                    </div>
-                                    <div class="flex items-center justify-between gap-4">
-                                        <span>Pajak</span>
-                                        <span class="font-semibold text-slate-900" x-text="'Rp ' + format(tax)"></span>
-                                    </div>
-                                    <div class="border-t border-slate-200 pt-2 flex items-center justify-between gap-4">
-                                        <span class="font-semibold text-slate-900">Total Bayar</span>
-                                        <span class="text-lg font-extrabold tracking-tight text-violet-600" x-text="'Rp ' + format(total)"></span>
-                                    </div>
-                                </div>
-
-                                <input type="hidden" name="qty" x-bind:value="qty">
-                                <input type="hidden" name="ticketType" x-bind:value="ticketType">
-                                <button type="submit" class="inline-flex h-12 w-full items-center justify-center rounded-2xl bg-violet-600 px-4 text-sm font-semibold text-white shadow-[0_16px_28px_rgba(109,40,217,0.28)] transition hover:-translate-y-0.5 hover:bg-violet-700 focus:outline-none focus:ring-4 focus:ring-violet-500/20">
-                                    Beli Tiket Sekarang
-                                </button>
-
-                                <div class="rounded-2xl border border-violet-100 bg-violet-50/50 p-4 text-[12px] leading-5 text-slate-500 text-center">
-                                    Aman dan Bergaransi, didukung oleh standar enkripsi terbaik.
-                                </div>
-                            </div>
-                        </form>
-                    </aside>
-            </div>
-        </main>
-
-        <x-home.footer />
-    </body>
-</html>
+<style>
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: rgba(139, 92, 246, 0.2);
+        border-radius: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: rgba(139, 92, 246, 0.4);
+    }
+</style>

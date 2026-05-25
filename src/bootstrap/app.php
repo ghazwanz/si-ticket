@@ -1,10 +1,12 @@
 <?php
 
+use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
 use Illuminate\Session\TokenMismatchException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -14,10 +16,19 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
-            'role' => \App\Http\Middleware\RoleMiddleware::class,
+            'role' => RoleMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        $exceptions->render(function (HttpException $exception, Request $request) {
+            if ($exception->getStatusCode() === 419 && ($request->is('login') || $request->is('register'))) {
+                $redirectRoute = $request->is('register') ? 'register' : 'login';
+
+                return redirect()
+                    ->route($redirectRoute)
+                    ->with('status', 'Sesi kamu sudah berakhir. Silakan login ulang.');
+            }
+        });
         $exceptions->render(function (TokenMismatchException $exception, Request $request) {
             if ($request->is('login') || $request->is('register')) {
                 $redirectRoute = $request->is('register') ? 'register' : 'login';
