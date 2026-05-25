@@ -19,7 +19,7 @@ class TicketCategorySeeder extends Seeder
             [
                 'id' => $ticketId1,
                 'event_id' => $eventId,
-                'name' => 'Festival A (Standing)',
+                'name' => 'Festifal A (Standing)',
                 'description' => 'Area berdiri paling dekat dengan panggung.',
                 'price' => 750000,
                 'quota' => 2000,
@@ -34,7 +34,7 @@ class TicketCategorySeeder extends Seeder
             [
                 'id' => $ticketId2,
                 'event_id' => $eventId,
-                'name' => 'VIP (Seating)',
+                'name' => 'VIP',
                 'description' => 'Area duduk VIP dengan akses jalur khusus.',
                 'price' => 1500000,
                 'quota' => 500,
@@ -53,7 +53,7 @@ class TicketCategorySeeder extends Seeder
         DB::table('merchandise_items')->insert([
             'id' => $merchId,
             'event_id' => $eventId,
-            'name' => 'Official T-Shirt Neon Nights',
+            'name' => 'Kaos Orisinil Neon Nights',
             'description' => 'Kaos event resmi edisi terbatas.',
             'image' => 'KaosOfficial.png',
             'base_price' => 250000,

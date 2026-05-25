@@ -124,6 +124,58 @@
     <div id="spa-modals">
         @stack('modals')
     </div>
+
+    {{-- Global Notification Toast --}}
+    @php
+        $notification = null;
+        $type = 'success';
+        
+        if (session('success')) {
+            $notification = session('success');
+            $type = 'success';
+        } elseif (session('status')) {
+            // Handle Laravel Breeze specific status codes
+            if (session('status') === 'profile-updated') {
+                $notification = 'Informasi profil berhasil diperbarui.';
+            } elseif (session('status') === 'password-updated') {
+                $notification = 'Kata sandi berhasil diubah.';
+            } else {
+                $notification = session('status');
+            }
+            $type = 'success';
+        } elseif (session('error')) {
+            $notification = session('error');
+            $type = 'error';
+        }
+    @endphp
+
+    @if ($notification)
+        <div x-data="{ show: true }" 
+             x-show="show" 
+             x-init="setTimeout(() => show = false, 3000)"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 translate-y-4"
+             x-transition:enter-end="opacity-100 translate-y-0"
+             x-transition:leave="transition ease-in duration-300"
+             x-transition:leave-start="opacity-100 translate-y-0"
+             x-transition:leave-end="opacity-0 translate-y-4"
+             class="fixed bottom-6 right-6 z-[110] glass-panel {{ $type === 'success' ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-rose-500/10 border-rose-500/20' }} px-6 py-4 rounded-2xl shadow-lg flex items-center gap-3">
+            @if ($type === 'success')
+                <x-heroicon-s-check-circle class="w-6 h-6 text-emerald-500" />
+            @else
+                <x-heroicon-s-x-circle class="w-6 h-6 text-rose-500" />
+            @endif
+            <div>
+                <h4 class="text-sm font-bold {{ $type === 'success' ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-700 dark:text-rose-400' }}">
+                    {{ $type === 'success' ? 'Berhasil' : 'Gagal' }}
+                </h4>
+                <p class="text-xs font-medium {{ $type === 'success' ? 'text-emerald-600 dark:text-emerald-500' : 'text-rose-600 dark:text-rose-500' }}">
+                    {{ $notification }}
+                </p>
+            </div>
+        </div>
+    @endif
+
     @stack('scripts')
 </body>
 </html>

@@ -11,33 +11,36 @@
         Hapus
     </button>
 
-    <div x-cloak x-show="open" x-transition.opacity class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 px-4 backdrop-blur-sm">
-        <div @click.outside="open = false" x-transition.scale.origin.center class="w-full max-w-md glass-panel rounded-2xl border border-white/60 dark:border-white/10 p-6 shadow-2xl">
-            <div class="flex items-start gap-4">
-                <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-rose-500/10 text-rose-600 dark:text-rose-400">
-                    <x-heroicon-o-trash class="h-6 w-6" />
+    <template x-teleport="body">
+        <div x-cloak x-show="open" class="relative z-[100]">
+            <div x-show="open" x-transition.opacity class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm"></div>
+            <div class="fixed inset-0 z-10 overflow-y-auto">
+                <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+                    <div @click.outside="open = false" x-show="open" x-transition.opacity.scale.95 class="relative transform overflow-hidden rounded-3xl bg-white text-left shadow-2xl transition-all dark:bg-slate-900 sm:my-8 sm:w-full sm:max-w-md">
+                        <div class="p-8 flex flex-col items-center text-center">
+                            <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-rose-500/10 text-rose-500 mb-6">
+                                <x-heroicon-o-trash class="h-8 w-8" />
+                            </div>
+                            <h3 class="text-xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-2">{{ $title }}</h3>
+                            <p class="text-sm leading-6 text-slate-500 dark:text-slate-400">
+                                Tindakan ini akan menghapus acara{{ $name ? ' “'.$name.'”' : '' }} dari daftar aktif. Data tetap tersimpan sebagai arsip sesuai kebijakan sistem.
+                            </p>
+                        </div>
+                        <div class="bg-slate-50 dark:bg-slate-950/50 px-8 py-5 flex flex-col-reverse sm:flex-row sm:justify-center gap-3">
+                            <button type="button" @click="open = false" class="inline-flex w-full sm:w-auto justify-center rounded-2xl px-5 py-3 text-sm font-bold text-slate-700 transition-all hover:bg-slate-200 dark:text-slate-300 dark:hover:bg-slate-800">
+                                Batal
+                            </button>
+                            <form method="POST" action="{{ $action }}" class="w-full sm:w-auto m-0 p-0 flex">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="inline-flex w-full sm:w-auto justify-center items-center gap-2 rounded-2xl bg-rose-600 px-5 py-3 text-sm font-extrabold text-white shadow-lg shadow-rose-500/30 transition-all hover:bg-rose-500">
+                                    Ya, Hapus
+                                </button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
-                <div class="min-w-0">
-                    <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400">Konfirmasi Penghapusan</p>
-                    <h3 class="mt-1 text-lg font-extrabold tracking-tight text-slate-950 dark:text-white">{{ $title }}</h3>
-                    <p class="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">
-                        Tindakan ini akan menghapus acara{{ $name ? ' “'.$name.'”' : '' }} dari daftar aktif. Data tetap tersimpan sebagai arsip sesuai kebijakan sistem.
-                    </p>
-                </div>
-            </div>
-
-            <div class="mt-6 flex justify-end gap-3">
-                <button type="button" @click="open = false" class="px-5 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 font-bold">
-                    Batal
-                </button>
-                <form method="POST" action="{{ $action }}">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="px-5 py-2.5 rounded-xl bg-rose-600 text-white font-bold shadow-sm hover:bg-rose-700">
-                        Hapus Acara
-                    </button>
-                </form>
             </div>
         </div>
-    </div>
+    </template>
 </div>

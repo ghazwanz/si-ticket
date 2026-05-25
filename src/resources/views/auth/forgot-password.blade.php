@@ -1,8 +1,8 @@
 <x-guest-layout>
     <div class="text-center">
         <p class="mb-1 text-xs font-bold uppercase tracking-widest text-violet-600">JoinFest</p>
-        <h1 class="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">Reset Password</h1>
-        <p class="mt-2 text-sm text-slate-500">Enter your account email. We will send a link to reset your password.</p>
+        <h1 class="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">Reset Kata Sandi</h1>
+        <p class="mt-2 text-sm text-slate-500">Masukkan email akun Anda. Kami akan mengirimkan tautan untuk mereset kata sandi.</p>
     </div>
 
     @if (session('status'))
@@ -16,7 +16,7 @@
         <div class="mt-6 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
             <div class="flex items-center gap-2 font-semibold mb-2">
                 <x-heroicon-s-exclamation-circle class="w-5 h-5 text-red-500" />
-                <span>There were errors with your submission</span>
+                <span>Ada kesalahan pada pengisian formulir</span>
             </div>
             <ul class="list-disc list-inside pl-7">
                 @foreach ($errors->all() as $error)
@@ -40,13 +40,13 @@
         </div>
 
         <button type="submit" class="group relative flex w-full justify-center mt-6 rounded-xl bg-violet-600 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 transition-all disabled:opacity-50">
-            Send Reset Link
+            Kirim Link Reset Password
             <x-heroicon-s-paper-airplane class="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
         </button>
     </form>
 
     <p class="mt-8 text-center text-sm text-slate-500">
-        Already remember your password?
+        Sudah ingat passwordnya?
         <a href="{{ route('login') }}" class="font-semibold text-violet-600 hover:text-violet-700 transition-colors">Back to login</a>
     </p>
 </x-guest-layout>

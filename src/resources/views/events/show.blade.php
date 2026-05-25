@@ -18,19 +18,19 @@
 
             $merchandise = [
                 [
-                    'name' => config('app.name') . ' Official Tee',
+                    'name' => config('app.name') . ' Kaos Orisinil',
                     'price' => 'Rp 250.000',
                     'image' => 'img/KaosOfficial.png',
                     'cta' => 'Tambah ke Pesanan',
                 ],
                 [
-                    'name' => config('app.name') . ' Hoodie',
+                    'name' => config('app.name') . ' Totebag',
                     'price' => 'Rp 450.000',
                     'image' => 'img/ToteBag.png',
                     'cta' => 'Tambah ke Pesanan',
                 ],
                 [
-                    'name' => 'Festival Tote Bag',
+                    'name' => 'Standee Acrylic',
                     'price' => 'Rp 90.000',
                     'image' => 'img/Tiket.png',
                     'cta' => 'Tambah ke Pesanan',

@@ -140,11 +140,11 @@
                                 </div>
                                 <button type="submit" 
                                         class="w-full py-2.5 rounded-xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-600/20">
-                                    Mark as Disbursed
+                                    Tandai Selesai
                                 </button>
                             </form>
                         @else
-                            <div class="text-xs text-slate-400 mt-1 italic">Waiting for approval...</div>
+                            <div class="text-xs text-slate-400 mt-1 italic">Menunggu persetujuan...</div>
                         @endif
                     </div>
                 </div>

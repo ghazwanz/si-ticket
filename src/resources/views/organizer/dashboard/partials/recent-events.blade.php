@@ -36,6 +36,7 @@
                     <th class="px-4 py-3 font-bold">Tanggal</th>
                     <th class="px-4 py-3 font-bold">Status</th>
                     <th class="px-4 py-3 font-bold">Penjualan</th>
+                    <th class="px-4 py-3 font-bold">Pencairan</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
@@ -43,6 +44,7 @@
                     @php
                         $sold = $event->ticketCategories->sum('sold_count');
                         $quota = $event->ticketCategories->sum('quota');
+                        $isPayoutEligible = $event->status === 'completed';
                     @endphp
                     <tr class="transition-colors hover:bg-slate-50 dark:hover:bg-white/5">
                         <td class="px-4 py-3">
@@ -56,6 +58,13 @@
                             </span>
                         </td>
                         <td class="px-4 py-3 font-bold text-slate-900 dark:text-white">{{ number_format($sold, 0, ',', '.') }}/{{ number_format($quota, 0, ',', '.') }} Tiket</td>
+                        <td class="px-4 py-3">
+                            @if($isPayoutEligible)
+                                <span class="rounded-full px-2 py-1 text-xs font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">Siap Cair</span>
+                            @else
+                                <span class="rounded-full px-2 py-1 text-xs font-bold bg-slate-500/10 text-slate-600 dark:text-slate-300">Belum Siap</span>
+                            @endif
+                        </td>
                     </tr>
                 @empty
                     <tr>

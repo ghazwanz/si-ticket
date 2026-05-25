@@ -1,8 +1,8 @@
 <x-guest-layout>
     <div class="text-center">
         <p class="mb-1 text-xs font-bold uppercase tracking-widest text-violet-600">JoinFest</p>
-        <h1 class="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">Welcome Back</h1>
-        <p class="mt-2 text-sm text-slate-500">Sign in to your account</p>
+        <h1 class="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">Selamat Datang Kembali</h1>
+        <p class="mt-2 text-sm text-slate-500">Silahkan masuk untuk melanjutkan</p>
     </div>
 
     @if (session('status'))
@@ -52,24 +52,24 @@
         <div class="flex items-center justify-between gap-3 text-sm">
             <label class="flex items-center gap-2 cursor-pointer">
                 <input id="remember_me" type="checkbox" name="remember" class="h-4 w-4 rounded border-slate-300 text-violet-600 focus:ring-violet-500 transition-colors">
-                <span class="text-slate-600">Remember me</span>
+                <span class="text-slate-600">Ingat saya</span>
             </label>
 
             @if (Route::has('password.request'))
-                <a href="{{ route('password.request') }}" class="font-medium text-violet-600 hover:text-violet-700 transition-colors">Forgot password?</a>
+                <a href="{{ route('password.request') }}" class="font-medium text-violet-600 hover:text-violet-700 transition-colors">Lupa Password?</a>
             @endif
         </div>
 
         <button type="submit" class="group relative flex w-full justify-center rounded-xl bg-violet-600 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 transition-all disabled:opacity-50">
-            Sign In
+            Masuk
             <x-heroicon-s-arrow-right class="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
         </button>
     </form>
 
     @if (Route::has('register'))
         <p class="mt-8 text-center text-sm text-slate-500">
-            Don't have an account?
-            <a href="{{ route('register') }}" class="font-semibold text-violet-600 hover:text-violet-700 transition-colors">Sign up</a>
+            Belum punya akun?
+            <a href="{{ route('register') }}" class="font-semibold text-violet-600 hover:text-violet-700 transition-colors">Daftar</a>
         </p>
     @endif
 </x-guest-layout>

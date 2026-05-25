@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\CancellationController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\EventCategoryController;
 use App\Http\Controllers\Admin\EventController;
@@ -7,7 +8,6 @@ use App\Http\Controllers\Admin\PayoutController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\CheckoutController;
-use App\Http\Controllers\MerchandiseController;
 use App\Http\Controllers\Organizer\DashboardController as OrganizerDashboardController;
 use App\Http\Controllers\PesananController;
 use App\Http\Controllers\ProfileController;
@@ -25,7 +25,7 @@ $eventCatalog = [
         'location' => 'Jakarta Convention Center',
         'date' => '26 October 2026',
         'price' => 'Rp 150.000',
-        'category' => 'Music Festival',
+        'category' => 'Festival Musik',
         'image' => 'img/EOBanner.png',
         'description' => 'Pertunjukan malam penuh energi dengan visual panggung spektakuler, line-up musisi populer, dan pengalaman festival yang tak terlupakan.',
     ],
@@ -35,7 +35,7 @@ $eventCatalog = [
         'location' => 'Bandung Creative Hub',
         'date' => '10 November 2026',
         'price' => 'Rp 75.000',
-        'category' => 'Conference',
+        'category' => 'Konferensi',
         'image' => 'img/Tiket.png',
         'description' => 'Summit inspiratif untuk kreator dan inovator, menghadirkan pembicara industri, networking session, serta workshop interaktif.',
     ],
@@ -45,7 +45,7 @@ $eventCatalog = [
         'location' => 'Surabaya Hall',
         'date' => '5 December 2026',
         'price' => 'Rp 425.000',
-        'category' => 'Grand Show',
+        'category' => 'Pameran',
         'image' => 'img/KaosOfficial.png',
         'description' => 'Malam pembukaan arena JoinFest dengan konsep pertunjukan premium, tata cahaya imersif, dan special performance dari guest star.',
     ],
@@ -101,6 +101,11 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
     Route::put('payouts/{payout}/approve', [PayoutController::class, 'approve'])->name('payouts.approve');
     Route::put('payouts/{payout}/confirm', [PayoutController::class, 'confirm'])->name('payouts.confirm');
 
+    // Cancellation Review Queue
+    Route::get('cancellations', [CancellationController::class, 'index'])->name('cancellations.index');
+    Route::put('cancellations/{cancellationRequest}/approve', [CancellationController::class, 'approve'])->name('cancellations.approve');
+    Route::put('cancellations/{cancellationRequest}/reject', [CancellationController::class, 'reject'])->name('cancellations.reject');
+
     // Category Registry
     Route::get('event-categories', [EventCategoryController::class, 'index'])->name('event-categories.index');
     Route::post('event-categories', [EventCategoryController::class, 'store'])->name('event-categories.store');
@@ -116,15 +121,9 @@ Route::middleware(['auth', 'verified', 'role:organizer'])->prefix('organizer')->
     Route::get('dashboard', [OrganizerDashboardController::class, 'index'])->name('dashboard');
 
     // Events CRUD
-    Route::resource('events', App\Http\Controllers\Organizer\EventController::class)->except(['show']);
-
-    // Merchandise CRUD
-    Route::get('merchandise', [MerchandiseController::class, 'index'])->name('merchandise.index');
-    Route::get('merchandise/create', [MerchandiseController::class, 'create'])->name('merchandise.create');
-    Route::post('merchandise', [MerchandiseController::class, 'store'])->name('merchandise.store');
-    Route::get('merchandise/{id}/edit', [MerchandiseController::class, 'edit'])->name('merchandise.edit');
-    Route::put('merchandise/{id}', [MerchandiseController::class, 'update'])->name('merchandise.update');
-    Route::delete('merchandise/{id}', [MerchandiseController::class, 'destroy'])->name('merchandise.destroy');
+    Route::resource('events', App\Http\Controllers\Organizer\EventController::class);
+    Route::post('events/{event}/cancel', [App\Http\Controllers\Organizer\EventController::class, 'cancel'])->name('events.cancel');
+    Route::post('events/{event}/request-cancellation', [App\Http\Controllers\Organizer\EventController::class, 'requestCancellation'])->name('events.request-cancellation');
 
     Route::get('settings', function () {
         return view('organizer.settings');

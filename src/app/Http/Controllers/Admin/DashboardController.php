@@ -41,10 +41,10 @@ class DashboardController extends Controller
 
         // Temporary Logs (Can be migrated to actual ActivityLog later)
         $logs = [
-            ['icon' => '✓', 'color' => 'bg-green-100 text-green-600', 'action' => 'Event "Jakarta Tech Expo" approved', 'user' => 'Admin Utama', 'time' => '2 mins ago'],
-            ['icon' => '👤', 'color' => 'bg-purple-100 text-purple-600', 'action' => 'New EO Registration: Stellar Creative', 'user' => 'System', 'time' => '15 mins ago'],
-            ['icon' => '⚑', 'color' => 'bg-red-100 text-red-600', 'action' => 'Flagged review on "Jazz Night"', 'user' => 'Moderator B', 'time' => '42 mins ago'],
-            ['icon' => '✎', 'color' => 'bg-blue-100 text-blue-600', 'action' => 'Updated system permissions', 'user' => 'Super Admin', 'time' => '1 hour ago'],
+            ['icon' => '✓', 'color' => 'bg-green-100 text-green-600', 'action' => 'Event "Jakarta Tech Expo" Disetujui', 'user' => 'Admin Utama', 'time' => '2 menit yang lalu'],
+            ['icon' => '👤', 'color' => 'bg-purple-100 text-purple-600', 'action' => 'Registrasi EO Baru: Stellar Creative', 'user' => 'System', 'time' => '15 menit yang lalu'],
+            ['icon' => '⚑', 'color' => 'bg-red-100 text-red-600', 'action' => 'Ulasan ditandai pada "Jazz Night"', 'user' => 'Moderator B', 'time' => '42 menit yang lalu'],
+            ['icon' => '✎', 'color' => 'bg-blue-100 text-blue-600', 'action' => 'Izin sistem diperbarui', 'user' => 'Super Admin', 'time' => '1 jam yang lalu'],
         ];
 
         // Category Distribution

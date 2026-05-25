@@ -65,9 +65,9 @@
             
             <a href="{{ route('admin.dashboard') }}" data-link
                class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all relative overflow-hidden group {{ request()->routeIs('admin.dashboard') ? 'nav-active' : 'text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-white/5' }}"
-               :title="sidebarMini ? 'Dasbor' : ''">
+               :title="sidebarMini ? 'Panel Kontrol' : ''">
                 <x-heroicon-o-squares-2x2 class="w-5 h-5 shrink-0" />
-                <span x-show="!sidebarMini" x-transition.opacity class="whitespace-nowrap">Dasbor</span>
+                <span x-show="!sidebarMini" x-transition.opacity class="whitespace-nowrap">Panel Kontrol</span>
             </a>
 
             <a href="{{ route('admin.users.index') }}" data-link
@@ -82,6 +82,13 @@
                :title="sidebarMini ? 'Persetujuan Acara' : ''">
                 <x-heroicon-o-calendar-days class="w-5 h-5 shrink-0" />
                 <span x-show="!sidebarMini" x-transition.opacity class="whitespace-nowrap">Acara</span>
+            </a>
+
+            <a href="{{ route('admin.cancellations.index') }}" data-link
+               class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all relative overflow-hidden group {{ request()->routeIs('admin.cancellations.*') ? 'nav-active' : 'text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-white/5' }}"
+               :title="sidebarMini ? 'Pembatalan Acara' : ''">
+                <x-heroicon-o-document-minus class="w-5 h-5 shrink-0" />
+                <span x-show="!sidebarMini" x-transition.opacity class="whitespace-nowrap">Pembatalan</span>
             </a>
 
             <a href="{{ route('admin.payouts.index') }}" data-link
@@ -217,6 +224,58 @@
     <div id="spa-modals">
         @stack('modals')
     </div>
+
+    {{-- Global Notification Toast --}}
+    @php
+        $notification = null;
+        $type = 'success';
+        
+        if (session('success')) {
+            $notification = session('success');
+            $type = 'success';
+        } elseif (session('status')) {
+            // Handle Laravel Breeze specific status codes
+            if (session('status') === 'profile-updated') {
+                $notification = 'Informasi profil berhasil diperbarui.';
+            } elseif (session('status') === 'password-updated') {
+                $notification = 'Kata sandi berhasil diubah.';
+            } else {
+                $notification = session('status');
+            }
+            $type = 'success';
+        } elseif (session('error')) {
+            $notification = session('error');
+            $type = 'error';
+        }
+    @endphp
+
+    @if ($notification)
+        <div x-data="{ show: true }" 
+             x-show="show" 
+             x-init="setTimeout(() => show = false, 3000)"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 translate-y-4"
+             x-transition:enter-end="opacity-100 translate-y-0"
+             x-transition:leave="transition ease-in duration-300"
+             x-transition:leave-start="opacity-100 translate-y-0"
+             x-transition:leave-end="opacity-0 translate-y-4"
+             class="fixed bottom-6 right-6 z-[110] glass-panel {{ $type === 'success' ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-rose-500/10 border-rose-500/20' }} px-6 py-4 rounded-2xl shadow-lg flex items-center gap-3">
+            @if ($type === 'success')
+                <x-heroicon-s-check-circle class="w-6 h-6 text-emerald-500" />
+            @else
+                <x-heroicon-s-x-circle class="w-6 h-6 text-rose-500" />
+            @endif
+            <div>
+                <h4 class="text-sm font-bold {{ $type === 'success' ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-700 dark:text-rose-400' }}">
+                    {{ $type === 'success' ? 'Berhasil' : 'Gagal' }}
+                </h4>
+                <p class="text-xs font-medium {{ $type === 'success' ? 'text-emerald-600 dark:text-emerald-500' : 'text-rose-600 dark:text-rose-500' }}">
+                    {{ $notification }}
+                </p>
+            </div>
+        </div>
+    @endif
+
     @stack('scripts')
 </body>
 </html>

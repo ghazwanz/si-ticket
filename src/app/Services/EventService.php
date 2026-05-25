@@ -17,7 +17,7 @@ class EventService
         $sort = $filters['sort'] ?? 'created_at';
         $order = $filters['order'] ?? 'desc';
 
-        return Event::with(['organizer', 'category'])
+        return Event::with(['organizer', 'category', 'latestCancellationRequest'])
             ->when($status && $status !== 'all', function ($query) use ($status) {
                 return $query->where('status', $status);
             })
