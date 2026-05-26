@@ -21,6 +21,8 @@ class StoreEventCategoryRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255', 'unique:event_categories,name'],
+            'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:1024'],
+            'color' => ['nullable', 'string', 'in:violet,sky,emerald,rose,amber,fuchsia,cyan,indigo'],
         ];
     }
 }

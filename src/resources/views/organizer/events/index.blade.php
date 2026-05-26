@@ -69,13 +69,17 @@
                                 $badgeClasses = [
                                     'published' => 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
                                     'draft' => 'bg-slate-500/10 text-slate-600 dark:text-slate-300',
+                                    'awaiting_approval' => 'bg-amber-500/10 text-amber-600 dark:text-amber-400',
                                     'completed' => 'bg-sky-500/10 text-sky-600 dark:text-sky-400',
+                                    'awaiting_cancellation' => 'bg-orange-500/10 text-orange-600 dark:text-orange-400',
                                     'cancelled' => 'bg-rose-500/10 text-rose-600 dark:text-rose-400',
                                 ];
                                 $statusLabel = [
                                     'published' => 'Terbit',
                                     'draft' => 'Draf',
+                                    'awaiting_approval' => 'Ditinjau',
                                     'completed' => 'Selesai',
+                                    'awaiting_cancellation' => 'Proses Batal',
                                     'cancelled' => 'Dibatalkan',
                                 ];
                                 $badge = $badgeClasses[$event->status] ?? 'bg-slate-500/10 text-slate-600 dark:text-slate-300';
@@ -87,15 +91,34 @@
                         </td>
                         <td class="px-6 py-4 text-right">
                             <div class="inline-flex items-center justify-end gap-3">
-                                <a href="{{ route('organizer.events.edit', $event) }}" data-link class="inline-flex items-center justify-end gap-1 text-violet-600 hover:text-violet-800 dark:text-violet-400 dark:hover:text-violet-300 font-bold">
-                                    <x-heroicon-o-pencil-square class="w-4 h-4" />
-                                    Edit
+                                <a href="{{ route('organizer.events.show', $event) }}" data-link class="inline-flex items-center justify-end gap-1 text-sky-600 hover:text-sky-800 dark:text-sky-400 dark:hover:text-sky-300 font-bold">
+                                    <x-heroicon-o-chart-bar class="w-4 h-4" />
+                                    Detail
                                 </a>
-                                <x-organizer.confirm-delete
-                                    :id="$event->id"
-                                    :action="route('organizer.events.destroy', $event)"
-                                    :name="$event->name"
-                                />
+                                
+                                @if(in_array($event->status, ['completed', 'cancelled', 'awaiting_cancellation']))
+                                    <a href="{{ route('organizer.events.edit', $event) }}" data-link class="inline-flex items-center justify-end gap-1 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300 font-bold">
+                                        <x-heroicon-o-eye class="w-4 h-4" />
+                                        Lihat
+                                    </a>
+                                    @if(in_array($event->status, ['completed', 'cancelled']))
+                                        <x-organizer.confirm-delete
+                                            :id="$event->id"
+                                            :action="route('organizer.events.destroy', $event)"
+                                            :name="$event->name"
+                                        />
+                                    @endif
+                                @else
+                                    <a href="{{ route('organizer.events.edit', $event) }}" data-link class="inline-flex items-center justify-end gap-1 text-violet-600 hover:text-violet-800 dark:text-violet-400 dark:hover:text-violet-300 font-bold">
+                                        <x-heroicon-o-pencil-square class="w-4 h-4" />
+                                        Edit
+                                    </a>
+                                    <x-organizer.confirm-delete
+                                        :id="$event->id"
+                                        :action="route('organizer.events.destroy', $event)"
+                                        :name="$event->name"
+                                    />
+                                @endif
                             </div>
                         </td>
                     </tr>

@@ -15,7 +15,7 @@ class MerchandiseVariantFactory extends Factory
         return [
             'merchandise_item_id' => MerchandiseItem::factory(),
             'variant_group' => 'Size',
-            'variant_value' => $this->faker->unique()->word().' '.$this->faker->unique()->randomNumber(5),
+            'variant_value' => $this->faker->word().' '.$this->faker->randomNumber(5),
             'price_adjustment' => $this->faker->randomElement([0, 0, 0, 10000, 20000]),
             'stock' => $this->faker->numberBetween(10, 100),
         ];

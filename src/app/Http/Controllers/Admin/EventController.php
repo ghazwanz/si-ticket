@@ -30,6 +30,7 @@ class EventController extends Controller
             'organizer.organizerProfile',
             'ticketCategories',
             'merchandiseItems.variants',
+            'latestCancellationRequest',
         ]);
 
         $intelligence = $this->analyticsService->getEventIntelligence($event);

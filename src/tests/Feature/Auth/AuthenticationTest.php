@@ -3,6 +3,8 @@
 namespace Tests\Feature\Auth;
 
 use App\Models\User;
+use Illuminate\Contracts\Encryption\Encrypter;
+use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -44,7 +46,18 @@ class AuthenticationTest extends TestCase
 
     public function test_login_with_missing_csrf_token_redirects_back_to_login_with_message(): void
     {
+        $this->app->singleton(ValidateCsrfToken::class, function ($app) {
+            return new class($app, $app->make(Encrypter::class)) extends ValidateCsrfToken
+            {
+                protected function runningUnitTests()
+                {
+                    return false;
+                }
+            };
+        });
+
         $response = $this->withMiddleware()
+            ->from('/login')
             ->post('/login', [
                 'email' => 'invalid@example.com',
                 'password' => 'password',

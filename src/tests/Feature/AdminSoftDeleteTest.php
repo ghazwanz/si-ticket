@@ -5,12 +5,12 @@ namespace Tests\Feature;
 use App\Enums\UserRole;
 use App\Models\EventCategory;
 use App\Models\User;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class AdminSoftDeleteTest extends TestCase
 {
-    use DatabaseTransactions;
+    use RefreshDatabase;
 
     public function test_admin_archives_user_without_hard_deleting_record(): void
     {

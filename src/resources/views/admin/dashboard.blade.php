@@ -1,6 +1,6 @@
 <x-admin-layout>
-    <x-slot name="title">Dasbor - JoinFest Admin</x-slot>
-    <x-slot name="header">DASHBOARD OVERVIEW</x-slot>
+    <x-slot name="title">Panel Kontrol - JoinFest Admin</x-slot>
+    <x-slot name="header">PANEL KONTROL</x-slot>
 
     <div class="space-y-6">
         {{-- Page Header --}}

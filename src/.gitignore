@@ -22,3 +22,11 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+.agent
+.agents
+.cursor
+.github/*
+PRD*
+skill*
+fix-svgs.php
+AGENTS.md

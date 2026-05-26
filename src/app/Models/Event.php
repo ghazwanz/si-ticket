@@ -53,4 +53,14 @@ class Event extends Model
     {
         return $this->hasOne(Payout::class);
     }
+
+    public function cancellationRequests(): HasMany
+    {
+        return $this->hasMany(CancellationRequest::class);
+    }
+
+    public function latestCancellationRequest(): HasOne
+    {
+        return $this->hasOne(CancellationRequest::class)->latestOfMany();
+    }
 }

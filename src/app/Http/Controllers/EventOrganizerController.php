@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 
 class EventOrganizerController extends Controller
 {
@@ -27,7 +28,7 @@ class EventOrganizerController extends Controller
     /**
      * Data dummy events
      */
-    private function dummyEvents(string $tab): \Illuminate\Support\Collection
+    private function dummyEvents(string $tab): Collection
     {
         $aktif = collect([
             (object) [
@@ -81,7 +82,7 @@ class EventOrganizerController extends Controller
     /**
      * Data dummy testimonials
      */
-    private function dummyTestimonials(): \Illuminate\Support\Collection
+    private function dummyTestimonials(): Collection
     {
         return collect([
             (object) [

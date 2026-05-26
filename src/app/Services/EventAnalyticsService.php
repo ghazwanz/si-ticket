@@ -3,7 +3,9 @@
 namespace App\Services;
 
 use App\Models\Event;
+use App\Models\OrderMerchandise;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class EventAnalyticsService
 {
@@ -73,14 +75,30 @@ class EventAnalyticsService
     {
         $items = $event->merchandiseItems()->with('variants')->get();
 
+        $paidOrdersIds = $event->orders()->where('status', 'paid')->pluck('id');
+
+        $soldPerVariant = OrderMerchandise::whereIn('order_id', $paidOrdersIds)
+            ->select('merchandise_variant_id', DB::raw('SUM(quantity) as total_sold'))
+            ->groupBy('merchandise_variant_id')
+            ->pluck('total_sold', 'merchandise_variant_id');
+
+        $totalMerchSold = $soldPerVariant->sum();
+
         return [
             'total_items' => $items->count(),
-            'items' => $items->map(fn ($item) => [
-                'name' => $item->name,
-                'base_price' => $item->base_price,
-                'total_stock' => $item->variants->sum('stock'),
-                'is_available' => $item->is_available,
-            ]),
+            'total_sold' => (int) $totalMerchSold,
+            'items' => $items->map(function ($item) use ($soldPerVariant) {
+                $totalStock = $item->variants->sum('stock');
+                $sold = $item->variants->sum(fn ($v) => $soldPerVariant[$v->id] ?? 0);
+
+                return [
+                    'name' => $item->name,
+                    'base_price' => $item->base_price,
+                    'total_stock' => $totalStock,
+                    'sold' => (int) $sold,
+                    'is_available' => $item->is_available,
+                ];
+            }),
         ];
     }
 

@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Enums\UserRole;
+use App\Models\CancellationRequest;
 use App\Models\Event;
 use App\Models\EventCategory;
 use App\Models\MerchandiseItem;
@@ -42,7 +43,7 @@ class ComprehensiveSeeder extends Seeder
         User::factory()->count(5)->create(['role' => UserRole::Organizer])->each(function ($organizer) use ($categories, $customers) {
 
             // Create Events for each Organizer
-            $statuses = ['published', 'completed', 'awaiting_approval'];
+            $statuses = ['published', 'completed', 'awaiting_approval', 'awaiting_cancellation', 'cancelled'];
 
             foreach ($statuses as $status) {
                 $event = Event::factory()->create([
@@ -71,8 +72,8 @@ class ComprehensiveSeeder extends Seeder
                     }
                 });
 
-                // Create Orders if Event is published or completed
-                if (in_array($event->status, ['published', 'completed'])) {
+                // Create Orders if Event is published, completed, awaiting cancellation, or cancelled
+                if (in_array($event->status, ['published', 'completed', 'awaiting_cancellation', 'cancelled'])) {
                     $orderCount = $event->status === 'completed' ? 12 : 6;
 
                     for ($i = 0; $i < $orderCount; $i++) {
@@ -114,8 +115,51 @@ class ComprehensiveSeeder extends Seeder
                     }
                 }
 
-                // Create Payout if Event is completed
-                if ($event->status === 'completed') {
+                // Seed Cancellation Request and Payout depending on status
+                if ($event->status === 'awaiting_cancellation') {
+                    CancellationRequest::factory()->create([
+                        'event_id' => $event->id,
+                        'requested_by' => $organizer->id,
+                        'status' => 'pending',
+                        'reason' => 'Saya harus membatalkan acara ini karena alasan darurat medis dan kendala logistik di lapangan.',
+                    ]);
+
+                    $revenue = Order::where('event_id', $event->id)->where('status', 'paid')->sum('total_amount');
+                    $fee = $revenue * 0.10;
+
+                    Payout::factory()->create([
+                        'event_id' => $event->id,
+                        'organizer_id' => $organizer->id,
+                        'gross_amount' => $revenue,
+                        'platform_fee' => $fee,
+                        'net_amount' => $revenue - $fee,
+                        'status' => 'pending',
+                        'fee_percentage' => 10.00,
+                    ]);
+                } elseif ($event->status === 'cancelled') {
+                    $admin = User::where('role', UserRole::Admin)->first();
+                    CancellationRequest::factory()->create([
+                        'event_id' => $event->id,
+                        'requested_by' => $organizer->id,
+                        'status' => 'approved',
+                        'reason' => 'Masalah teknis yang tidak dapat diselesaikan dengan vendor utama.',
+                        'reviewed_by' => $admin?->id,
+                        'reviewed_at' => now(),
+                    ]);
+
+                    $revenue = Order::where('event_id', $event->id)->where('status', 'paid')->sum('total_amount');
+                    $fee = $revenue * 0.10;
+
+                    Payout::factory()->create([
+                        'event_id' => $event->id,
+                        'organizer_id' => $organizer->id,
+                        'gross_amount' => $revenue,
+                        'platform_fee' => $fee,
+                        'net_amount' => $revenue - $fee,
+                        'status' => 'voided',
+                        'fee_percentage' => 10.00,
+                    ]);
+                } elseif ($event->status === 'completed') {
                     $revenue = Order::where('event_id', $event->id)->where('status', 'paid')->sum('total_amount');
                     $fee = $revenue * 0.10;
 
@@ -127,6 +171,17 @@ class ComprehensiveSeeder extends Seeder
                         'net_amount' => $revenue - $fee,
                         'status' => 'completed',
                         'fee_percentage' => 10.00,
+                    ]);
+                } elseif ($event->status === 'published' && rand(1, 10) > 8) {
+                    $admin = User::where('role', UserRole::Admin)->first();
+                    CancellationRequest::factory()->create([
+                        'event_id' => $event->id,
+                        'requested_by' => $organizer->id,
+                        'status' => 'rejected',
+                        'reason' => 'Pengen batalin aja sepi peminat.',
+                        'reviewed_by' => $admin?->id,
+                        'rejection_reason' => 'Alasan pembatalan tidak memenuhi syarat minimum (tidak ada kondisi force majeure atau darurat).',
+                        'reviewed_at' => now(),
                     ]);
                 }
             }

@@ -26,7 +26,7 @@ return new class extends Migration
             $table->timestamp('reviewed_at')->nullable();
             $table->foreignUuid('disbursed_by')->nullable()->constrained('users')->nullOnDelete();
             $table->decimal('fee_percentage', 5, 2);              // snapshot of fee % at time of payout
-            $table->enum('status', ['pending', 'processing', 'completed', 'failed'])->default('pending');
+            $table->enum('status', ['pending', 'processing', 'completed', 'failed', 'voided'])->default('pending');
             $table->string('midtrans_reference')->nullable();
             $table->timestamp('disbursed_at')->nullable();
             $table->timestamps();
