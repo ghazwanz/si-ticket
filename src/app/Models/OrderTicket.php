@@ -11,15 +11,36 @@ class OrderTicket extends Model
 {
     use HasFactory, HasUuids;
 
-    protected $guarded = [];
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'order_id',
+        'ticket_category_id',
+        'qr_token',
+        'holder_name',
+        'unit_price',
+        'is_checked_in',
+        'checked_in_at',
+    ];
 
+    /**
+     * @return array<string, string>
+     */
     protected function casts(): array
     {
         return [
+            'unit_price' => 'integer',
             'is_checked_in' => 'boolean',
             'checked_in_at' => 'datetime',
         ];
     }
+
+    // ──────────────────────────────────────────────
+    // Relationships
+    // ──────────────────────────────────────────────
 
     public function order(): BelongsTo
     {

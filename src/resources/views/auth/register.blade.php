@@ -2,7 +2,7 @@
     <div class="text-center">
         <p class="mb-1 text-xs font-bold uppercase tracking-widest text-violet-650 dark:text-violet-400">JoinFest</p>
         <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-3xl">Buat Akun</h1>
-        <p class="mt-2 text-sm text-slate-505 dark:text-slate-400">Daftar untuk menemukan dan memesan event.</p>
+        <p class="mt-2 text-sm text-slate-505 dark:text-slate-400">Daftar untuk menemukan dan memesan tiket acara.</p>
     </div>
 
     @if (session('status'))
@@ -26,7 +26,7 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('register') }}" class="mt-8 space-y-5" x-data="{ role: 'user' }">
+    <form method="POST" action="{{ route('register') }}" enctype="multipart/form-data" class="mt-8 space-y-5" x-data="{ role: 'user' }">
         @csrf
 
         {{-- Role Selection --}}
@@ -34,7 +34,7 @@
             <label class="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">Saya mendaftar sebagai <span class="text-red-500">*</span></label>
             <div class="grid grid-cols-2 gap-3">
                 <label class="flex cursor-pointer items-center justify-center gap-2 rounded-xl border p-3 shadow-sm transition-all"
-                       :class="role === 'user' ? 'border-violet-600 dark:border-violet-500 bg-violet-50 dark:bg-violet-950/30 text-violet-900 dark:text-violet-300' : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-400'">
+                       :class="role === 'user' ? 'border-violet-600 dark:border-violet-500 bg-violet-50 dark:bg-violet-955/30 text-violet-900 dark:text-violet-300' : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-400'">
                     <input type="radio" name="role" value="user" x-model="role" class="sr-only" required>
                     <x-heroicon-o-user class="w-5 h-5" />
                     <span class="text-sm font-semibold">Pengguna</span>
@@ -102,7 +102,7 @@
                     <x-heroicon-s-building-office-2 class="h-4 w-4 text-violet-500" />
                     Data Penyelenggara & Pembayaran
                 </h3>
-                <p class="text-xs text-slate-500 dark:text-slate-450 mt-1">Wajib diisi untuk verifikasi dan pencairan dana tiket.</p>
+                <p class="text-sm text-slate-500 dark:text-slate-450 mt-1">Wajib diisi untuk verifikasi dan pencairan dana tiket.</p>
             </div>
 
             <div>
@@ -112,9 +112,27 @@
             </div>
 
             <div>
-                <label for="phone" class="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">WhatsApp / Phone <span class="text-red-500">*</span></label>
+                <label for="phone" class="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">Nomor Telepon<span class="text-red-500">*</span></label>
                 <input id="phone" type="tel" name="phone" value="{{ old('phone') }}" :required="role === 'organizer'"
                        class="block w-full rounded-xl border border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-900 py-2.5 px-4 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:border-violet-500 dark:focus:border-violet-400 focus:ring-4 focus:ring-violet-500/10 dark:focus:ring-violet-500/5 transition-shadow" placeholder="0812xxxxxx">
+            </div>
+
+            <div>
+                <label for="organization_address" class="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">Alamat Organisasi <span class="text-red-500">*</span></label>
+                <textarea id="organization_address" name="organization_address" :required="role === 'organizer'" rows="3"
+                          class="block w-full rounded-xl border border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-900 py-2.5 px-4 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:border-violet-500 dark:focus:border-violet-400 focus:ring-4 focus:ring-violet-500/10 dark:focus:ring-violet-500/5 transition-shadow" placeholder="e.g. Jl. Jend. Sudirman No. 123, Jakarta">{{ old('organization_address') }}</textarea>
+            </div>
+
+            <div>
+                <label for="official_contact" class="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">Kontak Resmi (Email/Telepon Tambahan) <span class="text-red-500">*</span></label>
+                <input id="official_contact" type="text" name="official_contact" value="{{ old('official_contact') }}" :required="role === 'organizer'"
+                       class="block w-full rounded-xl border border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-900 py-2.5 px-4 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:border-violet-500 dark:focus:border-violet-400 focus:ring-4 focus:ring-violet-500/10 dark:focus:ring-violet-500/5 transition-shadow" placeholder="e.g. info@bintangkreasindo.com">
+            </div>
+
+            <div>
+                <label for="legality_document" class="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">Dokumen Legalitas (PDF/JPG/PNG, Max 5MB) <span class="text-red-500">*</span></label>
+                <input id="legality_document" type="file" name="legality_document" :required="role === 'organizer'"
+                       class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-violet-50/10 file:text-violet-700 dark:file:bg-violet-500/10 dark:file:text-violet-400 hover:file:bg-violet-100 dark:hover:file:bg-violet-500/20 bg-transparent border border-slate-300 dark:border-slate-800 rounded-xl py-2 px-4 focus:outline-none">
             </div>
 
             <div class="grid grid-cols-2 gap-4">
@@ -133,7 +151,7 @@
             <div>
                 <label for="bank_account_name" class="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">Nama Pemilik Rekening <span class="text-red-500">*</span></label>
                 <input id="bank_account_name" type="text" name="bank_account_name" value="{{ old('bank_account_name') }}" :required="role === 'organizer'"
-                       class="block w-full rounded-xl border border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-900 py-2.5 px-4 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:border-violet-500 dark:focus:border-violet-400 focus:ring-4 focus:ring-violet-500/10 dark:focus:ring-violet-500/5 transition-shadow" placeholder="As it appears on the bank account">
+                       class="block w-full rounded-xl border border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-900 py-2.5 px-4 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:border-violet-500 dark:focus:border-violet-400 focus:ring-4 focus:ring-violet-500/10 dark:focus:ring-violet-500/5 transition-shadow" placeholder="Sesuai dengan rekening bank">
             </div>
         </div>
 

@@ -3,6 +3,122 @@ import Alpine from 'alpinejs';
 
 window.Alpine = Alpine;
 
+window.downloadQrCode = function downloadQrCode(elementId, filename) {
+    const container = document.getElementById(elementId);
+    if (!container) return;
+    const svgElement = container.querySelector('svg');
+    if (!svgElement) return;
+
+    const svgString = new XMLSerializer().serializeToString(svgElement);
+    const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+    const URL = window.URL || window.webkitURL || window;
+    const blobURL = URL.createObjectURL(svgBlob);
+
+    const image = new Image();
+    image.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 400;
+        canvas.height = 400;
+        const context = canvas.getContext('2d');
+        context.fillStyle = '#FFFFFF';
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        // Draw SVG image onto canvas
+        context.drawImage(image, 20, 20, 360, 360);
+
+        const png = canvas.toDataURL('image/png');
+        const downloadLink = document.createElement('a');
+        downloadLink.href = png;
+        downloadLink.download = filename + '.png';
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+    };
+    image.src = blobURL;
+};
+
+Alpine.data('checkoutApp', (categories, merchVariants, isSuspended, isCancelled) => ({
+    cart: {},
+    merchCart: {},
+    categories: categories,
+    merchVariants: merchVariants,
+    isSuspended: isSuspended,
+    isCancelled: isCancelled,
+    activeMerchModalId: null,
+    getMerchItemTotal(itemId) {
+        let total = 0;
+        this.merchVariants.forEach(mv => {
+            if (mv.merchandise_item_id === itemId) {
+                total += this.merchCart[mv.id] || 0;
+            }
+        });
+        return total;
+    },
+    init() {
+        this.categories.forEach(c => {
+            this.cart[c.id] = 0;
+        });
+        this.merchVariants.forEach(mv => {
+            this.merchCart[mv.id] = 0;
+        });
+        this.$watch('activeMerchModalId', value => {
+            if (value) {
+                document.body.classList.add('overflow-y-hidden');
+            } else {
+                document.body.classList.remove('overflow-y-hidden');
+            }
+        });
+    },
+    getQty(id) {
+        return this.cart[id] || 0;
+    },
+    updateQty(id, delta) {
+        let current = this.cart[id] || 0;
+        let next = current + delta;
+        if (next >= 0) {
+            this.cart[id] = next;
+        }
+    },
+    getMerchQty(id) {
+        return this.merchCart[id] || 0;
+    },
+    updateMerchQty(id, delta) {
+        let current = this.merchCart[id] || 0;
+        let next = current + delta;
+        if (next >= 0) {
+            this.merchCart[id] = next;
+        }
+    },
+    get totalTickets() {
+        return Object.values(this.cart).reduce((a, b) => a + b, 0);
+    },
+    get totalMerch() {
+        return Object.values(this.merchCart).reduce((a, b) => a + b, 0);
+    },
+    get totalPrice() {
+        let total = 0;
+        this.categories.forEach(c => {
+            total += (this.cart[c.id] || 0) * c.price;
+        });
+        this.merchVariants.forEach(mv => {
+            total += (this.merchCart[mv.id] || 0) * mv.price;
+        });
+        return total;
+    },
+    getActiveTickets() {
+        return Object.entries(this.cart)
+            .filter(([_, qty]) => qty > 0)
+            .map(([id, qty]) => ({ id: id, qty: qty }));
+    },
+    getActiveMerch() {
+        return Object.entries(this.merchCart)
+            .filter(([_, qty]) => qty > 0)
+            .map(([id, qty]) => ({ id: id, qty: qty }));
+    },
+    format(value) {
+        return new Intl.NumberFormat('id-ID').format(value);
+    }
+}));
+
 const initAppLogic = () => {
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const header = document.querySelector('[data-site-header]');
@@ -127,6 +243,7 @@ function updateActiveLinks(newDoc) {
 }
 
 window.loadPage = function loadPage(url, push = true) {
+    // document.body.classList.remove('overflow-hidden', 'overflow-y-hidden');
     if (loader) loader.classList.remove('hidden');
     if (mainElement) mainElement.classList.add('opacity-50');
 
@@ -218,6 +335,30 @@ document.addEventListener('DOMContentLoaded', () => {
             loadPage(link.getAttribute('href'));
         }
     });
+
+    // document.body.addEventListener('submit', e => {
+    //     const form = e.target.closest('form');
+    //     if (form && (!form.getAttribute('method') || form.getAttribute('method').toLowerCase() === 'get')) {
+    //         const actionAttr = form.getAttribute('action');
+    //         const actionUrl = actionAttr ? new URL(actionAttr, window.location.origin) : new URL(window.location.href);
+            
+    //         // Only intercept local/same-origin GET forms
+    //         if (actionUrl.origin === window.location.origin) {
+    //             e.preventDefault();
+    //             const formData = new FormData(form);
+    //             const searchParams = new URLSearchParams();
+                
+    //             for (const [key, value] of formData.entries()) {
+    //                 if (value !== '') {
+    //                     searchParams.append(key, value);
+    //                 }
+    //             }
+                
+    //             const targetUrl = actionUrl.pathname + (searchParams.toString() ? '?' + searchParams.toString() : '');
+    //             loadPage(targetUrl);
+    //         }
+    //     }
+    // });
 
     window.addEventListener('popstate', () => {
         loadPage(location.pathname + location.search, false);

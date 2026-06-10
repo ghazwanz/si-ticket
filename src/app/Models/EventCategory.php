@@ -13,8 +13,23 @@ class EventCategory extends Model
 {
     use HasFactory, HasUuids, SoftDeletes;
 
-    protected $guarded = [];
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'name',
+        'slug',
+        'image',
+        'color',
+    ];
 
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var list<string>
+     */
     protected $appends = ['image_url'];
 
     public function events(): HasMany

@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\EventStatus;
 use App\Models\Event;
 use App\Models\EventCategory;
 use App\Models\User;
@@ -17,7 +18,7 @@ class EventFactory extends Factory
         $name = $this->faker->sentence(3);
 
         return [
-            'organizer_id' => User::factory(),
+            'organizer_id' => User::factory()->organizer(),
             'category_id' => EventCategory::factory(),
             'name' => $name,
             'slug' => Str::slug($name).'-'.Str::random(5),
@@ -28,22 +29,78 @@ class EventFactory extends Factory
             'event_date' => $this->faker->dateTimeBetween('now', '+6 months')->format('Y-m-d'),
             'start_time' => '19:00:00',
             'end_time' => '22:00:00',
-            'status' => $this->faker->randomElement(['draft', 'awaiting_approval', 'published', 'awaiting_cancellation', 'completed', 'cancelled']),
+            'status' => $this->faker->randomElement(EventStatus::cases()),
             'is_featured' => $this->faker->boolean(20),
         ];
     }
 
-    public function awaitingCancellation(): static
+    /**
+     * Set event status to draft.
+     */
+    public function draft(): static
     {
         return $this->state(fn (array $attributes) => [
-            'status' => 'awaiting_cancellation',
+            'status' => EventStatus::Draft,
         ]);
     }
 
+    /**
+     * Set event status to awaiting approval.
+     */
+    public function awaitingApproval(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => EventStatus::AwaitingApproval,
+        ]);
+    }
+
+    /**
+     * Set event status to published.
+     */
+    public function published(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => EventStatus::Published,
+        ]);
+    }
+
+    /**
+     * Set event status to awaiting cancellation.
+     */
+    public function awaitingCancellation(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => EventStatus::AwaitingCancellation,
+        ]);
+    }
+
+    /**
+     * Set event status to completed.
+     */
+    public function completed(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => EventStatus::Completed,
+        ]);
+    }
+
+    /**
+     * Set event status to cancelled.
+     */
     public function cancelled(): static
     {
         return $this->state(fn (array $attributes) => [
-            'status' => 'cancelled',
+            'status' => EventStatus::Cancelled,
+        ]);
+    }
+
+    /**
+     * Set event as featured.
+     */
+    public function featured(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'is_featured' => true,
         ]);
     }
 }

@@ -20,4 +20,14 @@ class MerchandiseVariantFactory extends Factory
             'stock' => $this->faker->numberBetween(10, 100),
         ];
     }
+
+    /**
+     * Set the variant as out of stock.
+     */
+    public function outOfStock(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'stock' => 0,
+        ]);
+    }
 }
