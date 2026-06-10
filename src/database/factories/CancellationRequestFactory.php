@@ -1,9 +1,8 @@
 <?php
 
-declare(strict_types=1);
-
 namespace Database\Factories;
 
+use App\Enums\CancellationRequestStatus;
 use App\Models\CancellationRequest;
 use App\Models\Event;
 use App\Models\User;
@@ -25,9 +24,9 @@ class CancellationRequestFactory extends Factory
     {
         return [
             'event_id' => Event::factory(),
-            'requested_by' => User::factory(),
+            'requested_by' => User::factory()->organizer(),
             'reason' => $this->faker->paragraph(2),
-            'status' => 'pending',
+            'status' => CancellationRequestStatus::Pending,
             'reviewed_by' => null,
             'rejection_reason' => null,
             'reviewed_at' => null,
@@ -40,8 +39,8 @@ class CancellationRequestFactory extends Factory
     public function approved(): static
     {
         return $this->state(fn (array $attributes) => [
-            'status' => 'approved',
-            'reviewed_by' => User::factory(),
+            'status' => CancellationRequestStatus::Approved,
+            'reviewed_by' => User::factory()->admin(),
             'reviewed_at' => now(),
         ]);
     }
@@ -52,8 +51,8 @@ class CancellationRequestFactory extends Factory
     public function rejected(): static
     {
         return $this->state(fn (array $attributes) => [
-            'status' => 'rejected',
-            'reviewed_by' => User::factory(),
+            'status' => CancellationRequestStatus::Rejected,
+            'reviewed_by' => User::factory()->admin(),
             'rejection_reason' => $this->faker->sentence(10),
             'reviewed_at' => now(),
         ]);

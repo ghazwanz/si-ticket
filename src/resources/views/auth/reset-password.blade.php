@@ -1,8 +1,8 @@
 <x-guest-layout>
     <div class="text-center">
         <p class="mb-1 text-xs font-bold uppercase tracking-widest text-violet-650 dark:text-violet-400">JoinFest</p>
-        <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-3xl">New Password</h1>
-        <p class="mt-2 text-sm text-slate-505 dark:text-slate-400">Pick a strong password that you haven't used before.</p>
+        <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-3xl">Kata Sandi Baru</h1>
+        <p class="mt-2 text-sm text-slate-505 dark:text-slate-400">Pilih kata sandi baru yang kuat yang belum pernah Anda gunakan sebelumnya.</p>
     </div>
 
     @if ($errors->any())
@@ -24,7 +24,7 @@
         <input type="hidden" name="token" value="{{ $request->route('token') }}">
 
         <div>
-            <label for="email" class="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">Email Address <span class="text-red-500">*</span></label>
+            <label for="email" class="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">Alamat Surel <span class="text-red-500">*</span></label>
             <div class="relative">
                 <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                     <x-heroicon-o-envelope class="h-5 w-5 text-slate-400 dark:text-slate-550" />
@@ -35,7 +35,7 @@
         </div>
 
         <div>
-            <label for="password" class="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">New Password <span class="text-red-500">*</span></label>
+            <label for="password" class="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">Kata Sandi Baru <span class="text-red-500">*</span></label>
             <div class="relative">
                 <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                     <x-heroicon-o-lock-closed class="h-5 w-5 text-slate-400 dark:text-slate-550" />
@@ -46,7 +46,7 @@
         </div>
 
         <div>
-            <label for="password_confirmation" class="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">Confirm Password <span class="text-red-500">*</span></label>
+            <label for="password_confirmation" class="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">Konfirmasi Kata Sandi <span class="text-red-500">*</span></label>
             <div class="relative">
                 <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                     <x-heroicon-o-lock-closed class="h-5 w-5 text-slate-400 dark:text-slate-550" />
@@ -57,7 +57,7 @@
         </div>
 
         <button type="submit" class="group relative flex w-full justify-center mt-6 rounded-xl bg-violet-600 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-violet-755 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 dark:focus:ring-offset-slate-950 transition-all disabled:opacity-50">
-            Update Password
+            Perbarui Kata Sandi
             <x-heroicon-s-arrow-right class="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
         </button>
     </form>

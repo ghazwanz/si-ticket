@@ -25,4 +25,44 @@ class TicketCategoryFactory extends Factory
             'max_per_user' => 4,
         ];
     }
+
+    /**
+     * Set the ticket category as sold out.
+     */
+    public function soldOut(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'sold_count' => $attributes['quota'] ?? 100,
+        ]);
+    }
+
+    /**
+     * Set the ticket category as inactive.
+     */
+    public function inactive(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'is_active' => false,
+        ]);
+    }
+
+    /**
+     * Set a specific max_per_user cap.
+     */
+    public function withMaxPerUser(int $cap): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'max_per_user' => $cap,
+        ]);
+    }
+
+    /**
+     * Remove the per-user cap (unlimited).
+     */
+    public function unlimited(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'max_per_user' => null,
+        ]);
+    }
 }

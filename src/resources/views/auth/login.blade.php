@@ -2,7 +2,7 @@
     <div class="text-center">
         <p class="mb-1 text-xs font-bold uppercase tracking-widest text-violet-600 dark:text-violet-400">JoinFest</p>
         <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-3xl">Selamat Datang Kembali</h1>
-        <p class="mt-2 text-sm text-slate-505 dark:text-slate-400">Silahkan masuk untuk melanjutkan</p>
+        <p class="mt-2 text-sm text-slate-505 dark:text-slate-400">Silakan masuk untuk melanjutkan</p>
     </div>
 
     @if (session('status'))
