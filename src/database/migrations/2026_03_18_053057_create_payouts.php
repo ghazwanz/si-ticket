@@ -18,12 +18,19 @@ return new class extends Migration
             $table->unsignedBigInteger('gross_amount');           // total settled revenue for the event
             $table->unsignedBigInteger('platform_fee');           // deducted platform fee (IDR)
             $table->unsignedBigInteger('net_amount');             // disbursed to organizer
+            $table->string('payout_bank_name')->nullable();
+            $table->string('payout_account_number')->nullable();
+            $table->string('payout_account_holder')->nullable();
+            $table->boolean('missing_bank_details')->default(false);
+            $table->foreignUuid('reviewed_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->timestamp('reviewed_at')->nullable();
+            $table->foreignUuid('disbursed_by')->nullable()->constrained('users')->nullOnDelete();
             $table->decimal('fee_percentage', 5, 2);              // snapshot of fee % at time of payout
-            $table->enum('status', ['pending', 'processing', 'completed', 'failed'])->default('pending');
+            $table->enum('status', ['pending', 'processing', 'completed', 'failed', 'voided', 'rejected'])->default('pending');
             $table->string('midtrans_reference')->nullable();
             $table->timestamp('disbursed_at')->nullable();
             $table->timestamps();
- 
+
             $table->index(['organizer_id', 'status']);
             $table->index('status');
         });

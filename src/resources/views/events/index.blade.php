@@ -1,133 +1,164 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Katalog Event - {{ config('app.name', 'JoinFest') }}</title>
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    </head>
-    <body class="min-h-screen bg-[radial-gradient(circle_at_10%_10%,_#f8f4ff,_transparent_30%),_linear-gradient(180deg,_#f8fafc_0%,_#eef2ff_100%)] font-[Plus_Jakarta_Sans,sans-serif] text-slate-900">
-        <x-home.header />
-
-        <main class="w-full px-4 py-6 md:px-6 md:py-10">
-            <div class="max-w-7xl mx-auto">
-                <div class="mb-8 flex flex-col gap-2" data-reveal data-reveal-delay="0">
-                    <h1 class="lg:text-4xl text-2xl font-semibold tracking-tight text-slate-900">Katalog Event</h1>
-                    <p class="text-sm text-slate-500">Temukan event pilihanmu dan lanjutkan pemesanan dalam alur yang cepat.</p>
+<x-public-layout title="Katalog Acara">
+    <div class="w-full px-4 py-6 md:px-6 md:py-10">
+        <div class="max-w-7xl mx-auto">
+            <div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-6" data-reveal data-reveal-delay="0">
+                <div>
+                    <div class="inline-flex items-center gap-2 mb-3">
+                        <span class="h-px w-8 bg-violet-500"></span>
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-violet-600 dark:text-violet-400">Discover</span>
+                    </div>
+                    <h1 class="lg:text-5xl text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">Katalog Acara</h1>
+                    <p class="mt-3 text-sm text-slate-600 dark:text-slate-400 max-w-xl">Temukan Acara pilihanmu dan lanjutkan pemesanan dalam alur yang cepat dan aman.</p>
                 </div>
 
-                <div class="flex flex-col gap-8 lg:flex-row items-start">
-                    <!-- Sidebar Filter -->
-                    <aside class="w-full shrink-0 rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_8px_24px_rgba(15,23,42,0.04)] lg:sticky lg:top-24 lg:w-64 opacity-0 blur-sm translate-y-6 scale-[0.98] transition-all duration-700 ease-out" data-reveal data-reveal-delay="50">
-                        <form action="{{ route('events.index') }}" method="GET" class="space-y-6">
-                            <!-- Kategori Filter -->
-                            <div>
-                                <h3 class="text-sm font-bold text-slate-900">Kategori</h3>
-                                <div class="mt-3 space-y-2">
-                                    @foreach (['Konser', 'Seminar', 'Olahraga', 'Teater', 'Seni', 'Film'] as $cat)
-                                        <label class="group flex cursor-pointer items-center gap-3">
-                                            <input type="checkbox" name="category[]" value="{{ strtolower($cat) }}" class="h-4 w-4 rounded border-slate-300 text-violet-600 transition focus:ring-violet-600">
-                                            <span class="text-sm font-medium text-slate-600 transition group-hover:text-slate-900">{{ $cat }}</span>
-                                        </label>
-                                    @endforeach
-                                </div>
-                            </div>
-
-                            <!-- Waktu Pelaksanaan / Tanggal Filter -->
-                            <div class="border-t border-slate-100 pt-6">
-                                <h3 class="text-sm font-bold text-slate-900">Waktu Pelaksanaan</h3>
-                                <div class="mt-3 space-y-2">
-                                    @foreach (['Hari Ini', 'Besok', 'Minggu Ini', 'Bulan Ini', 'Bulan Depan'] as $time)
-                                        <label class="group flex cursor-pointer items-center gap-3">
-                                            <input type="radio" name="date" value="{{ strtolower(str_replace(' ', '-', $time)) }}" class="h-4 w-4 border-slate-300 text-violet-600 transition focus:ring-violet-600">
-                                            <span class="text-sm font-medium text-slate-600 transition group-hover:text-slate-900">{{ $time }}</span>
-                                        </label>
-                                    @endforeach
-                                </div>
-                            </div>
-
-                            <!-- Harga Filter -->
-                            <div class="border-t border-slate-100 pt-6">
-                                <h3 class="text-sm font-bold text-slate-900">Range Harga</h3>
-                                <div class="mt-3 space-y-4">
-                                    <label class="group flex cursor-pointer items-center gap-3">
-                                        <input type="checkbox" name="is_free" value="true" class="h-4 w-4 rounded border-slate-300 text-violet-600 transition focus:ring-violet-600">
-                                        <span class="text-sm font-medium text-slate-600 transition group-hover:text-slate-900">Gratis (Rp 0)</span>
-                                    </label>
-
-                                    <div class="grid grid-cols-2 gap-2">
-                                        <div>
-                                            <label class="sr-only" for="price_min">Minimal</label>
-                                            <input type="number" id="price_min" name="price_min" placeholder="Min (Rp)" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-medium text-slate-900 outline-none transition focus:border-violet-500 focus:bg-white focus:ring-2 focus:ring-violet-500/20">
-                                        </div>
-                                        <div>
-                                            <label class="sr-only" for="price_max">Maksimal</label>
-                                            <input type="number" id="price_max" name="price_max" placeholder="Max (Rp)" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-medium text-slate-900 outline-none transition focus:border-violet-500 focus:bg-white focus:ring-2 focus:ring-violet-500/20">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="border-t border-slate-100 pt-6">
-                                <button type="submit" class="w-full rounded-xl bg-violet-600 py-2.5 text-sm font-bold tracking-wide text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-violet-700 hover:shadow-[0_8px_20px_rgba(109,40,217,0.32)]">Terapkan Filter</button>
-                                <button type="reset" class="mt-2 w-full py-2 text-sm font-semibold text-slate-500 transition hover:text-slate-800">Reset Semua</button>
-                            </div>
-                        </form>
-                    </aside>
-
-                    <!-- Event Grid -->
-                    <section class="w-full" data-reveal data-reveal-delay="100">
-                        <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                        @foreach ($events as $event)
-                            <article class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_8px_24px_rgba(15,23,42,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_16px_30px_rgba(15,23,42,0.12)] opacity-0 blur-sm translate-y-6 scale-[0.98] transition-all duration-700 ease-out" data-reveal data-reveal-delay="{{ $loop->index * 80 + 80 }}">
-                                <a href="{{ route('events.show', $event['slug']) }}" class="block p-0">
-                                    <div class="relative">
-                                        <img src="{{ asset($event['image']) }}" alt="{{ $event['title'] }}" class="h-52 w-full object-cover">
-                                        <div class="absolute left-3 top-3 inline-flex rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-slate-700">{{ $event['category'] }}</div>
-                                    </div>
-                                    <div class="p-4">
-                                        <h3 class="text-sm font-semibold text-slate-900">{{ $event['title'] }}</h3>
-                                        <div class="mt-2 grid gap-1 text-xs text-slate-500">
-                                            <div class="flex items-center gap-2"><span class="h-1.5 w-1.5 rounded-full bg-violet-600"></span>{{ $event['date'] }}</div>
-                                            <div class="flex items-center gap-2"><span class="h-1.5 w-1.5 rounded-full bg-slate-300"></span>{{ $event['location'] }}</div>
-                                        </div>
-                                        <div class="mt-4 flex items-center justify-between gap-3">
-                                            <span class="text-sm font-semibold text-violet-600">{{ $event['price'] }}</span>
-                                        </div>
-                                    </div>
-                                </a>
-                            </article>
-                        @endforeach
-                    </div>
-                    </section>
+                <!-- Search Box -->
+                <div class="w-full md:w-96">
+                    <form action="{{ route('events.index') }}" method="GET" class="relative group">
+                        <!-- Preserve existing filters -->
+                        @if(request('category')) <input type="hidden" name="category" value="{{ request('category') }}"> @endif
+                        @if(request('city')) <input type="hidden" name="city" value="{{ request('city') }}"> @endif
+                        @if(request('status')) <input type="hidden" name="status" value="{{ request('status') }}"> @endif
+                        @if(request('start_date')) <input type="hidden" name="start_date" value="{{ request('start_date') }}"> @endif
+                        @if(request('end_date')) <input type="hidden" name="end_date" value="{{ request('end_date') }}"> @endif
+                        
+                        <x-heroicon-o-magnifying-glass class="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 dark:text-slate-550 group-focus-within:text-violet-600 dark:group-focus-within:text-violet-400 transition-colors" />
+                        <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari nama event, artis, atau lokasi..."
+                               class="w-full rounded-2xl border border-slate-200 dark:border-white/10 bg-white/50 dark:bg-slate-900/40 py-3 pl-11 pr-4 text-sm font-medium text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 outline-none transition-all focus:border-violet-500 focus:bg-white focus:dark:bg-slate-950 focus:ring-4 focus:ring-violet-500/10 dark:focus:ring-violet-500/5 shadow-sm">
+                    </form>
                 </div>
             </div>
-        </main>
 
-        <x-home.footer />
+            <div class="flex flex-col gap-8 lg:flex-row items-start">
+                <!-- Sidebar Filter -->
+                <aside class="w-full shrink-0 rounded-[2rem] border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900/40 backdrop-blur-xl p-6 shadow-md lg:sticky lg:top-28 lg:w-72 opacity-0 blur-sm translate-y-6 scale-[0.98] transition-all duration-700 ease-out" data-reveal data-reveal-delay="50">
+                    <form action="{{ route('events.index') }}" method="GET" class="space-y-6">
+                        <!-- Preserve search -->
+                        @if(request('q')) <input type="hidden" name="q" value="{{ request('q') }}"> @endif
 
-        <script>
-            document.addEventListener('DOMContentLoaded', () => {
-                const elements = document.querySelectorAll('[data-reveal]');
-                elements.forEach(el => el.classList.add('reveal-node'));
-                const observer = new IntersectionObserver((entries, observer) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            setTimeout(() => {
-                                entry.target.classList.add('revealed');
-                                entry.target.style.opacity = '1';
-                                entry.target.style.filter = 'blur(0)';
-                                entry.target.style.transform = 'translateY(0) scale(1)';
-                            }, 50);
-                            observer.unobserve(entry.target);
-                        }
-                    });
-                }, { root: null, rootMargin: '0px 0px -50px 0px', threshold: 0.1 });
-                elements.forEach(el => observer.observe(el));
-            });
-        </script>
-    </body>
-</html>
+                        <!-- Kategori Filter (Dynamic) -->
+                        <div>
+                            <h3 class="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-3">Kategori</h3>
+                            <div class="space-y-2.5">
+                                @forelse ($eventCategories as $cat)
+                                    <label class="group flex cursor-pointer items-center gap-3">
+                                        <input type="radio" name="category" value="{{ $cat->slug }}" {{ request('category') == $cat->slug ? 'checked' : '' }} class="h-4 w-4 rounded-full border-slate-300 dark:border-white/20 bg-slate-50 dark:bg-white/5 text-violet-600 dark:text-violet-400 transition focus:ring-violet-500/30 focus:ring-offset-slate-900">
+                                        <span class="text-sm font-medium text-slate-650 dark:text-slate-405 transition group-hover:text-slate-900 dark:group-hover:text-white">{{ $cat->name }}</span>
+                                    </label>
+                                @empty
+                                    <p class="text-xs text-slate-500 dark:text-slate-400">Tidak ada kategori.</p>
+                                @endforelse
+                            </div>
+                        </div>
+
+                        <!-- Kota Filter (Dynamic) -->
+                        <div class="border-t border-slate-200 dark:border-white/10 pt-5">
+                            <h3 class="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-3">Kota</h3>
+                            <select name="city" class="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 py-2 px-3 text-sm text-slate-800 dark:text-slate-300 outline-none transition focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10 shadow-sm">
+                                <option value="">Semua Kota</option>
+                                @foreach ($cities as $city)
+                                    <option value="{{ $city }}" {{ request('city') == $city ? 'selected' : '' }}>{{ $city }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Status Filter -->
+                        <div class="border-t border-slate-200 dark:border-white/10 pt-5">
+                            <h3 class="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-3">Status Acara</h3>
+                            <div class="space-y-2.5">
+                                <label class="group flex cursor-pointer items-center gap-3">
+                                    <input type="radio" name="status" value="" {{ !request('status') ? 'checked' : '' }} class="h-4 w-4 rounded-full border-slate-300 dark:border-white/20 bg-slate-50 dark:bg-white/5 text-violet-600 dark:text-violet-400 transition focus:ring-violet-500/30 focus:ring-offset-slate-900">
+                                    <span class="text-sm font-medium text-slate-650 dark:text-slate-405 transition group-hover:text-slate-900 dark:group-hover:text-white">Semua Status</span>
+                                </label>
+                                <label class="group flex cursor-pointer items-center gap-3">
+                                    <input type="radio" name="status" value="upcoming" {{ request('status') == 'upcoming' ? 'checked' : '' }} class="h-4 w-4 rounded-full border-slate-300 dark:border-white/20 bg-slate-50 dark:bg-white/5 text-violet-600 dark:text-violet-400 transition focus:ring-violet-500/30 focus:ring-offset-slate-900">
+                                    <span class="text-sm font-medium text-slate-650 dark:text-slate-405 transition group-hover:text-slate-900 dark:group-hover:text-white">Mendatang</span>
+                                </label>
+                                <label class="group flex cursor-pointer items-center gap-3">
+                                    <input type="radio" name="status" value="suspended" {{ request('status') == 'suspended' ? 'checked' : '' }} class="h-4 w-4 rounded-full border-slate-300 dark:border-white/20 bg-slate-50 dark:bg-white/5 text-violet-600 dark:text-violet-400 transition focus:ring-violet-500/30 focus:ring-offset-slate-900">
+                                    <span class="text-sm font-medium text-slate-650 dark:text-slate-405 transition group-hover:text-slate-900 dark:group-hover:text-white">Ditangguhkan</span>
+                                </label>
+                                <label class="group flex cursor-pointer items-center gap-3">
+                                    <input type="radio" name="status" value="completed" {{ request('status') == 'completed' ? 'checked' : '' }} class="h-4 w-4 rounded-full border-slate-300 dark:border-white/20 bg-slate-50 dark:bg-white/5 text-violet-600 dark:text-violet-400 transition focus:ring-violet-500/30 focus:ring-offset-slate-900">
+                                    <span class="text-sm font-medium text-slate-650 dark:text-slate-405 transition group-hover:text-slate-900 dark:group-hover:text-white">Selesai</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Rentang Tanggal Filter -->
+                        <div class="border-t border-slate-200 dark:border-white/10 pt-5">
+                            <h3 class="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-3">Rentang Tanggal</h3>
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Mulai</label>
+                                    <input type="date" name="start_date" value="{{ request('start_date') }}" class="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 py-2 px-3 text-sm text-slate-800 dark:text-slate-300 outline-none transition focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10 shadow-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Selesai</label>
+                                    <input type="date" name="end_date" value="{{ request('end_date') }}" class="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 py-2 px-3 text-sm text-slate-800 dark:text-slate-300 outline-none transition focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10 shadow-sm">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="border-t border-slate-200 dark:border-white/10 pt-5">
+                            <button type="submit" class="w-full rounded-xl bg-violet-600 py-3 text-sm font-bold tracking-wide text-white shadow-lg shadow-violet-600/25 transition hover:-translate-y-0.5 hover:bg-violet-700 hover:shadow-violet-700/30">Terapkan Filter</button>
+                            <a href="{{ route('events.index') }}" class="mt-3 block text-center w-full py-2 text-xs font-semibold text-slate-500 hover:text-slate-800 dark:hover:text-white transition-colors">Reset Semua</a>
+                        </div>
+                    </form>
+                </aside>
+
+                <!-- Event Grid -->
+                <section class="w-full" data-reveal data-reveal-delay="100">
+                    <div class="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+                    @forelse ($events as $event)
+                        @php
+                            $isSuspended = $event->status === 'awaiting_cancellation';
+                        @endphp
+
+                        <a href="{{ route('events.show', $event->slug) }}" data-link class="group relative overflow-hidden rounded-[2rem] border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900/40 backdrop-blur-xl transition-all duration-500 hover:-translate-y-1 hover:border-violet-500/30 hover:shadow-2xl hover:shadow-violet-900/10 opacity-0 blur-sm translate-y-6 scale-[0.98]" data-reveal data-reveal-delay="{{ $loop->index * 90 + 130 }}">
+                            <div class="relative h-56 overflow-hidden">
+                                <img src="{{ $event->image_path ? Storage::url($event->image_path) : asset('img/eobanner.png') }}" alt="{{ $event->name }}" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" style="view-transition-name: event-img-{{ $event->id }};">
+                                <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/20 to-transparent"></div>
+                                
+                                <div class="absolute left-4 top-4 flex flex-col gap-2 items-start">
+                                    <div class="inline-flex rounded-xl border border-white/10 bg-black/30 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-white backdrop-blur-md">
+                                        {{ $event->category?->name ?? 'Event' }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="relative p-6">
+                                <h3 class="text-lg font-bold text-slate-900 dark:text-white line-clamp-1 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">{{ $event->name }}</h3>
+                                <div class="mt-4 grid gap-2 text-xs font-medium text-slate-500 dark:text-slate-400">
+                                    <div class="flex items-center gap-2">
+                                        <x-heroicon-s-calendar class="h-4 w-4 text-violet-500" />
+                                        {{ $event->event_date->translatedFormat('d M Y') }}
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <x-heroicon-s-map-pin class="h-4 w-4 text-sky-500" />
+                                        <span class="line-clamp-1">{{ $event->venue_name }}, {{ $event->city }}</span>
+                                    </div>
+                                </div>
+                                <div class="mt-6 flex items-center justify-between border-t border-slate-100 dark:border-white/5 pt-4">
+                                    <span class="text-xs font-medium text-slate-400 dark:text-slate-550">Mulai dari</span>
+                                    <span class="text-sm font-extrabold text-emerald-600 dark:text-emerald-400">Detail Event &rarr;</span>
+                                </div>
+                            </div>
+                        </a>
+                    @empty
+                        <div class="col-span-full py-20 text-center bg-white dark:bg-slate-909/45 border border-slate-205 dark:border-white/10 rounded-[2rem] shadow-sm">
+                            <x-heroicon-o-magnifying-glass class="mx-auto h-12 w-12 text-slate-400 dark:text-slate-600 mb-4" />
+                            <h3 class="text-lg font-bold text-slate-900 dark:text-white">Event tidak ditemukan</h3>
+                            <p class="text-sm text-slate-500 dark:text-slate-400 mt-2">Coba ubah filter atau kata kunci pencarian Anda.</p>
+                        </div>
+                    @endforelse
+                    </div>
+
+                    @if($events->hasPages())
+                        <div class="mt-10">
+                            {{ $events->links() }}
+                        </div>
+                    @endif
+                </section>
+            </div>
+        </div>
+    </div>
+</x-public-layout>

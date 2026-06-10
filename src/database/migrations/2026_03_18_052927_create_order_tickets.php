@@ -21,7 +21,7 @@ return new class extends Migration
             $table->boolean('is_checked_in')->default(false);
             $table->timestamp('checked_in_at')->nullable();
             $table->timestamps();
- 
+
             $table->index(['order_id']);
             $table->index(['ticket_category_id', 'is_checked_in']);
         });

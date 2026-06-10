@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\UserRole;
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\Event;
+use App\Models\Order;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,7 +19,37 @@ class ProfileController extends Controller
      */
     public function index(): View
     {
-        return view('profile.index');
+        $user = Auth::user();
+
+        if ($user->role === UserRole::Admin) {
+            return view('profile.admin', [
+                'user' => $user,
+            ]);
+        }
+
+        if ($user->role === UserRole::Organizer) {
+            $user->load('organizerProfile');
+            $recentEvents = Event::where('organizer_id', $user->id)
+                ->latest()
+                ->take(5)
+                ->get();
+
+            return view('profile.eo', [
+                'user' => $user,
+                'recentEvents' => $recentEvents,
+            ]);
+        }
+
+        // For Regular Users
+        $recentOrders = Order::with('event')->where('user_id', $user->id)
+            ->latest()
+            ->take(5)
+            ->get();
+
+        return view('profile.index', [
+            'user' => $user,
+            'recentOrders' => $recentOrders,
+        ]);
     }
 
     /**
@@ -42,7 +75,7 @@ class ProfileController extends Controller
 
         $request->user()->save();
 
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        return back()->with('status', 'profile-updated');
     }
 
     /**
@@ -60,8 +93,13 @@ class ProfileController extends Controller
      */
     public function ticketsQr(Request $request, string $orderId): View
     {
+        $order = Order::with(['event', 'tickets.ticketCategory', 'merchandise.merchandiseVariant.item'])->findOrFail($orderId);
+
+        // Pastikan hanya pemilik pesanan yang bisa melihat QR
+        abort_if($order->user_id !== Auth::id(), 403);
+
         return view('profile.tickets-qr', [
-            'orderId' => $orderId,
+            'order' => $order,
         ]);
     }
 

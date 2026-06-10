@@ -13,15 +13,15 @@ return new class extends Migration
     {
         Schema::create('merchandise_variants', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('merchandise_item_id')->constrained('merchandise_items')->cascadeOnDelete()->unique();
-            $table->string('variant_group')->unique();                      // e.g. "Size", "Color"
-            $table->string('variant_value')->unique();                      // e.g. "M", "Red"
+            $table->foreignUuid('merchandise_item_id')->constrained('merchandise_items')->cascadeOnDelete();
+            $table->string('variant_group');                      // e.g. "Size", "Color"
+            $table->string('variant_value');                      // e.g. "M", "Red"
             $table->unsignedInteger('stock')->default(0);
-            $table->bigInteger('price_adjustment')->default(0);   // signed: can be negative discount or positive premium
+            $table->bigInteger('price_adjustment')->default(0);   // signed
             $table->timestamps();
- 
+
             $table->index('merchandise_item_id');
-            // $table->unique(['merchandise_item_id', 'variant_group', 'variant_value']);
+            $table->unique(['merchandise_item_id', 'variant_group', 'variant_value'], 'merch_variant_unique');
         });
     }
 
