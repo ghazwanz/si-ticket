@@ -1,6 +1,6 @@
 <x-admin-layout>
-    <x-slot name="title">Intelijen Acara - {{ $event->name }}</x-slot>
-    <x-slot name="header">EVENT INTELLIGENCE</x-slot>
+    <x-slot name="title">Rincian Acara - {{ $event->name }}</x-slot>
+    <x-slot name="header">Rincian Acara</x-slot>
 
     <div class="space-y-8 animate-fade-in">
         {{-- Navigation & Quick Tindakan --}}
@@ -9,29 +9,29 @@
                 <div class="p-2 rounded-xl glass-panel group-hover:scale-110 transition-transform">
                     <x-heroicon-o-chevron-left class="w-4 h-4" />
                 </div>
-                <span class="text-xs font-bold uppercase tracking-widest">Kembali ke Direktori</span>
+                <span class="text-xs font-bold uppercase tracking-widest text-neutral-700 dark:text-slate-400">Kembali ke Direktori</span>
             </a>
             
-            <div class="flex items-center gap-3">
-                @if($event->status === 'completed')
-                    @if(!$event->payout()->exists())
+             <div class="flex items-center gap-3">
+                @if($event->status->value === 'completed')
+                    @if(!$event->finalPayout()->exists())
                         <form action="{{ route('admin.payouts.initialize', $event) }}" method="POST" class="inline">
                             @csrf
                             <button type="submit" 
-                                    class="px-5 py-2.5 rounded-2xl bg-violet-600 text-white text-xs font-bold hover:bg-violet-700 transition-all shadow-lg shadow-violet-500/20">
+                                    class="px-5 py-2.5 rounded-2xl bg-violet-600 text-white text-xs font-bold hover:bg-violet-705 transition-all shadow-lg shadow-violet-500/20">
                                 Mulai Pencairan Dana
                             </button>
                         </form>
                     @else
-                        <a href="{{ route('admin.payouts.show', $event->payout) }}" data-link
+                        <a href="{{ route('admin.payouts.show', $event->finalPayout) }}" data-link
                            class="px-5 py-2.5 rounded-2xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-500/20">
-                            Lihat Intelijen Pencairan Dana
+                            Lihat Pencairan Dana
                         </a>
                     @endif
                 @endif
 
-                @if(!in_array($event->status, ['completed', 'cancelled']))
-                    @if($event->status === 'awaiting_cancellation')
+                @if(!in_array($event->status->value, ['completed', 'cancelled']))
+                    @if($event->status->value === 'awaiting_cancellation')
                         <button x-on:click="$dispatch('open-panel', 'review-cancellation-{{ $event->latestCancellationRequest?->id }}')" 
                                 class="px-5 py-2.5 rounded-2xl glass-panel text-xs font-bold text-rose-500 hover:bg-rose-500 hover:text-white transition-all">
                             Tinjau Pembatalan
@@ -55,8 +55,8 @@
                     </div>
                     <div class="flex-1">
                         <div class="flex items-center gap-3 mb-1">
-                            <h3 class="text-lg font-black tracking-tight text-slate-900 dark:text-white">Status Pembatalan: {{ ucfirst($event->latestCancellationRequest->status) }}</h3>
-                            <span class="px-2.5 py-0.5 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-rose-100 text-rose-600 dark:bg-rose-500/20 dark:text-rose-400">
+                            <h3 class="text-lg font-black tracking-tight text-slate-900 dark:text-white">Status Pembatalan: {{ $event->latestCancellationRequest->status->label() }}</h3>
+                            <span class="px-2.5 py-0.5 rounded-lg text-xs font-bold uppercase tracking-wider bg-rose-100 text-rose-600 dark:bg-rose-500/20 dark:text-rose-400">
                                 {{ $event->latestCancellationRequest->created_at->format('d M Y') }}
                             </span>
                         </div>
@@ -64,10 +64,9 @@
                             <strong class="text-slate-900 dark:text-white block mb-1 text-xs uppercase tracking-widest">Alasan Pengajuan:</strong>
                             {{ $event->latestCancellationRequest->reason }}
                         </p>
-
-                        @if($event->latestCancellationRequest->status === 'rejected' && $event->latestCancellationRequest->rejection_reason)
+                        @if($event->latestCancellationRequest->status->value === 'rejected' && $event->latestCancellationRequest->rejection_reason)
                             <div class="p-4 rounded-xl bg-white/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800">
-                                <strong class="text-slate-900 dark:text-white block mb-1 text-[10px] uppercase tracking-widest text-rose-500">Alasan Penolakan (Admin):</strong>
+                                <strong class="text-slate-900 dark:text-white block mb-1 text-xs uppercase tracking-widest text-rose-500">Alasan Penolakan (Admin):</strong>
                                 <p class="text-sm text-slate-600 dark:text-slate-400">{{ $event->latestCancellationRequest->rejection_reason }}</p>
                             </div>
                         @endif
@@ -95,10 +94,10 @@
                 <div class="flex-1 space-y-6">
                     <div class="space-y-2">
                         <div class="flex items-center gap-3">
-                            <span class="px-3 py-1 rounded-xl bg-violet-500/10 text-violet-500 text-[10px] font-black uppercase tracking-widest">{{ $event->category->name }}</span>
-                            <span class="px-3 py-1 rounded-xl border {{ $event->status === 'published' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 'bg-amber-500/10 text-amber-500 border-amber-500/20' }} text-[10px] font-black uppercase tracking-widest">{{ $event->status }}</span>
+                            <span class="px-3 py-1 rounded-xl bg-violet-500/10 text-violet-500 text-xs font-bold uppercase tracking-widest">{{ $event->category->name }}</span>
+                            <span class="px-3 py-1 rounded-xl border {{ $event->status->value === 'published' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 'bg-amber-500/10 text-amber-500 border-amber-500/20' }} text-xs font-bold uppercase tracking-widest">{{ $event->status->label() }}</span>
                         </div>
-                        <h1 class="text-4xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white">{{ $event->name }}</h1>
+                        <h1 class="text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white">{{ $event->name }}</h1>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -108,9 +107,9 @@
                                     <x-heroicon-o-map-pin class="w-4 h-4" />
                                 </div>
                                 <div>
-                                    <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Intelijen Lokasi</div>
-                                    <div class="text-sm font-bold text-slate-700 dark:text-slate-300 leading-relaxed">{{ $event->venue_name }}</div>
-                                    <div class="text-xs text-slate-500 mt-1">{{ $event->city }}, {{ $event->address }}</div>
+                                    <div class="text-xs font-bold uppercase tracking-widest text-neutral-700 dark:text-slate-400 mb-1">Lokasi</div>
+                                    <div class="text-sm font-bold text-slate-900 dark:text-white leading-relaxed">{{ $event->venue_name }}</div>
+                                    <div class="text-sm text-slate-550 dark:text-slate-400 mt-1">{{ $event->city }}, {{ $event->address }}</div>
                                 </div>
                             </div>
                             <div class="flex items-start gap-3">
@@ -118,9 +117,9 @@
                                     <x-heroicon-o-calendar class="w-4 h-4" />
                                 </div>
                                 <div>
-                                    <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Jadwal Acara</div>
-                                    <div class="text-sm font-bold text-slate-700 dark:text-slate-300">{{ $event->event_date->format('l, d F Y') }}</div>
-                                    <div class="text-xs text-slate-500 mt-1">{{ \Carbon\Carbon::parse($event->start_time)->format('H:i') }} - {{ \Carbon\Carbon::parse($event->end_time)->format('H:i') }} WIB</div>
+                                    <div class="text-xs font-bold uppercase tracking-widest text-neutral-700 dark:text-slate-400 mb-1">Jadwal Acara</div>
+                                    <div class="text-sm font-bold text-slate-900 dark:text-white">{{ $event->event_date->translatedFormat('l, d F Y') }}</div>
+                                    <div class="text-sm text-slate-550 dark:text-slate-400 mt-1">{{ \Carbon\Carbon::parse($event->start_time)->translatedFormat('H:i') }} - {{ \Carbon\Carbon::parse($event->end_time)->translatedFormat('H:i') }} WIB</div>
                                 </div>
                             </div>
                         </div>
@@ -131,11 +130,11 @@
                                     <x-heroicon-o-user class="w-4 h-4" />
                                 </div>
                                 <div>
-                                    <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Penyelenggara Entity</div>
+                                    <div class="text-xs font-bold uppercase tracking-widest text-neutral-700 dark:text-slate-400 mb-1">Nama Penyelenggara</div>
                                     <a href="{{ route('admin.users.show', $event->organizer) }}" class="text-sm font-bold text-violet-500 hover:underline">
                                         {{ $event->organizer->organizerProfile->organization_name ?? $event->organizer->name }}
                                     </a>
-                                    <div class="text-xs text-slate-500 mt-1">Direct verification available in user intelligence</div>
+                                    <div class="text-sm text-slate-550 dark:text-slate-400 mt-1">Verifikasi tersedia di opsi pengguna</div>
                                 </div>
                             </div>
                         </div>
@@ -154,32 +153,32 @@
 
                 <div class="flex items-center gap-2 mb-2 relative z-10">
                     <div class="w-1.5 h-4 bg-emerald-500 rounded-full"></div>
-                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Sales Performance</h3>
+                    <h3 class="text-xs font-bold uppercase tracking-widest text-neutral-700 dark:text-slate-400">Performa Penjualan</h3>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative z-10 items-center">
                     <div>
-                        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-1">Gross Pendapatan</div>
-                        <div class="text-4xl font-black text-slate-900 dark:text-white">{{ $intelligence['revenue']['formatted_gross'] }}</div>
+                        <div class="text-xs font-bold uppercase tracking-widest text-neutral-700 dark:text-slate-400 mb-1">Pendapatan Kotor</div>
+                        <div class="text-4xl font-extrabold text-slate-900 dark:text-white">{{ $intelligence['revenue']['formatted_gross'] }}</div>
                     </div>
 
                     <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 flex flex-col justify-center">
-                        <div class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">Tickets Sold</div>
+                        <div class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Tiket Terjual</div>
                         <div class="text-2xl font-black text-slate-900 dark:text-white">{{ number_format($intelligence['ticketing']['total_sold']) }} <span class="text-xs text-slate-400 font-medium ml-1">/ {{ number_format($intelligence['ticketing']['total_quota']) }}</span></div>
                     </div>
                     
                     <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 flex flex-col justify-center">
-                        <div class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">Merchandise Sold</div>
-                        <div class="text-2xl font-black text-slate-900 dark:text-white">{{ number_format($intelligence['merchandise']['total_sold'] ?? 0) }} <span class="text-xs text-slate-400 font-medium ml-1">items</span></div>
+                        <div class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Suvenir Terjual</div>
+                        <div class="text-2xl font-black text-slate-900 dark:text-white">{{ number_format($intelligence['merchandise']['total_sold'] ?? 0) }} <span class="text-xs text-slate-400 font-medium ml-1">pcs</span></div>
                     </div>
 
                     <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 flex flex-col justify-center h-full">
-                        <div class="flex justify-between items-center text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-2">
-                            <span>Projection After Fees</span>
+                        <div class="flex justify-between items-center text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">
+                            <span>Estimasi Pencairan Dana</span>
                             <span class="text-slate-600 dark:text-slate-300">Rp {{ number_format($intelligence['revenue']['payout_projection'], 0, ',', '.') }}</span>
                         </div>
-                        <div class="flex justify-between items-center text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1 mt-2">
-                            <span>Ticketing Fill Rate</span>
+                        <div class="flex justify-between items-center text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 mt-2">
+                            <span>Tingkat Terjual</span>
                             <span class="text-violet-500">{{ $intelligence['ticketing']['fill_rate'] }}%</span>
                         </div>
                         <div class="w-full h-1.5 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
@@ -197,9 +196,9 @@
                 <div class="flex items-center justify-between mb-2">
                     <div class="flex items-center gap-2">
                         <div class="w-1.5 h-4 bg-blue-500 rounded-full"></div>
-                        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Ticketing Registry</h3>
+                        <h3 class="text-base font-bold uppercase tracking-widest text-neutral-700 dark:text-slate-400">Rincian Tiket</h3>
                     </div>
-                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">{{ $event->ticketCategories->count() }} Tiers Aktif</span>
+                    <span class="text-xs font-bold uppercase tracking-widest text-neutral-700 dark:text-slate-400">{{ $event->ticketCategories->count() }} Kategori Tiket Aktif</span>
                 </div>
 
                 <div class="flex-1 overflow-hidden">
@@ -213,12 +212,12 @@
                                             <div class="text-xs font-bold text-slate-500 mt-0.5">Rp {{ number_format($cat['price'], 0, ',', '.') }}</div>
                                         </div>
                                         @if($cat['is_sold_out'])
-                                            <span class="px-2 py-0.5 rounded-lg bg-rose-500 text-white text-[8px] font-black uppercase tracking-widest">Sold Out</span>
+                                            <span class="px-2 py-0.5 rounded-lg bg-rose-500 text-white text-xs font-black uppercase tracking-widest">Terjual</span>
                                         @endif
                                     </div>
                                     
                                     <div class="space-y-2">
-                                        <div class="flex justify-between text-[9px] font-bold uppercase tracking-widest">
+                                        <div class="flex justify-between text-xs font-bold uppercase tracking-widest">
                                             <span class="text-slate-400">Status Inventaris</span>
                                             <span class="text-slate-600 dark:text-slate-300">{{ $cat['sold'] }} / {{ $cat['quota'] }}</span>
                                         </div>
@@ -243,7 +242,7 @@
             <section class="lg:col-span-1 glass-panel p-8 rounded-[2rem] space-y-6 flex flex-col">
                 <div class="flex items-center gap-2 mb-2">
                     <div class="w-1.5 h-4 bg-fuchsia-500 rounded-full"></div>
-                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Merchandise Inventory</h3>
+                    <h3 class="text-base font-bold uppercase tracking-widest text-neutral-700 dark:text-slate-400">Suvenir</h3>
                 </div>
 
                 <div class="flex-1 overflow-y-auto">
@@ -257,7 +256,7 @@
                                         </div>
                                         <div class="flex-1 min-w-0">
                                             <div class="text-sm font-bold text-slate-900 dark:text-white truncate group-hover:text-fuchsia-500 transition-colors">{{ $item['name'] }}</div>
-                                            <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">Rp {{ number_format($item['base_price'], 0, ',', '.') }}</div>
+                                            <div class="text-xs font-bold text-slate-500 uppercase tracking-widest mt-0.5">Rp {{ number_format($item['base_price'], 0, ',', '.') }}</div>
                                         </div>
                                         @if($item['total_stock'] > 0 && $item['sold'] >= $item['total_stock'])
                                             <span class="px-2 py-0.5 rounded-lg bg-rose-500 text-white text-[8px] font-black uppercase tracking-widest shrink-0">Sold Out</span>
@@ -265,7 +264,7 @@
                                     </div>
 
                                     <div class="space-y-2">
-                                        <div class="flex justify-between text-[9px] font-bold uppercase tracking-widest">
+                                        <div class="flex justify-between text-xs font-bold uppercase tracking-widest">
                                             <span class="text-slate-400">Terjual</span>
                                             <span class="text-slate-600 dark:text-slate-300">{{ $item['sold'] }} / {{ $item['total_stock'] }}</span>
                                         </div>
@@ -279,8 +278,8 @@
                         </div>
                     @else
                         <div class="flex flex-col items-center justify-center h-full opacity-40 py-12">
-                            <span class="text-4xl mb-2">👕</span>
-                            <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Belum ada merchandise terdaftar</p>
+                            <x-heroicon-o-shopping-bag class="w-10 h-10 mx-auto mb-2 text-slate-600 dark:text-slate-400" />
+                            <p class="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-widest">Belum ada suvernir terdaftar</p>
                         </div>
                     @endif
                 </div>
@@ -294,9 +293,8 @@
                 <div class="flex items-center justify-between mb-2">
                     <div class="flex items-center gap-2">
                         <div class="w-1.5 h-4 bg-amber-500 rounded-full"></div>
-                        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Aliran Aktivitas Terbaru</h3>
+                        <h3 class="text-base font-bold uppercase tracking-widest text-neutral-700 dark:text-slate-400">Transaksi Terkini</h3>
                     </div>
-                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">10 Transaksi Terakhir</span>
                 </div>
 
                 <div class="border border-slate-100 dark:border-slate-800 rounded-2xl overflow-hidden">
@@ -310,14 +308,14 @@
                                         </div>
                                         <div>
                                             <div class="text-sm font-bold text-slate-900 dark:text-white">{{ $order->user->name }}</div>
-                                            <div class="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Order #{{ substr($order->id, 0, 8) }} • {{ $order->created_at->diffForHumans() }}</div>
+                                            <div class="text-xs text-slate-500 uppercase tracking-widest font-bold">Order #{{ substr($order->id, 0, 8) }} • {{ $order->created_at->diffForHumans() }}</div>
                                         </div>
                                     </div>
                                     <div class="text-right">
                                         <div class="text-sm font-black text-slate-900 dark:text-white">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</div>
                                         <span class="inline-flex items-center px-2 py-0.5 rounded-lg text-[8px] font-black uppercase tracking-widest
-                                            {{ $order->status === 'paid' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-amber-500/10 text-amber-500' }}">
-                                            {{ $order->status }}
+                                            {{ $order->status->value === 'paid' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-amber-500/10 text-amber-500' }}">
+                                            {{ $order->status->label() }}
                                         </span>
                                     </div>
                                 </div>
@@ -325,8 +323,8 @@
                         </div>
                     @else
                         <div class="p-12 text-center opacity-40">
-                            <span class="text-4xl mb-2 block">📉</span>
-                            <p class="text-sm font-bold text-slate-400 uppercase tracking-widest">Menunggu Transaksi Pertama</p>
+                            <x-heroicon-o-chart-bar-square class="w-10 h-10 mx-auto mb-2 text-slate-600 dark:text-slate-400" />
+                            <p class="text-sm font-bold text-slate-600 dark:text-slate-400 uppercase tracking-widest">Menunggu Transaksi Pertama</p>
                         </div>
                     @endif
                 </div>
@@ -335,7 +333,7 @@
     </div>
 
     @push('modals')
-        @if($event->status === 'awaiting_cancellation' && $event->latestCancellationRequest)
+        @if($event->status->value === 'awaiting_cancellation' && $event->latestCancellationRequest)
             @include('admin.cancellations.partials.review-modal', ['cancellation' => $event->latestCancellationRequest])
         @else
             @include('admin.events.partials.review-modal', ['event' => $event])

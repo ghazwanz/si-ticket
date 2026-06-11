@@ -158,7 +158,7 @@ class EventCatalogTest extends TestCase
         $response = $this->get("/events/{$event->slug}");
         $response->assertOk();
         // Warns that ticket sales are temporarily suspended
-        $response->assertSee('Ticket sales are temporarily suspended.');
+        $response->assertSee('Penjualan Tiket Ditunda');
     }
 
     public function test_cancelled_event_returns_404_for_unauthenticated_users(): void
@@ -194,5 +194,27 @@ class EventCatalogTest extends TestCase
         $response->assertOk();
         $response->assertSee('Event Cancelled');
         $response->assertSee($event->name);
+    }
+
+    public function test_public_page_displays_session_notifications(): void
+    {
+        $event = Event::factory()->create([
+            'organizer_id' => $this->organizer->id,
+            'category_id' => $this->category1->id,
+            'status' => 'published',
+            'event_date' => now()->addDays(5),
+        ]);
+
+        // Scenario 1: Test error message in session
+        $response = $this->withSession(['error' => 'Pesan kesalahan contoh'])
+            ->get("/events/{$event->slug}");
+        $response->assertSee('Pesan kesalahan contoh');
+        $response->assertSee('Gagal');
+
+        // Scenario 2: Test success message in session
+        $response = $this->withSession(['success' => 'Pesan sukses contoh'])
+            ->get("/events/{$event->slug}");
+        $response->assertSee('Pesan sukses contoh');
+        $response->assertSee('Berhasil');
     }
 }

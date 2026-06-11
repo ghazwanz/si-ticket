@@ -36,6 +36,9 @@ class UpdateUserRequest extends FormRequest
             'bank_name' => 'required_if:role,organizer|nullable|string|max:255',
             'bank_account_number' => 'required_if:role,organizer|nullable|string|max:50',
             'bank_account_name' => 'required_if:role,organizer|nullable|string|max:255',
+            'organization_address' => 'required_if:role,organizer|nullable|string',
+            'official_contact' => 'required_if:role,organizer|nullable|string|email|max:255',
+            'legality_document' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
         ];
     }
 }

@@ -14,9 +14,9 @@
             <x-dynamic-component :component="$iconComponent" class="h-5 w-5" />
         </div>
         <div>
-            <h3 class="font-extrabold tracking-tight text-slate-950 dark:text-white">{{ $title }}</h3>
+            <h3 class="font-extrabold text-lg tracking-tight text-slate-950 dark:text-white">{{ $title }}</h3>
             @if($description)
-                <p class="mt-1 text-sm leading-6 text-slate-500 dark:text-slate-400">{{ $description }}</p>
+                <p class="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-400">{{ $description }}</p>
             @endif
         </div>
     </div>

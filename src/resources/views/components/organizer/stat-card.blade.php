@@ -19,13 +19,13 @@
 
 <div {{ $attributes->merge(['class' => 'glass-panel rounded-2xl p-5 border border-white/60 dark:border-white/10 shadow-sm']) }}>
     <div class="flex items-center justify-between gap-4">
-        <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400">{{ $label }}</p>
+        <p class="text-sm font-bold uppercase tracking-widest text-slate-600 dark:text-slate-400">{{ $label }}</p>
         <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl {{ $tones[$tone] ?? $tones['violet'] }}">
             <x-dynamic-component :component="$iconComponent" class="w-5 h-5" />
         </span>
     </div>
     <p class="mt-3 text-2xl font-extrabold tracking-tight text-slate-950 dark:text-white">{{ $value }}</p>
     @if($meta)
-        <p class="mt-1 text-xs font-medium text-slate-500 dark:text-slate-400">{{ $meta }}</p>
+        <p class="mt-1 text-sm font-medium text-slate-600 dark:text-slate-400">{{ $meta }}</p>
     @endif
 </div>

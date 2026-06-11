@@ -2,8 +2,10 @@
 
 namespace App\Http\Requests\Organizer;
 
+use App\Enums\EventStatus;
 use App\Models\Event;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Validator;
 
 class UpdateEventRequest extends FormRequest
 {
@@ -24,9 +26,9 @@ class UpdateEventRequest extends FormRequest
         $statusRule = 'required|in:draft,awaiting_approval';
 
         if ($event) {
-            $isLocked = $event->status === 'published' && $event->ticketCategories->sum('sold_count') > 0;
+            $isLocked = ($event->status === EventStatus::Published || $event->status->value === 'published') && $event->ticketCategories->sum('sold_count') > 0;
 
-            if ($event->status === 'published') {
+            if ($event->status === EventStatus::Published || $event->status->value === 'published') {
                 $statusRule = 'required|in:published';
             }
         }
@@ -70,7 +72,7 @@ class UpdateEventRequest extends FormRequest
     /**
      * Configure the validator instance.
      *
-     * @param  \Illuminate\Validation\Validator  $validator
+     * @param  Validator  $validator
      * @return void
      */
     public function withValidator($validator)
@@ -96,7 +98,7 @@ class UpdateEventRequest extends FormRequest
                             if ($basePrice + $adjustment < 0) {
                                 $validator->errors()->add(
                                     "merchandise.{$index}.variants.{$vIndex}.price_adjustment",
-                                    "Harga akhir varian (Base Price + Adjustment) tidak boleh kurang dari 0."
+                                    'Harga akhir varian (Base Price + Adjustment) tidak boleh kurang dari 0.'
                                 );
                             }
                         }

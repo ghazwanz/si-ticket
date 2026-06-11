@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Organizer;
 
+use App\Enums\EventStatus;
+use App\Enums\OrderStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Organizer\StoreEventRequest;
 use App\Http\Requests\Organizer\UpdateEventRequest;
@@ -11,7 +13,8 @@ use App\Models\MerchandiseItem;
 use App\Models\MerchandiseVariant;
 use App\Models\Order;
 use App\Models\TicketCategory;
-use App\Services\CancellationService;
+use App\Services\Organizer\CancellationService;
+use App\Services\Organizer\EventService;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -22,11 +25,30 @@ use Illuminate\View\View;
 
 class EventController extends Controller
 {
-    public function index(): View
-    {
-        $events = Event::with('category')->where('organizer_id', auth()->id())->latest()->paginate(10);
+    public function __construct(
+        protected EventService $eventService
+    ) {}
 
-        return view('organizer.events.index', compact('events'));
+    public function index(Request $request): View
+    {
+        $organizerId = auth()->id();
+        $events = $this->eventService->getPaginatedEventsForOrganizer($organizerId, $request->all());
+
+        $eventIds = Event::where('organizer_id', $organizerId)->pluck('id');
+
+        $ticketsSold = (int) TicketCategory::whereIn('event_id', $eventIds)->sum('sold_count');
+
+        $totalRevenue = (int) Order::whereIn('event_id', $eventIds)->where('status', OrderStatus::Paid)->sum('total_amount');
+
+        $upcomingEvents = Event::where('organizer_id', $organizerId)
+            ->where('status', EventStatus::Published)
+            ->where('event_date', '>=', now()->toDateString())
+            ->count();
+
+        $categories = EventCategory::orderBy('name')->pluck('name', 'id');
+        $statuses = collect(EventStatus::cases())->mapWithKeys(fn ($s) => [$s->value => $s->label()]);
+
+        return view('organizer.events.index', compact('events', 'ticketsSold', 'totalRevenue', 'upcomingEvents', 'categories', 'statuses'));
     }
 
     public function create(): View
@@ -54,7 +76,7 @@ class EventController extends Controller
                 'event_date' => $request->date('event_date'),
                 'start_time' => $request->string('start_time'),
                 'end_time' => $request->string('end_time'),
-                'status' => $request->string('status'),
+                'status' => $request->input('status'),
                 'banner_image' => $bannerPath,
                 'is_featured' => false,
             ]);
@@ -76,11 +98,11 @@ class EventController extends Controller
             ->findOrFail($id);
 
         $filter = $request->query('filter', '30'); // '7', '30', 'all'
-        
+
         $paidOrdersQuery = Order::query()
             ->where('event_id', $event->id)
-            ->where('status', 'paid');
-            
+            ->where('status', OrderStatus::Paid);
+
         if ($filter !== 'all') {
             $days = (int) $filter;
             $paidOrdersQuery->where('paid_at', '>=', now()->subDays($days)->startOfDay());
@@ -94,23 +116,23 @@ class EventController extends Controller
 
         // Aggregate Stats
         $totalRevenue = (clone $paidOrdersQuery)->sum('total_amount');
-        
+
         $ticketSold = 0;
         $merchSold = 0;
-        
+
         // Transaction Activity (Paginated)
         $transactions = (clone $paidOrdersQuery)
             ->with(['user', 'tickets.ticketCategory', 'merchandise.merchandiseItem', 'merchandise.merchandiseVariant'])
             ->latest('paid_at')
             ->paginate(10)
             ->withQueryString();
-            
+
         // Calculate dynamic ticket & merch sold based on filtered orders
         // Because $event->ticketCategories->sum('sold_count') is all-time, we need to calculate it for the date range
         // If filter is all, we can just use the models. Otherwise, query order relationships.
         if ($filter === 'all') {
             $ticketSold = $event->ticketCategories->sum('sold_count');
-            // For merch sold, we'd need to query if there's a sold_count on merch. 
+            // For merch sold, we'd need to query if there's a sold_count on merch.
             // Wait, there is no sold_count on merchandise_items in DB. We query OrderMerchandise anyway.
         }
 
@@ -119,7 +141,7 @@ class EventController extends Controller
         $filteredTicketSold = DB::table('order_tickets')
             ->whereIn('order_id', $filteredOrdersIds)
             ->count();
-            
+
         $filteredMerchSold = DB::table('order_merchandise')
             ->whereIn('order_id', $filteredOrdersIds)
             ->sum('quantity');
@@ -135,7 +157,7 @@ class EventController extends Controller
 
         // Charts Data
         $chartDays = collect(range($days, 0))->map(fn (int $day): string => now()->subDays($day)->format('Y-m-d'));
-        
+
         $dailyTransactions = (clone $paidOrdersQuery)
             ->selectRaw('DATE(paid_at) as date, SUM(total_amount) as total, COUNT(*) as count')
             ->groupBy('date')
@@ -147,7 +169,7 @@ class EventController extends Controller
             'revenue' => $chartDays->map(fn (string $date): int => $dailyTransactions->has($date) ? (int) $dailyTransactions[$date]->total : 0)->toArray(),
             'volume' => $chartDays->map(fn (string $date): int => $dailyTransactions->has($date) ? (int) $dailyTransactions[$date]->count : 0)->toArray(),
         ];
-        
+
         // Distribution Data
         $ticketDistributionData = DB::table('order_tickets')
             ->join('ticket_categories', 'order_tickets.ticket_category_id', '=', 'ticket_categories.id')
@@ -156,7 +178,7 @@ class EventController extends Controller
             ->groupBy('ticket_categories.name')
             ->orderByDesc('count')
             ->get();
-            
+
         $merchDistributionData = DB::table('order_merchandise')
             ->join('merchandise_variants', 'order_merchandise.merchandise_variant_id', '=', 'merchandise_variants.id')
             ->join('merchandise_items', 'merchandise_variants.merchandise_item_id', '=', 'merchandise_items.id')
@@ -165,9 +187,9 @@ class EventController extends Controller
             ->groupBy('merchandise_items.name')
             ->orderByDesc('count')
             ->get();
-            
+
         $tones = ['bg-violet-600', 'bg-fuchsia-500', 'bg-sky-500', 'bg-emerald-500', 'bg-amber-500', 'bg-rose-500'];
-        
+
         $ticketTotal = max($filteredTicketSold, 1);
         $ticketDistribution = $ticketDistributionData->map(fn ($item, $index) => [
             'label' => $item->label,
@@ -183,7 +205,7 @@ class EventController extends Controller
             'percentage' => round(($item->count / $merchTotal) * 100),
             'color' => $tones[$index % count($tones)],
         ]);
-        
+
         // Variant Sales Breakdown
         $merchVariantsSold = DB::table('order_merchandise')
             ->join('merchandise_variants', 'order_merchandise.merchandise_variant_id', '=', 'merchandise_variants.id')
@@ -195,7 +217,7 @@ class EventController extends Controller
             ->get();
 
         return view('organizer.events.show', compact(
-            'event', 'filter', 'stats', 'transactions', 'analytics', 
+            'event', 'filter', 'stats', 'transactions', 'analytics',
             'ticketDistribution', 'merchDistribution', 'merchVariantsSold'
         ));
     }
@@ -218,11 +240,14 @@ class EventController extends Controller
             ->where('organizer_id', $request->user()->id)
             ->findOrFail($id);
 
-        $isLocked = $event->status === 'published' && $event->ticketCategories->sum('sold_count') > 0;
+        $isLocked = $event->status === EventStatus::Published && $event->hasSales();
 
         $bannerPath = $this->handleBannerUpload($request, $event->banner_image);
 
         DB::transaction(function () use ($event, $request, $bannerPath, $isLocked): void {
+            $newStatus = $request->input('status');
+            $rejectionMessage = $newStatus === 'awaiting_approval' ? null : $event->rejection_message;
+
             $event->update([
                 'category_id' => $request->string('category_id'),
                 'name' => $request->string('name'),
@@ -233,8 +258,9 @@ class EventController extends Controller
                 'event_date' => $isLocked ? $event->event_date : $request->date('event_date'),
                 'start_time' => $isLocked ? $event->start_time : $request->string('start_time'),
                 'end_time' => $isLocked ? $event->end_time : $request->string('end_time'),
-                'status' => $request->string('status'),
+                'status' => $newStatus,
                 'banner_image' => $bannerPath,
+                'rejection_message' => $rejectionMessage,
             ]);
 
             $this->syncTicketCategories($event, $request->validated('tickets'), $isLocked);
@@ -259,6 +285,11 @@ class EventController extends Controller
         $event = Event::query()
             ->where('organizer_id', auth()->id())
             ->findOrFail($id);
+
+        if (auth()->user()->cannot('delete', $event)) {
+            return redirect()->route('organizer.events.index')
+                ->withErrors(['error' => 'Acara tidak dapat dihapus karena telah diterbitkan dan memiliki tiket terjual yang belum selesai.']);
+        }
 
         $event->delete();
 

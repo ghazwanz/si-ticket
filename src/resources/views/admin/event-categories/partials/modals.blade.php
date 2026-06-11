@@ -1,5 +1,5 @@
 {{-- Panel Ubah Kategori --}}
-<x-admin-panel 
+<x-admin.panel 
     name="edit-category-{{ $category->id }}" 
     title="Ubah Klasifikasi" 
     description="Perbarui nama dan properti kategori {{ $category->name }}."
@@ -158,7 +158,7 @@
             </x-primary-button>
         </div>
     </x-slot>
-</x-admin-panel>
+</x-admin.panel>
 
 {{-- Modal Hapus Kategori --}}
 <x-modal name="delete-category-{{ $category->id }}" maxWidth="md">

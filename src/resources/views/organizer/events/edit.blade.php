@@ -7,7 +7,7 @@
         <x-organizer.page-hero
             eyebrow="Penyempurnaan Acara"
             title="Edit {{ $event->name }}"
-            description="Perbarui informasi acara dengan hati-hati agar detail publikasi, jadwal, lokasi, dan kategori tiket tetap akurat."
+            description="Perbarui informasi acara dengan hati-hati agar rincian publikasi, jadwal, lokasi, dan kategori tiket tetap akurat."
             icon="pencil-square" />
 
         @include('organizer.events.partials.form', [

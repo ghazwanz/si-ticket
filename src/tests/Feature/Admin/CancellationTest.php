@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Admin;
 
+use App\Enums\CancellationRequestStatus;
+use App\Enums\EventStatus;
+use App\Enums\PayoutStatus;
 use App\Enums\UserRole;
 use App\Models\CancellationRequest;
 use App\Models\Event;
@@ -93,8 +96,8 @@ final class CancellationTest extends TestCase
             'reviewed_by' => $admin->id,
         ]);
 
-        $this->assertEquals('cancelled', $event->fresh()->status);
-        $this->assertEquals('voided', $payout->fresh()->status);
+        $this->assertEquals(EventStatus::Cancelled, $event->fresh()->status);
+        $this->assertEquals(PayoutStatus::Voided, $payout->fresh()->status);
 
         Notification::assertSentTo($ticketHolder, EventCancelledNotification::class);
         Notification::assertSentTo($organizer, CancellationApprovedNotification::class);
@@ -138,7 +141,7 @@ final class CancellationTest extends TestCase
             'rejection_reason' => 'Alasan penolakan pembatalan ini valid dan panjang.',
         ]);
 
-        $this->assertEquals('published', $event->fresh()->status);
+        $this->assertEquals(EventStatus::Published, $event->fresh()->status);
 
         Notification::assertSentTo($organizer, CancellationRejectedNotification::class);
     }
@@ -171,7 +174,7 @@ final class CancellationTest extends TestCase
 
         $response->assertRedirect(route('admin.cancellations.index'));
         $response->assertSessionHasErrors('rejection_reason');
-        $this->assertEquals('pending', $cancellation->fresh()->status);
+        $this->assertEquals(CancellationRequestStatus::Pending, $cancellation->fresh()->status);
 
         // Scenario 2: Too short reason (less than 10 chars)
         $response = $this->actingAs($admin)
@@ -182,7 +185,7 @@ final class CancellationTest extends TestCase
 
         $response->assertRedirect(route('admin.cancellations.index'));
         $response->assertSessionHasErrors('rejection_reason');
-        $this->assertEquals('pending', $cancellation->fresh()->status);
+        $this->assertEquals(CancellationRequestStatus::Pending, $cancellation->fresh()->status);
     }
 
     /**
@@ -213,8 +216,8 @@ final class CancellationTest extends TestCase
         $response->assertRedirect();
         $response->assertSessionHas('error', 'Batas waktu pembatalan acara telah terlampaui.');
 
-        $this->assertEquals('pending', $cancellation->fresh()->status);
-        $this->assertEquals('awaiting_cancellation', $event->fresh()->status);
+        $this->assertEquals(CancellationRequestStatus::Pending, $cancellation->fresh()->status);
+        $this->assertEquals(EventStatus::AwaitingCancellation, $event->fresh()->status);
     }
 
     /**
@@ -247,8 +250,8 @@ final class CancellationTest extends TestCase
         $response->assertRedirect();
         $response->assertSessionHas('error', 'Batas waktu pembatalan acara telah terlampaui.');
 
-        $this->assertEquals('pending', $cancellation->fresh()->status);
-        $this->assertEquals('awaiting_cancellation', $event->fresh()->status);
+        $this->assertEquals(CancellationRequestStatus::Pending, $cancellation->fresh()->status);
+        $this->assertEquals(EventStatus::AwaitingCancellation, $event->fresh()->status);
     }
 
     /**
@@ -317,9 +320,9 @@ final class CancellationTest extends TestCase
         $this->actingAs($admin)->put(route('admin.cancellations.approve', $cancellationProcessing));
         $this->actingAs($admin)->put(route('admin.cancellations.approve', $cancellationCompleted));
 
-        $this->assertEquals('voided', $payoutPending->fresh()->status);
-        $this->assertEquals('voided', $payoutProcessing->fresh()->status);
-        $this->assertEquals('completed', $payoutCompleted->fresh()->status);
+        $this->assertEquals(PayoutStatus::Voided, $payoutPending->fresh()->status);
+        $this->assertEquals(PayoutStatus::Voided, $payoutProcessing->fresh()->status);
+        $this->assertEquals(PayoutStatus::Completed, $payoutCompleted->fresh()->status);
     }
 
     /**

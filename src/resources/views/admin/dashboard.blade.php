@@ -9,12 +9,6 @@
                 <h2 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Selamat Datang, Admin</h2>
                 <p class="text-slate-500 dark:text-slate-400 mt-1 text-sm font-medium">Overview performa platform JoinFest hari ini.</p>
             </div>
-            <div class="flex items-center gap-2">
-                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold uppercase tracking-wider border border-emerald-500/20">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                    Live Updates
-                </span>
-            </div>
         </div>
 
         {{-- Stats Grid --}}
@@ -27,7 +21,7 @@
                 <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-1">Total Pengguna</p>
                 <h3 class="text-3xl font-bold text-slate-900 dark:text-white tabular-nums">{{ number_format($stats['total_pengguna']) }}</h3>
                 <div class="mt-4 flex items-center gap-2">
-                    <span class="text-[10px] font-bold text-emerald-500">+12% vs last month</span>
+                    <span class="text-[10px] font-bold {{ $stats['user_growth_color'] }}">{{ $stats['user_growth_text'] }}</span>
                 </div>
             </div>
 
@@ -36,10 +30,16 @@
                 <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                     <svg class="w-12 h-12 text-orange-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 00 2 2h10a2 2 0 00 2-2V7a2 2 0 00-2-2h-2"/></svg>
                 </div>
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-1">Event Tinjau</p>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-1">Tinjau Acara</p>
                 <h3 class="text-3xl font-bold text-slate-900 dark:text-white tabular-nums text-orange-500">{{ $stats['event_review'] }}</h3>
                 <div class="mt-4 flex items-center gap-2">
-                    <a href="{{ route('admin.events.index') }}" class="text-[10px] font-bold text-orange-600 dark:text-orange-400 hover:underline">Tinjau Sekarang &rarr;</a>
+                    @if($stats['event_review'] > 0)
+                        <a href="{{ route('admin.events.index') }}" data-link class="text-[10px] font-bold text-orange-600 dark:text-orange-400 hover:underline">
+                            {{ $stats['event_review'] }} acara membutuhkan persetujuan &rarr;
+                        </a>
+                    @else
+                        <span class="text-[10px] font-bold text-slate-400">Semua acara telah ditinjau</span>
+                    @endif
                 </div>
             </div>
 
@@ -48,10 +48,10 @@
                 <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                     <svg class="w-12 h-12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                 </div>
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-1">Event Aktif</p>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-1">Acara Aktif</p>
                 <h3 class="text-3xl font-bold text-slate-900 dark:text-white tabular-nums text-violet-500">{{ $stats['event_aktif'] }}</h3>
                 <div class="mt-4 flex items-center gap-2">
-                    <span class="text-[10px] font-bold text-slate-400">Sedang berlangsung</span>
+                    <span class="text-[10px] font-bold {{ $stats['event_growth_color'] }}">{{ $stats['event_growth_text'] }}</span>
                 </div>
             </div>
 
@@ -60,10 +60,14 @@
                 <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                     <svg class="w-12 h-12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                 </div>
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-1">EO Pending</p>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-1">EO Tertunda</p>
                 <h3 class="text-3xl font-bold text-slate-900 dark:text-white tabular-nums text-rose-500">{{ $stats['eo_pending'] }}</h3>
                 <div class="mt-4 flex items-center gap-2">
-                    <span class="text-[10px] font-bold text-rose-500">Verifikasi diperlukan</span>
+                    @if($stats['eo_pending'] > 0)
+                        <span class="text-[10px] font-bold text-rose-500">{{ $stats['eo_pending'] }} EO menunggu verifikasi</span>
+                    @else
+                        <span class="text-[10px] font-bold text-slate-400">Tidak ada EO tertunda</span>
+                    @endif
                 </div>
             </div>
         </div>
@@ -160,10 +164,10 @@
                     <button class="text-xs font-bold text-violet-600 dark:text-violet-400 hover:underline">Lihat Semua</button>
                 </div>
                 <div class="space-y-6">
-                    @foreach($logs as $log)
+                    @forelse($logs as $log)
                     <div class="flex items-start gap-4 group">
-                        <div class="w-10 h-10 rounded-2xl {{ $log['color'] }} flex items-center justify-center font-bold text-sm shrink-0 group-hover:scale-110 transition-transform">
-                            {{ $log['icon'] }}
+                        <div class="w-10 h-10 rounded-2xl {{ $log['color'] }} flex items-center justify-center font-bold text-sm shrink-0 group-hover:scale-110 transition-transform" data-icon="{{ $log['icon'] }}">
+                            <x-dynamic-component :component="'heroicon-o-' . $log['icon']" class="w-5 h-5" />
                         </div>
                         <div class="flex-1">
                             <div class="flex items-center justify-between">
@@ -173,7 +177,11 @@
                             <p class="text-xs text-slate-500 mt-0.5">Oleh: <span class="text-slate-700 dark:text-slate-300">{{ $log['user'] }}</span></p>
                         </div>
                     </div>
-                    @endforeach
+                    @empty
+                    <div class="text-center py-8">
+                        <p class="text-xs text-slate-500">Tidak ada aktivitas terbaru.</p>
+                    </div>
+                    @endforelse
                 </div>
             </div>
 

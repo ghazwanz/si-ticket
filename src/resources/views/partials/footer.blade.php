@@ -2,11 +2,11 @@
     <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
         <div class="grid gap-3 content-start">
             <a href="{{ url('/') }}" class="inline-flex items-center gap-3 text-lg font-bold tracking-tight text-slate-900">
-                <img src="{{ asset('img/EOLogo.png') }}" alt="JoinFest logo" class="h-9 w-9 rounded-full">
+                <img src="{{ asset('favicon.svg') }}" alt="JoinFest logo" class="h-9 w-9 object-contain">
                 <span>JoinFest</span>
             </a>
             <p class="text-sm leading-7 text-slate-500">
-                Platform tiket, festival, dan merchandise resmi untuk pengalaman event yang cepat, aman, dan mudah diakses.
+                Platform tiket, festival, dan souvenir resmi untuk pengalaman acara yang cepat, aman, dan mudah diakses.
             </p>
         </div>
 

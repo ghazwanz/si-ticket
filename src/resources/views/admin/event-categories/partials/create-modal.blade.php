@@ -1,5 +1,5 @@
 {{-- Create Category Panel --}}
-<x-admin-panel 
+<x-admin.panel 
     name="create-category" 
     title="Klasifikasi Baru" 
     description="Tambahkan kategori acara baru untuk memperluas taksonomi pencarian platform."
@@ -141,4 +141,4 @@
             </x-primary-button>
         </div>
     </x-slot>
-</x-admin-panel>
+</x-admin.panel>

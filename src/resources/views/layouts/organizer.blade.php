@@ -76,9 +76,13 @@
 
                 <div class="relative ml-2" x-data="{ open: false }" @click.away="open = false">
                     <button type="button" @click="open = !open" class="flex items-center gap-3 p-1 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-                        <div class="w-8 h-8 rounded-xl bg-violet-500 flex items-center justify-center font-bold text-white text-xs">
-                            {{ substr(Auth::user()->name, 0, 1) }}
-                        </div>
+                        @if(Auth::user()->profile_photo_path)
+                            <img src="{{ Auth::user()->avatar_url }}" alt="{{ Auth::user()->name }}" class="w-8 h-8 rounded-xl object-cover shrink-0">
+                        @else
+                            <div class="w-8 h-8 rounded-xl bg-violet-500 flex items-center justify-center font-bold text-white text-xs">
+                                {{ substr(Auth::user()->name, 0, 1) }}
+                            </div>
+                        @endif
                         <div class="hidden sm:block text-left">
                             <div class="text-[11px] font-bold text-slate-900 dark:text-white leading-none">{{ Auth::user()->name }}</div>
                             <div class="text-[10px] text-slate-400 font-medium mt-0.5 uppercase tracking-tighter">Penyelenggara</div>

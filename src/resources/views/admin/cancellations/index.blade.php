@@ -103,8 +103,8 @@
                                         @endif
                                     </div>
                                     <div>
-                                        <div class="text-sm font-bold text-slate-900 dark:text-white">{{ $event->name }}</div>
-                                        <div class="text-[11px] text-slate-400 font-medium">Diajukan: {{ $cancellation->created_at->format('d M Y H:i') }}</div>
+                                        <div class="text-base font-bold text-slate-900 dark:text-white">{{ $event->name }}</div>
+                                        <div class="text-sm text-slate-400 font-medium">Diajukan: {{ $cancellation->created_at->format('d M Y H:i') }}</div>
                                     </div>
                                 </div>
                             </td>
@@ -135,9 +135,9 @@
                                             'label' => 'Ditolak'
                                         ],
                                     ];
-                                    $statusData = $statusMap[$cancellation->status] ?? [
+                                    $statusData = $statusMap[$cancellation->status->value] ?? [
                                         'class' => 'bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700',
-                                        'label' => $cancellation->status
+                                        'label' => $cancellation->status->label()
                                     ];
                                 @endphp
                                 <span class="inline-flex items-center px-3 py-1 rounded-xl text-[10px] font-bold uppercase tracking-wider border {{ $statusData['class'] }}">
@@ -147,8 +147,8 @@
                             <td class="px-8 py-5 text-right">
                                 <div class="flex items-center justify-end gap-2">
                                     <button x-data="" x-on:click.prevent="$dispatch('open-panel', 'review-cancellation-{{ $cancellation->id }}')" 
-                                            class="px-4 py-2 rounded-xl glass-panel text-[11px] font-bold {{ $cancellation->status === 'pending' ? 'text-rose-600 dark:text-rose-400 hover:bg-rose-600 hover:text-white' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-600 hover:text-white' }} transition-all">
-                                        {{ $cancellation->status === 'pending' ? 'Tinjau' : 'Detail' }}
+                                            class="px-4 py-2 rounded-xl glass-panel text-[11px] font-bold {{ $cancellation->status->value === 'pending' ? 'text-rose-600 dark:text-rose-400 hover:bg-rose-600 hover:text-white' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-600 hover:text-white' }} transition-all">
+                                        {{ $cancellation->status->value === 'pending' ? 'Tinjau' : 'Rincian' }}
                                     </button>
                                 </div>
 

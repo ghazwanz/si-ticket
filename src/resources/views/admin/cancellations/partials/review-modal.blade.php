@@ -1,4 +1,4 @@
-<x-admin-panel 
+<x-admin.panel 
     name="review-cancellation-{{ $cancellation->id }}" 
     title="Tinjauan Pembatalan Acara" 
     description="Evaluasi permohonan pembatalan acara dan dampak terhadap pembeli tiket."
@@ -114,7 +114,7 @@
         </section>
 
         {{-- Formulir Keputusan Admin --}}
-        @if(!$cutoffPassed && $cancellation->status === 'pending')
+        @if(!$cutoffPassed && $cancellation->status->value === 'pending')
             <section class="border-t border-slate-200 dark:border-slate-800 pt-6 space-y-6">
                 <div class="flex items-center gap-2">
                     <div class="w-1.5 h-4 bg-violet-500 rounded-full"></div>
@@ -159,7 +159,7 @@
                 </button>
             </div>
             
-            @if(!$cutoffPassed && $cancellation->status === 'pending')
+            @if(!$cutoffPassed && $cancellation->status->value === 'pending')
                 <div>
                     <form method="POST" action="{{ route('admin.cancellations.approve', $cancellation) }}">
                         @csrf
@@ -176,4 +176,4 @@
             @endif
         </div>
     </x-slot>
-</x-admin-panel>
+</x-admin.panel>

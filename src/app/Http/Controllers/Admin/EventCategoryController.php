@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreEventCategoryRequest;
 use App\Http\Requests\Admin\UpdateEventCategoryRequest;
 use App\Models\EventCategory;
-use App\Services\EventCategoryService;
+use App\Services\Admin\EventCategoryService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;

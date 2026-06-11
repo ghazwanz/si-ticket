@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Organizer;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Validator;
 
 class StoreEventRequest extends FormRequest
 {
@@ -50,7 +51,7 @@ class StoreEventRequest extends FormRequest
     /**
      * Configure the validator instance.
      *
-     * @param  \Illuminate\Validation\Validator  $validator
+     * @param  Validator  $validator
      * @return void
      */
     public function withValidator($validator)
@@ -76,7 +77,7 @@ class StoreEventRequest extends FormRequest
                             if ($basePrice + $adjustment < 0) {
                                 $validator->errors()->add(
                                     "merchandise.{$index}.variants.{$vIndex}.price_adjustment",
-                                    "Harga akhir varian (Base Price + Adjustment) tidak boleh kurang dari 0."
+                                    'Harga akhir varian (Base Price + Adjustment) tidak boleh kurang dari 0.'
                                 );
                             }
                         }

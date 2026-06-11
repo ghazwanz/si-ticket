@@ -4,29 +4,36 @@ use App\Http\Controllers\Admin\CancellationController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\EventCategoryController;
 use App\Http\Controllers\Admin\EventController;
+use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\PayoutController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\Organizer\DashboardController as OrganizerDashboardController;
-use App\Http\Controllers\PesananController;
+use App\Http\Controllers\Organizer\ScannerController;
+use App\Http\Controllers\Organizer\SettingsController as OrganizerSettingsController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Public\EventCatalogController;
-use App\Http\Controllers\ScannerController;
+use App\Http\Controllers\User\CheckoutController;
+use App\Http\Controllers\User\PesananController;
+use App\Http\Controllers\Webhook\PaymentWebhookController;
+use App\Http\Controllers\Webhook\PayoutWebhookController;
 use App\Models\Event;
 use App\Models\EventCategory;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    $popularEvents = Event::with('category')
+    $popularEvents = Event::with(['category', 'ticketCategories' => function ($q) {
+        $q->where('is_active', true);
+    }])
         ->where('status', 'published')
+        ->orderByDesc('is_featured')
         ->orderBy('event_date')
         ->take(3)
         ->get();
 
     $eventCategories = EventCategory::orderBy('created_at', 'desc')->take(6)->get();
 
-    return view('welcome', compact('popularEvents', 'eventCategories'));
+    return view('public.welcome', compact('popularEvents', 'eventCategories'));
 })->name('landing');
 
 Route::get('/events', [EventCatalogController::class, 'index'])->name('events.index');
@@ -55,18 +62,25 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
     Route::put('users/{user}', [UserController::class, 'update'])->name('users.update');
     Route::patch('users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
     Route::delete('users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+    Route::post('users/{user}/approve-organizer', [UserController::class, 'approveOrganizer'])->name('users.approve-organizer');
+    Route::post('users/{user}/reject-organizer', [UserController::class, 'rejectOrganizer'])->name('users.reject-organizer');
 
     // Event Approval & Intelligence
     Route::get('events', [EventController::class, 'index'])->name('events.index');
     Route::get('events/{event}', [EventController::class, 'show'])->name('events.show');
     Route::put('events/{event}/status', [EventController::class, 'updateStatus'])->name('events.update-status');
+    Route::patch('events/{event}/toggle-featured', [EventController::class, 'toggleFeatured'])->name('events.toggle-featured');
 
     // Payout Management
     Route::get('payouts', [PayoutController::class, 'index'])->name('payouts.index');
+    Route::get('payouts/audit-logs', [PayoutController::class, 'auditLogs'])->name('payouts.audit-logs');
     Route::get('payouts/{payout}', [PayoutController::class, 'show'])->name('payouts.show');
-    Route::post('payouts/initialize/{event}', [PayoutController::class, 'initialize'])->name('payouts.initialize');
+    Route::post('payouts/initialize/{event}', [PayoutController::class, 'initializeFinalPayout'])->name('payouts.initialize');
     Route::put('payouts/{payout}/approve', [PayoutController::class, 'approve'])->name('payouts.approve');
+    Route::put('payouts/{payout}/approve-advance', [PayoutController::class, 'approveAdvance'])->name('payouts.approve-advance');
+    Route::put('payouts/{payout}/reject-advance', [PayoutController::class, 'rejectAdvance'])->name('payouts.reject-advance');
     Route::put('payouts/{payout}/confirm', [PayoutController::class, 'confirm'])->name('payouts.confirm');
+    Route::post('payouts/{payout}/sync', [PayoutController::class, 'sync'])->name('payouts.sync');
 
     // Cancellation Review Queue
     Route::get('cancellations', [CancellationController::class, 'index'])->name('cancellations.index');
@@ -79,48 +93,67 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
     Route::put('event-categories/{event_category}', [EventCategoryController::class, 'update'])->name('event-categories.update');
     Route::delete('event-categories/{event_category}', [EventCategoryController::class, 'destroy'])->name('event-categories.destroy');
 
-    // System Settings (Profile Settings)
+    // System Settings (Profile & System Configurations)
     Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
+    Route::put('settings/system', [SettingsController::class, 'updateSystem'])->name('settings.system');
+
+    // Manual Reconciliations
+    Route::post('orders/{order}/sync', [OrderController::class, 'sync'])->name('orders.sync');
 });
 
 // Organizer Routes
 Route::middleware(['auth', 'verified', 'role:organizer'])->prefix('organizer')->name('organizer.')->group(function () {
     Route::get('dashboard', [OrganizerDashboardController::class, 'index'])->name('dashboard');
 
-    // Events CRUD
-    Route::resource('events', App\Http\Controllers\Organizer\EventController::class);
-    Route::post('events/{event}/cancel', [App\Http\Controllers\Organizer\EventController::class, 'cancel'])->name('events.cancel');
-    Route::post('events/{event}/request-cancellation', [App\Http\Controllers\Organizer\EventController::class, 'requestCancellation'])->name('events.request-cancellation');
+    Route::get('settings', [OrganizerSettingsController::class, 'index'])->name('settings');
+    Route::put('settings/profile', [OrganizerSettingsController::class, 'updateProfile'])->name('settings.profile');
+    Route::put('settings/password', [OrganizerSettingsController::class, 'updatePassword'])->name('settings.password');
 
-    Route::get('settings', function () {
-        return view('organizer.settings');
-    })->name('settings');
+    // Routes requiring Admin Approval
+    Route::middleware(['organizer.approved'])->group(function () {
+        // Events CRUD
+        Route::resource('events', App\Http\Controllers\Organizer\EventController::class);
+        Route::post('events/{event}/cancel', [App\Http\Controllers\Organizer\EventController::class, 'cancel'])->name('events.cancel');
+        Route::post('events/{event}/request-cancellation', [App\Http\Controllers\Organizer\EventController::class, 'requestCancellation'])->name('events.request-cancellation');
 
-    // QR Scanner
-    Route::get('scanner', [ScannerController::class, 'index'])->name('scanner.index');
+        // QR Scanner
+        Route::get('scanner', [ScannerController::class, 'index'])->name('scanner.index');
+        Route::post('scanner/select', [ScannerController::class, 'selectEvent'])->name('scanner.select');
+        Route::post('scanner/validate', [ScannerController::class, 'validateScan'])->name('scanner.validate')->middleware('throttle:60,1');
+
+        // Payouts & Advance Requests
+        Route::get('payouts', [App\Http\Controllers\Organizer\PayoutController::class, 'index'])->name('payouts.index');
+        Route::get('payouts/{event}', [App\Http\Controllers\Organizer\PayoutController::class, 'show'])->name('payouts.show');
+        Route::post('payouts/{event}/request-advance', [App\Http\Controllers\Organizer\PayoutController::class, 'requestAdvance'])->name('payouts.request-advance');
+    });
 });
 
 // User Authenticated Routes
 Route::middleware(['auth', 'verified', 'role:user'])->group(function () {
     // Checkout & Orders
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
-    Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+    Route::post('/checkout', [CheckoutController::class, 'store'])->middleware('throttle:5,1')->name('checkout.store');
 
     Route::get('/pesanan', [PesananController::class, 'index'])->name('pesanan.index');
     Route::get('/pesanan/{id}', [PesananController::class, 'show'])->name('pesanan.show');
     Route::get('/pesanan/{id}/invoice', [PesananController::class, 'invoice'])->name('pesanan.invoice');
+    Route::put('/pesanan/{order}/retry', [PesananController::class, 'retryPayment'])->name('pesanan.retry');
 });
 
 // Generic Authenticated Routes (Profiles for All Roles)
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('profile')->name('profile.')->group(function () {
         Route::get('/', [ProfileController::class, 'index'])->name('index');
-        Route::get('/edit', [ProfileController::class, 'edit'])->name('edit');
         Route::patch('/', [ProfileController::class, 'update'])->name('update');
         Route::delete('/', [ProfileController::class, 'destroy'])->name('destroy');
-        Route::get('/orders/{orderId}', [ProfileController::class, 'orderDetail'])->name('order-detail');
-        Route::get('/orders/{orderId}/tickets', [ProfileController::class, 'ticketsQr'])->name('tickets-qr');
+        Route::get('/verify-email/{id}/{hash}', [ProfileController::class, 'verifyPendingEmail'])
+            ->middleware(['signed', 'throttle:6,1'])
+            ->name('verify-pending-email');
     });
 });
+
+// Public Webhook for Midtrans Payment Callbacks
+Route::post('/api/payment/callback', [PaymentWebhookController::class, 'handleCallback'])->name('payment.callback');
+Route::post('/api/payout/callback', [PayoutWebhookController::class, 'handleCallback'])->name('payout.callback');
 
 require __DIR__.'/auth.php';

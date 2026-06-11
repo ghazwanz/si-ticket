@@ -3,14 +3,14 @@
     $method ??= 'POST';
     $submitLabel ??= 'Simpan Acara';
 
-    $isPublished = $event?->status === 'published';
-    $hasSales = $event?->ticketCategories?->sum('sold_count') > 0;
+    $isPublished = $event?->status?->value === 'published';
+    $hasSales = $event ? $event->hasSales() : false;
     
     // Lock specific fields if published with sales
     $isPartiallyLocked = $isPublished && $hasSales;
     
     // Fully lock everything if the event is over or in cancellation process
-    $isFullyLocked = in_array($event?->status, ['completed', 'cancelled', 'awaiting_cancellation']);
+    $isFullyLocked = in_array($event?->status?->value, ['completed', 'cancelled', 'awaiting_cancellation']);
     
     $isLocked = $isPartiallyLocked || $isFullyLocked;
     
@@ -57,7 +57,7 @@
         ])->values()->all() ?: []);
 
     $inputClass = 'w-full rounded-2xl border-slate-200 bg-white/80 px-4 py-3 text-sm font-semibold text-slate-900 shadow-sm transition-all placeholder:text-slate-400 focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10 dark:border-slate-800 dark:bg-slate-950/60 dark:text-white';
-    $labelClass = 'mb-2 block text-[10px] font-bold uppercase tracking-widest text-slate-400';
+    $labelClass = 'mb-2 block text-[13px] font-bold uppercase tracking-widest text-slate-500';
 @endphp
 
 <form method="POST" action="{{ $action }}" enctype="multipart/form-data" x-data="{
@@ -106,6 +106,32 @@
     <div class="grid gap-6 lg:grid-cols-12">
         <div class="space-y-6 lg:col-span-8">
             
+            @if($event && $event->rejection_message)
+                <div class="glass-panel p-5 rounded-3xl mb-6 bg-rose-500/10 border border-rose-500/20 text-rose-850 dark:text-rose-300">
+                    <div class="flex items-start gap-4">
+                        <div class="mt-0.5 shrink-0 w-10 h-10 flex items-center justify-center rounded-full bg-rose-500/20 text-rose-600 dark:text-rose-400">
+                            <x-heroicon-o-x-circle class="w-6 h-6 animate-pulse" />
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-sm font-extrabold uppercase tracking-widest text-rose-600 dark:text-rose-450 mb-1">
+                                {{ $event->status->value === 'cancelled' ? 'Acara Dibatalkan oleh Admin' : 'Acara Ditolak oleh Admin' }}
+                            </h3>
+                            <p class="text-sm font-semibold mb-3 text-rose-750 dark:text-rose-400">
+                                {{ $event->status->value === 'cancelled' ? 'Acara Anda telah dibatalkan oleh Admin dengan alasan sebagai berikut:' : 'Acara Anda dikembalikan ke status draf dengan alasan penolakan sebagai berikut:' }}
+                            </p>
+                            <div class="bg-white/50 dark:bg-slate-900/50 rounded-xl p-4 text-sm italic border border-rose-500/10 text-slate-800 dark:text-slate-200">
+                                "{{ $event->rejection_message }}"
+                            </div>
+                            @if($event->status->value !== 'cancelled')
+                            <p class="text-xs font-semibold text-rose-600 dark:text-rose-400 mt-3">
+                                * Harap perbaiki konten acara sesuai masukan di atas sebelum mengajukan kembali untuk ditinjau.
+                            </p>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            @endif
+            
             @if(isset($pendingCancellation) && $pendingCancellation)
                 <div class="glass-panel p-5 rounded-3xl mb-6 bg-orange-500/10 border border-orange-500/20 text-orange-800 dark:text-orange-300">
                     <div class="flex items-start gap-4">
@@ -135,7 +161,7 @@
                              :class="step >= 1 ? 'bg-violet-600 text-white shadow-lg shadow-violet-600/30' : 'bg-slate-100 text-slate-400 dark:bg-slate-800'">
                             1
                         </div>
-                        <span class="text-[10px] font-bold uppercase tracking-widest" :class="step >= 1 ? 'text-violet-600 dark:text-violet-400' : 'text-slate-400'">Info Acara</span>
+                        <span class="text-xs font-bold uppercase tracking-widest" :class="step >= 1 ? 'text-violet-600 dark:text-violet-400' : 'text-slate-500'">Info Acara</span>
                     </button>
                     <div class="h-1 flex-1 bg-slate-100 dark:bg-slate-800 rounded-full mx-2 overflow-hidden relative">
                         <div class="absolute inset-y-0 left-0 bg-violet-600 transition-all" :class="step >= 2 ? 'w-full' : 'w-0'"></div>
@@ -145,7 +171,7 @@
                              :class="step >= 2 ? 'bg-violet-600 text-white shadow-lg shadow-violet-600/30' : 'bg-slate-100 text-slate-400 dark:bg-slate-800'">
                             2
                         </div>
-                        <span class="text-[10px] font-bold uppercase tracking-widest" :class="step >= 2 ? 'text-violet-600 dark:text-violet-400' : 'text-slate-400'">Tiket</span>
+                        <span class="text-xs font-bold uppercase tracking-widest" :class="step >= 2 ? 'text-violet-600 dark:text-violet-400' : 'text-slate-500'">Tiket</span>
                     </button>
                     <div class="h-1 flex-1 bg-slate-100 dark:bg-slate-800 rounded-full mx-2 overflow-hidden relative">
                         <div class="absolute inset-y-0 left-0 bg-violet-600 transition-all" :class="step >= 3 ? 'w-full' : 'w-0'"></div>
@@ -155,7 +181,7 @@
                              :class="step >= 3 ? 'bg-violet-600 text-white shadow-lg shadow-violet-600/30' : 'bg-slate-100 text-slate-400 dark:bg-slate-800'">
                             3
                         </div>
-                        <span class="text-[10px] font-bold uppercase tracking-widest" :class="step >= 3 ? 'text-violet-600 dark:text-violet-400' : 'text-slate-400'">Merchandise</span>
+                        <span class="text-xs font-bold uppercase tracking-widest" :class="step >= 3 ? 'text-violet-600 dark:text-violet-400' : 'text-slate-500'">Suvenir</span>
                     </button>
                 </div>
             </div>
@@ -313,12 +339,12 @@
                 <fieldset @disabled($isFullyLocked)>
                 <x-organizer.form-section
                     icon="shopping-bag"
-                    title="Merchandise (Opsional)"
-                    description="Tambahkan merchandise khusus untuk acara ini. Peserta dapat membelinya saat checkout tiket.">
+                    title="Suvenir (Opsional)"
+                    description="Tambahkan suvenir khusus untuk acara ini. Peserta dapat membelinya saat pembelian tiket.">
                     <div class="mb-5 flex justify-end">
                         <button type="button" @click="addMerchandise()" class="inline-flex items-center gap-2 rounded-2xl bg-violet-600/10 px-4 py-2 text-xs font-extrabold uppercase tracking-widest text-violet-600 transition-all hover:bg-violet-600 hover:text-white dark:text-violet-400 dark:hover:text-white">
                             <x-heroicon-o-plus class="h-4 w-4" />
-                            Tambah Merchandise
+                            Tambah Suvenir
                         </button>
                     </div>
 
@@ -326,8 +352,8 @@
                         <div class="w-16 h-16 bg-slate-200 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-400">
                             <x-heroicon-o-shopping-bag class="w-8 h-8" />
                         </div>
-                        <h4 class="text-lg font-bold text-slate-900 dark:text-white">Belum ada Merchandise</h4>
-                        <p class="text-sm text-slate-500 mt-1 mb-6 max-w-sm mx-auto">Anda tidak wajib menambahkan merchandise. Lewati langkah ini jika tidak diperlukan.</p>
+                        <h4 class="text-lg font-bold text-slate-900 dark:text-white">Belum ada Suvenir</h4>
+                        <p class="text-sm text-slate-500 mt-1 mb-6 max-w-sm mx-auto">Anda tidak wajib menambahkan suvenir. Lewati langkah ini jika tidak diperlukan.</p>
                     </div>
 
                     <div class="space-y-4" x-show="merchandise.length > 0">
@@ -367,7 +393,7 @@
                                         <input type="hidden" :name="`merchandise[${index}][id]`" x-model="item.id">
                                         <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                                             <div>
-                                                <label class="{{ $labelClass }}">Nama Item</label>
+                                                <label class="{{ $labelClass }}">Nama Suvenir</label>
                                                 <input type="text" :name="`merchandise[${index}][name]`" x-model="item.name" required class="{{ $inputClass }}" placeholder="Misal: T-Shirt Official">
                                             </div>
                                             <div>
@@ -452,8 +478,8 @@
                     @if($isPublished)
                         <option value="published" selected>Dipublikasikan</option>
                     @else
-                        <option value="draft" {{ old('status', $event?->status ?? 'draft') === 'draft' ? 'selected' : '' }}>Simpan sebagai draf</option>
-                        <option value="awaiting_approval" {{ old('status', $event?->status) === 'awaiting_approval' ? 'selected' : '' }}>Ajukan untuk Ditinjau</option>
+                        <option value="draft" {{ old('status', $event?->status?->value ?? 'draft') === 'draft' ? 'selected' : '' }}>Simpan sebagai draf</option>
+                        <option value="awaiting_approval" {{ old('status', $event?->status?->value) === 'awaiting_approval' ? 'selected' : '' }}>Ajukan untuk Ditinjau</option>
                     @endif
                 </select>
                 </fieldset>
@@ -464,7 +490,7 @@
                         <x-heroicon-o-exclamation-triangle class="h-5 w-5" />
                         Periksa sebelum menyimpan
                     </div>
-                    Pastikan informasi acara, jadwal, lokasi, tiket, dan merchandise sudah akurat sebelum dipublikasikan.
+                    Pastikan informasi acara, jadwal, lokasi, tiket, dan suvenir sudah akurat sebelum dipublikasikan.
                 </div>
 
                 <div class="mt-6 grid gap-3">
@@ -491,16 +517,16 @@
                     </a>
                 </div>
 
-                @if($event && in_array($event->status, ['published', 'completed', 'cancelled']))
+                @if($event && in_array($event->status->value, ['published', 'completed', 'cancelled']))
                     <div class="mt-8 border-t border-slate-200 pt-6 dark:border-slate-800">
                         <div class="mb-4 flex items-center gap-2 font-extrabold text-rose-500">
                             <x-heroicon-o-exclamation-circle class="h-5 w-5" />
                             Zona Berbahaya
                         </div>
                         
-                        @if($event->status === 'published')
+                        @if($event->status->value === 'published')
                             @if(!$isHardCutoffPassed)
-                                @if($soldCount == 0)
+                                @if(!$hasSales)
                                     <button type="button" x-data @click="$dispatch('open-panel', 'cancel-event-modal')" class="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-rose-500/10 px-5 py-3 text-sm font-extrabold text-rose-600 transition-all hover:bg-rose-500 hover:text-white dark:text-rose-400">
                                         <x-heroicon-o-x-circle class="h-5 w-5" />
                                         Batalkan Acara
@@ -516,12 +542,12 @@
                             @endif
                         @endif
 
-                        @if(in_array($event->status, ['completed', 'cancelled']))
+                        @can('delete', $event)
                             <button type="button" x-data @click="$dispatch('open-panel', 'delete-event-modal')" class="w-full mt-3 inline-flex items-center justify-center gap-2 rounded-2xl bg-rose-500/10 px-5 py-3 text-sm font-extrabold text-rose-600 transition-all hover:bg-rose-500 hover:text-white dark:text-rose-400">
                                 <x-heroicon-o-trash class="h-5 w-5" />
                                 Hapus dari Dashboard
                             </button>
-                        @endif
+                        @endcan
                     </div>
                 @endif
             </div>
@@ -532,7 +558,7 @@
 @if($event)
     @push('modals')
         {{-- Tier 1: Cancel Event Modal --}}
-        @if($event->status === 'published' && !$isHardCutoffPassed && $soldCount == 0)
+        @if($event->status->value === 'published' && !$isHardCutoffPassed && !$hasSales)
         <template x-teleport="body">
         <div x-data="{ show: false }" @open-panel.window="if ($event.detail === 'cancel-event-modal') show = true" @close-panel.window="if ($event.detail === 'cancel-event-modal') show = false" x-show="show" class="relative z-[100]" x-cloak>
             <div x-show="show" x-transition.opacity class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
@@ -567,7 +593,7 @@
         @endif
 
         {{-- Tier 2: Request Cancellation Modal --}}
-        @if($event->status === 'published' && !$isHardCutoffPassed && $soldCount > 0)
+        @if($event->status->value === 'published' && !$isHardCutoffPassed && $hasSales)
         <template x-teleport="body">
         <div x-data="{ show: false, reason: '' }" @open-panel.window="if ($event.detail === 'request-cancellation-modal') show = true" @close-panel.window="if ($event.detail === 'request-cancellation-modal') show = false" x-show="show" class="relative z-[100]" x-cloak>
             <div x-show="show" x-transition.opacity class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
@@ -582,7 +608,11 @@
                                 </div>
                                 <h3 class="text-xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-2">Ajukan Pembatalan</h3>
                                 <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">
-                                    Acara ini sudah memiliki <strong class="text-amber-500">{{ $soldCount }} tiket terjual</strong>. Pengajuan pembatalan membutuhkan persetujuan Admin karena melibatkan refund ke pembeli.
+                                    @if($soldCount > 0)
+                                        Acara ini sudah memiliki <strong class="text-amber-500">{{ $soldCount }} tiket terjual</strong>. Pengajuan pembatalan membutuhkan persetujuan Admin karena melibatkan pengembalian dana ke pembeli.
+                                    @else
+                                        Acara ini sudah memiliki transaksi suvenir. Pengajuan pembatalan membutuhkan persetujuan Admin karena melibatkan pengembalian dana ke pembeli.
+                                    @endif
                                 </p>
                                 
                                 <div class="w-full text-left">
@@ -607,7 +637,7 @@
         @endif
 
         {{-- Delete Event Modal --}}
-        @if(in_array($event->status, ['completed', 'cancelled']))
+        @can('delete', $event)
         <template x-teleport="body">
         <div x-data="{ show: false }" @open-panel.window="if ($event.detail === 'delete-event-modal') show = true" @close-panel.window="if ($event.detail === 'delete-event-modal') show = false" x-show="show" class="relative z-[100]" x-cloak>
             <div x-show="show" x-transition.opacity class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
@@ -640,6 +670,6 @@
             </div>
         </div>
         </template>
-        @endif
+        @endcan
     @endpush
 @endif

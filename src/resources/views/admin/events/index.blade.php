@@ -12,7 +12,7 @@
             <div class="flex items-center gap-2">
                 <span class="inline-flex items-center px-4 py-2 rounded-2xl glass-panel text-xs font-bold text-slate-600 dark:text-slate-300">
                     <x-heroicon-o-clock class="w-4 h-4 mr-2 text-violet-500" />
-                    Awaiting: {{ $events->where('status', 'awaiting_approval')->count() }}
+                    Menunggu: {{ $events->where('status', 'awaiting_approval')->count() }}
                 </span>
             </div>
         </div>
@@ -29,6 +29,10 @@
                 <a href="{{ route('admin.events.index', array_merge(request()->except('page'), ['status' => 'awaiting_approval'])) }}" data-link
                    class="px-5 py-2.5 rounded-2xl text-xs font-bold transition-all whitespace-nowrap {{ $activeStatus === 'awaiting_approval' ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/20' : 'glass-panel text-slate-500 hover:text-slate-800 dark:hover:text-white' }}">
                     Menunggu Tinjauan
+                </a>
+                <a href="{{ route('admin.events.index', array_merge(request()->except('page'), ['status' => 'awaiting_cancellation'])) }}" data-link
+                   class="px-5 py-2.5 rounded-2xl text-xs font-bold transition-all whitespace-nowrap {{ $activeStatus === 'awaiting_cancellation' ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/20' : 'glass-panel text-slate-500 hover:text-slate-800 dark:hover:text-white' }}">
+                    Menunggu Pembatalan
                 </a>
                 <a href="{{ route('admin.events.index', array_merge(request()->except('page'), ['status' => 'published'])) }}" data-link
                    class="px-5 py-2.5 rounded-2xl text-xs font-bold transition-all whitespace-nowrap {{ $activeStatus === 'published' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/20' : 'glass-panel text-slate-500 hover:text-slate-800 dark:hover:text-white' }}">
@@ -97,19 +101,19 @@
                                         @endif
                                     </div>
                                     <div>
-                                        <div class="text-sm font-bold text-slate-900 dark:text-white">{{ $event->name }}</div>
-                                        <div class="text-[11px] text-slate-400 font-medium">{{ $event->city }} • {{ $event->event_date->format('d M Y') }}</div>
+                                        <div class="text-base font-bold text-slate-900 dark:text-white">{{ $event->name }}</div>
+                                        <div class="text-sm text-slate-600 dark:text-slate-400 font-medium">{{ $event->city }} • {{ $event->event_date->translatedFormat('d M Y') }}</div>
                                     </div>
                                 </div>
                             </td>
                             <td class="px-8 py-5">
                                 <a href="{{ route('admin.users.show', $event->organizer) }}" class="flex flex-col group/org" data-link>
-                                    <span class="text-xs font-bold text-slate-700 dark:text-slate-300 group-hover/org:text-violet-500 transition-colors">{{ $event->organizer->name }}</span>
-                                    <span class="text-[10px] text-slate-400 font-medium tracking-tight">Verified EO</span>
+                                    <span class="text-sm font-bold text-slate-700 dark:text-slate-300 group-hover/org:text-violet-500 transition-colors">{{ $event->organizer->name }}</span>
+                                    <span class="text-xs text-slate-600 dark:text-slate-400 font-medium tracking-tight">Verified EO</span>
                                 </a>
                             </td>
                             <td class="px-8 py-5">
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-lg text-[11px] font-bold uppercase tracking-wider bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
                                     {{ $event->category->name }}
                                 </span>
                             </td>
@@ -145,28 +149,43 @@
                                             'label' => 'Selesai'
                                         ],
                                     ];
-                                    $statusData = $statusMap[$event->status] ?? [
+                                    $statusData = $statusMap[$event->status->value] ?? [
                                         'class' => 'bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700',
-                                        'label' => $event->status
+                                        'label' => $event->status->label()
                                     ];
                                 @endphp
-                                <span class="inline-flex items-center px-3 py-1 rounded-xl text-[10px] font-bold uppercase tracking-wider border {{ $statusData['class'] }}">
+                                <span class="inline-flex items-center px-3 py-1 rounded-xl text-[11px] font-bold uppercase tracking-wider border {{ $statusData['class'] }}">
                                     {{ $statusData['label'] }}
                                 </span>
                             </td>
                             <td class="px-8 py-5 text-right">
                                 <div class="flex items-center justify-end gap-2">
+                                    @if($event->status->value === 'published')
+                                    <form method="POST" action="{{ route('admin.events.toggle-featured', $event) }}" class="inline">
+                                        @csrf
+                                        @method('PATCH')
+                                        <button type="submit" 
+                                                class="p-2 rounded-xl glass-panel {{ $event->is_featured ? 'text-amber-400 hover:text-amber-500' : 'text-slate-400 hover:text-amber-400' }} transition-all"
+                                                title="{{ $event->is_featured ? 'Hapus dari Unggulan' : 'Jadikan Unggulan' }}">
+                                            @if($event->is_featured)
+                                                <x-heroicon-s-star class="w-4 h-4" />
+                                            @else
+                                                <x-heroicon-o-star class="w-4 h-4" />
+                                            @endif
+                                        </button>
+                                    </form>
+                                    @endif
                                     <a href="{{ route('admin.events.show', $event) }}" data-link
                                        class="p-2 rounded-xl glass-panel text-slate-500 hover:text-violet-500 transition-all"
                                        title="Lihat Intelijen">
                                         <x-heroicon-o-eye class="w-4 h-4" />
                                     </a>
-                                    @if($event->status === 'cancelled')
+                                    @if($event->status->value === 'cancelled')
                                         <a href="{{ route('admin.events.show', $event) }}" data-link
                                            class="px-4 py-2 rounded-xl glass-panel text-[11px] font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-600 hover:text-white transition-all">
-                                            Lihat Detail
+                                            Lihat Rincian
                                         </a>
-                                    @elseif(!in_array($event->status, ['completed', 'awaiting_cancellation']))
+                                    @elseif(!in_array($event->status->value, ['completed', 'awaiting_cancellation']))
                                         <button x-data="" x-on:click.prevent="$dispatch('open-panel', 'review-event-{{ $event->id }}')" 
                                                 class="px-4 py-2 rounded-xl glass-panel text-[11px] font-bold text-violet-600 dark:text-violet-400 hover:bg-violet-600 hover:text-white transition-all">
                                             Audit Acara

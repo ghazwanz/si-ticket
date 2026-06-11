@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Auth;
 
+use App\Enums\UserRole;
 use App\Models\User;
 use Illuminate\Contracts\Encryption\Encrypter;
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
@@ -29,7 +30,7 @@ class AuthenticationTest extends TestCase
         ]);
 
         $this->assertAuthenticated();
-        $response->assertRedirect(route('dashboard', absolute: false));
+        $response->assertRedirect('/');
     }
 
     public function test_users_can_not_authenticate_with_invalid_password(): void
@@ -76,5 +77,53 @@ class AuthenticationTest extends TestCase
 
         $this->assertGuest();
         $response->assertRedirect('/');
+    }
+
+    public function test_user_role_checkout_intended_redirects_to_checkout(): void
+    {
+        $user = User::factory()->create(['role' => UserRole::User]);
+
+        $response = $this->withSession(['url.intended' => '/checkout'])
+            ->post('/login', [
+                'email' => $user->email,
+                'password' => 'password',
+            ]);
+
+        $this->assertAuthenticated();
+        $response->assertRedirect('/checkout');
+    }
+
+    public function test_admin_role_checkout_intended_redirects_to_admin_dashboard(): void
+    {
+        $admin = User::factory()->create(['role' => UserRole::Admin]);
+
+        $response = $this->withSession(['url.intended' => '/checkout'])
+            ->post('/login', [
+                'email' => $admin->email,
+                'password' => 'password',
+            ]);
+
+        $this->assertAuthenticated();
+        $response->assertRedirect(route('dashboard', absolute: false));
+
+        $follow = $this->actingAs($admin)->get(route('dashboard'));
+        $follow->assertRedirect(route('admin.dashboard'));
+    }
+
+    public function test_organizer_role_checkout_intended_redirects_to_organizer_dashboard(): void
+    {
+        $organizer = User::factory()->create(['role' => UserRole::Organizer]);
+
+        $response = $this->withSession(['url.intended' => '/checkout'])
+            ->post('/login', [
+                'email' => $organizer->email,
+                'password' => 'password',
+            ]);
+
+        $this->assertAuthenticated();
+        $response->assertRedirect(route('dashboard', absolute: false));
+
+        $follow = $this->actingAs($organizer)->get(route('dashboard'));
+        $follow->assertRedirect(route('organizer.dashboard'));
     }
 }

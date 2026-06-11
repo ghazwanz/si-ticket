@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\RedirectResponse;
@@ -28,7 +29,18 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        $user = Auth::user();
+        $intended = $request->session()->get('url.intended');
+
+        if ($intended && str_contains($intended, '/checkout') && $user->role !== UserRole::User) {
+            $request->session()->forget('url.intended');
+        }
+
+        $defaultRedirect = $user->role === UserRole::User
+            ? '/'
+            : route('dashboard', absolute: false);
+
+        return redirect()->intended($defaultRedirect);
     }
 
     /**

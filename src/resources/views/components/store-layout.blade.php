@@ -15,7 +15,7 @@
     </head>
     <body class="min-h-screen flex flex-col bg-background font-sans antialiased text-foreground">
 
-        <x-home.header />
+        <x-public.header />
 
         @if (isset($header))
             <header class="bg-background border-b border-border/60">
@@ -31,7 +31,7 @@
             </div>
         </main>
 
-        <x-home.footer />
+        <x-public.footer />
 
     </body>
 </html>

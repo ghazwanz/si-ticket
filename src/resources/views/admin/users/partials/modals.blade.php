@@ -1,12 +1,12 @@
 {{-- Edit User Panel --}}
-<x-admin-panel 
+<x-admin.panel 
     name="edit-user-{{ $user->id }}" 
     title="Ubah Akun" 
     description="Perbarui detail profil dan hak akses untuk {{ $user->name }}."
     width="3xl"
 >
 
-    <form id="edit-user-form-{{ $user->id }}" method="POST" action="{{ route('admin.users.update', $user) }}" class="space-y-8">
+    <form id="edit-user-form-{{ $user->id }}" method="POST" action="{{ route('admin.users.update', $user) }}" enctype="multipart/form-data" class="space-y-8">
         @csrf
         @method('PUT')
 
@@ -19,19 +19,19 @@
             
             <div class="grid gap-6">
                 <div class="space-y-2">
-                    <x-input-label for="edit_name_{{ $user->id }}" :value="__('Nama Lengkap')" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1" />
+                    <x-input-label for="edit_name_{{ $user->id }}" :value="__('Nama Lengkap')" class="text-sm font-bold text-slate-900 dark:text-slate-400 uppercase tracking-widest ml-1" />
                     <x-text-input id="edit_name_{{ $user->id }}" name="name" type="text" class="block w-full glass-panel !bg-transparent rounded-2xl border-slate-200 dark:border-slate-800 py-3" :value="old('name', $user->name)" required />
                 </div>
 
                 <div class="space-y-2">
-                    <x-input-label for="edit_email_{{ $user->id }}" :value="__('Alamat Email')" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1" />
+                    <x-input-label for="edit_email_{{ $user->id }}" :value="__('Alamat Pos-el')" class="text-sm font-bold text-slate-900 dark:text-slate-400 uppercase tracking-widest ml-1" />
                     <x-text-input id="edit_email_{{ $user->id }}" name="email" type="email" class="block w-full glass-panel !bg-transparent rounded-2xl border-slate-200 dark:border-slate-800 py-3" :value="old('email', $user->email)" required />
                 </div>
 
                 <div class="p-5 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-slate-100 dark:border-slate-800">
                     <div class="flex items-center gap-2 mb-3">
-                        <x-heroicon-o-lock-closed class="w-4 h-4 text-amber-500" />
-                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Pembaruan Keamanan</p>
+                        <x-heroicon-o-lock-closed class="w-6 h-6 text-amber-500" />
+                        <p class="text-xs text-slate-900 dark:text-slate-400 uppercase tracking-widest">Pembaruan Keamanan</p>
                     </div>
                     <x-text-input name="password" type="password" placeholder="Kosongkan jika tidak ingin mengubah kata sandi" class="block w-full !bg-transparent rounded-xl border-slate-200 dark:border-slate-800 py-2 text-sm" />
                 </div>
@@ -49,10 +49,10 @@
 
             <div class="grid grid-cols-2 gap-6">
                 <div class="space-y-2">
-                    <x-input-label for="edit_role_{{ $user->id }}" :value="__('Assigned Peran')" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1" />
+                    <x-input-label for="edit_role_{{ $user->id }}" :value="__('Peran')" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1" />
                     <select id="edit_role_{{ $user->id }}" name="role" class="block w-full glass-panel !bg-transparent rounded-2xl border-slate-200 dark:border-slate-800 text-sm focus:ring-violet-500/20 py-3">
                         <option value="user" {{ $user->role->value === 'user' ? 'selected' : '' }}>Pengguna / Pembeli</option>
-                        <option value="organizer" {{ $user->role->value === 'organizer' ? 'selected' : '' }}>Event Penyelenggara</option>
+                        <option value="organizer" {{ $user->role->value === 'organizer' ? 'selected' : '' }}>Penyelenggara Acara</option>
                         <option value="admin" {{ $user->role->value === 'admin' ? 'selected' : '' }}>Administrator</option>
                     </select>
                 </div>
@@ -60,8 +60,8 @@
                     <x-input-label for="edit_active_{{ $user->id }}" :value="__('Status Akun')" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1" />
                     <select id="edit_active_{{ $user->id }}" name="is_active" x-model="active"
                             class="block w-full glass-panel !bg-transparent rounded-2xl border-slate-200 dark:border-slate-800 text-sm focus:ring-violet-500/20 py-3">
-                        <option value="1">Aktif Account</option>
-                        <option value="0">Ditangguhkan / Restricted</option>
+                        <option value="1">Aktif</option>
+                        <option value="0">Ditangguhkan</option>
                     </select>
                     
                     @if($user->hasActivePaidOrders())
@@ -69,7 +69,7 @@
                             <div class="mt-3 p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-start gap-3 animate-fade-in">
                                 <x-heroicon-o-exclamation-triangle class="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
                                 <div>
-                                    <p class="text-[11px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest">Caution: Aktif Obligations</p>
+                                    <p class="text-[11px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest">Peringatan</p>
                                     <p class="text-[10px] text-amber-500 mt-1 leading-relaxed">Penyelenggara ini memiliki acara aktif dengan pesanan berbayar. Penangguhan dapat mengganggu akses tiket dan penyelesaian dana.</p>
                                 </div>
                             </div>
@@ -86,7 +86,7 @@
             <section id="edit-organizer-{{ $user->id }}" class="space-y-6">
                 <div class="flex items-center gap-2 mb-2">
                     <div class="w-1.5 h-4 bg-blue-500 rounded-full"></div>
-                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Penyelenggara Profile</h3>
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Profil Penyelenggara</h3>
                 </div>
 
                 <div class="grid gap-6">
@@ -115,6 +115,32 @@
                         <x-input-label for="edit_bank_acc_name_{{ $user->id }}" :value="__('Nama Pemilik Rekening')" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1" />
                         <x-text-input id="edit_bank_acc_name_{{ $user->id }}" name="bank_account_name" type="text" class="block w-full glass-panel !bg-transparent rounded-2xl border-slate-200 dark:border-slate-800 py-3" :value="old('bank_account_name', $user->organizerProfile?->bank_account_name)" />
                     </div>
+
+                    <div class="space-y-2">
+                        <x-input-label for="edit_org_addr_{{ $user->id }}" :value="__('Alamat Organisasi')" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1" />
+                        <textarea id="edit_org_addr_{{ $user->id }}" name="organization_address" rows="3" class="block w-full glass-panel !bg-transparent rounded-2xl border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-sm p-3 focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10 transition-shadow">{{ old('organization_address', $user->organizerProfile?->organization_address) }}</textarea>
+                    </div>
+
+                    <div class="space-y-2">
+                        <x-input-label for="edit_off_contact_{{ $user->id }}" :value="__('Alamat Pos-el Resmi')" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1" />
+                        <x-text-input id="edit_off_contact_{{ $user->id }}" name="official_contact" type="email" class="block w-full glass-panel !bg-transparent rounded-2xl border-slate-200 dark:border-slate-800 py-3" :value="old('official_contact', $user->organizerProfile?->official_contact)" />
+                    </div>
+
+                    <div class="space-y-2">
+                        <x-input-label for="edit_leg_doc_{{ $user->id }}" :value="__('Dokumen Legalitas')" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1" />
+                        <input id="edit_leg_doc_{{ $user->id }}" name="legality_document" type="file" class="block w-full text-sm text-slate-500 dark:text-slate-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-violet-50 file:text-violet-700 dark:file:bg-violet-950 dark:file:text-violet-300 hover:file:bg-violet-100 dark:hover:file:bg-violet-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-2.5" />
+                        <p class="text-[10px] text-slate-400 dark:text-slate-500 mt-1">Format: PDF, JPG, JPEG, PNG (Maks. 5MB). Biarkan kosong jika tidak diubah.</p>
+                        
+                        @if($user->organizerProfile?->legality_document)
+                            <div class="mt-2 flex items-center gap-2">
+                                <span class="text-[10px] text-slate-400">Dokumen Saat Ini:</span>
+                                <a href="{{ Storage::url($user->organizerProfile->legality_document) }}" target="_blank" class="inline-flex items-center gap-1 text-xs font-semibold text-violet-600 dark:text-violet-400 hover:underline">
+                                    <x-heroicon-o-document-text class="w-4 h-4" />
+                                    Lihat Dokumen
+                                </a>
+                            </div>
+                        @endif
+                    </div>
                 </div>
             </section>
         @endif
@@ -130,7 +156,7 @@
             </x-primary-button>
         </div>
     </x-slot>
-</x-admin-panel>
+</x-admin.panel>
 
 {{-- Termination / Suspension Modal --}}
 <x-modal name="delete-user-{{ $user->id }}" maxWidth="md">
@@ -146,9 +172,9 @@
                 <x-heroicon-o-shield-exclamation class="w-8 h-8" />
             </div>
             <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Batasi Akun?</h2>
-            <p class="text-sm text-slate-500 mt-2 px-4">
-                Deletion is blocked due to {{ $isBlocked ? 'active obligations' : 'audit history' }}. 
-                Suspending <b>{{ $user->name }}</b> will restrict their access while preserving data integrity.
+            <p class="text-sm text-slate-700 dark:text-slate-500 mt-2 px-4">
+                Penghapusan tidak dapat dilakukan karena terdapat {{ $isBlocked ? 'acara aktif' : 'riwayat audit' }}. 
+                Penangguhan <b>{{ $user->name }}</b> akan membatasi akses mereka sambil menjaga integritas data.
             </p>
         @else
             <div class="w-16 h-16 rounded-3xl bg-rose-500/10 text-rose-500 flex items-center justify-center mx-auto mb-6">
@@ -157,9 +183,9 @@
             <h2 class="text-2xl font-bold text-slate-900 dark:text-white">{{ $user->is_active ? 'Arsipkan Akun?' : 'Pulihkan Akses?' }}</h2>
             <p class="text-sm text-slate-500 mt-2 px-4">
                 @if($user->is_active)
-                    This will archive <b>{{ $user->name }}</b> and hide the account from active admin views while keeping audit records intact.
+                    Aksi ini akan mengarsipkan <b>{{ $user->name }}</b> dan menyembunyikan akun dari tampilan admin aktif sambil menjaga integritas catatan audit.
                 @else
-                    This will restore full access for <b>{{ $user->name }}</b> to the platform.
+                    Aksi ini akan memulihkan seluruh akses <b>{{ $user->name }}</b> pada Joinfest.
                 @endif
             </p>
         @endif
@@ -169,12 +195,12 @@
                 @if($user->hasPublishedEvents())
                     <div class="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-500 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2">
                         <x-heroicon-o-x-circle class="w-4 h-4" />
-                        Blocked: Aktif Dipublikasikan Events
+                        Diblokir: Acara Aktif yang Dipublikasikan
                     </div>
                 @elseif($user->hasPendingPayouts())
                     <div class="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-500 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2">
                         <x-heroicon-o-x-circle class="w-4 h-4" />
-                        Diblokir: Pencairan Dana Tertunda
+                        Diblokir: Penarikan Dana Tertunda
                     </div>
                 @elseif($hasHistory)
                     <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-600 text-[10px] font-bold uppercase tracking-widest flex items-start gap-2 text-left">
@@ -184,7 +210,7 @@
                 @elseif($user->events()->exists())
                     <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-600 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2">
                         <x-heroicon-o-information-circle class="w-4 h-4" />
-                        Note: Historical event data remains linked for audit.
+                        Catatan: Data riwayat acara akan tetap terhubung untuk kebutuhan audit.
                     </div>
                 @endif
             </div>
@@ -198,7 +224,7 @@
                     <button type="submit" 
                             class="w-full justify-center py-4 rounded-md text-xs font-bold uppercase tracking-widest transition-all active:scale-95 shadow-lg
                             {{ $user->is_active ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-amber-500/20' : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-600/20' }}">
-                        {{ $user->is_active ? __('Confirm Suspension') : __('Confirm Restoration') }}
+                        {{ $user->is_active ? __('Konfirmasi Penangguhan') : __('Konfirmasi Pemulihan') }}
                     </button>
                 </form>
             @else

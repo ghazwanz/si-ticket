@@ -21,10 +21,10 @@
                     'cancelled' => 'bg-rose-500/10 text-rose-600 dark:text-rose-400',
                     'awaiting_approval' => 'bg-amber-500/10 text-amber-600 dark:text-amber-400'
                 ];
-                $color = $statusColors[$event->status] ?? $statusColors['draft'];
+                $color = $statusColors[$event->status->value] ?? $statusColors['draft'];
             @endphp
             <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-bold uppercase tracking-widest {{ $color }}">
-                {{ ucfirst($event->status) }}
+                {{ $event->status->label() }}
             </span>
             
             <div x-data="{ open: false }" class="relative">
@@ -59,7 +59,7 @@
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <x-organizer.stat-card label="Total Pendapatan" value="Rp {{ number_format($stats['total_revenue'], 0, ',', '.') }}" meta="Berdasarkan periode filter" icon="banknotes" tone="emerald" />
         <x-organizer.stat-card label="Tiket Terjual" value="{{ number_format($stats['ticket_sold'], 0, ',', '.') }}" meta="Total dari semua kategori" icon="ticket" tone="violet" />
-        <x-organizer.stat-card label="Merch Terjual" value="{{ number_format($stats['merch_sold'], 0, ',', '.') }}" meta="Total dari semua item" icon="shopping-bag" tone="fuchsia" />
+        <x-organizer.stat-card label="Suvenir Terjual" value="{{ number_format($stats['merch_sold'], 0, ',', '.') }}" meta="Total dari semua item" icon="shopping-bag" tone="fuchsia" />
     </div>
 
     <!-- Charts -->
@@ -120,14 +120,14 @@
                     this.chart.render();
                 }
              }">
-            <h3 class="text-sm font-extrabold uppercase tracking-widest text-slate-400 mb-6">Tren Pendapatan</h3>
+            <h3 class="text-base font-extrabold uppercase tracking-widest text-slate-600 dark:text-slate-400 mb-6">Tren Pendapatan</h3>
             <div x-ref="chart" class="min-h-[256px]"></div>
         </div>
         
         <!-- Ticket & Merch Distribution -->
         <div class="glass-panel rounded-[2rem] p-6 border border-white/60 dark:border-white/10 flex flex-col gap-6">
             <div>
-                <h3 class="text-sm font-extrabold uppercase tracking-widest text-slate-400 mb-4">Distribusi Tiket</h3>
+                <h3 class="text-base font-extrabold uppercase tracking-widest text-slate-600 dark:text-slate-400 mb-4">Distribusi Tiket</h3>
                 @if(count($ticketDistribution) > 0)
                     <div class="space-y-3">
                         @foreach($ticketDistribution as $dist)
@@ -146,7 +146,7 @@
             </div>
             
             <div class="border-t border-slate-100 dark:border-slate-800 pt-6">
-                <h3 class="text-sm font-extrabold uppercase tracking-widest text-slate-400 mb-4">Distribusi Merch</h3>
+                <h3 class="text-base font-extrabold uppercase tracking-widest text-slate-600 dark:text-slate-400 mb-4">Distribusi Suvenir</h3>
                 @if(count($merchDistribution) > 0)
                     <div class="space-y-3">
                         @foreach($merchDistribution as $dist)
@@ -168,12 +168,12 @@
 
     <!-- Variant Sales Breakdown -->
     <div class="glass-panel rounded-[2rem] p-6 border border-white/60 dark:border-white/10">
-        <h3 class="text-sm font-extrabold uppercase tracking-widest text-slate-400 mb-4">Detail Penjualan Varian Merch</h3>
+        <h3 class="text-base font-extrabold uppercase tracking-widest text-slate-600 dark:text-slate-400 mb-4">Rincian Penjualan Varian Suvenir</h3>
         <div class="overflow-x-auto">
             <table class="w-full text-left text-sm">
                 <thead class="bg-slate-50 text-xs uppercase tracking-widest text-slate-500 dark:bg-slate-900/60">
                     <tr>
-                        <th class="px-4 py-3 font-bold">Item</th>
+                        <th class="px-4 py-3 font-bold">Pesanan</th>
                         <th class="px-4 py-3 font-bold">Varian</th>
                         <th class="px-4 py-3 font-bold text-right">Terjual</th>
                         <th class="px-4 py-3 font-bold text-right">Pendapatan</th>
@@ -201,14 +201,14 @@
 
     <!-- Transaction Activity -->
     <div class="glass-panel rounded-[2rem] p-6 border border-white/60 dark:border-white/10">
-        <h3 class="text-sm font-extrabold uppercase tracking-widest text-slate-400 mb-4">Aktivitas Transaksi</h3>
+        <h3 class="text-base font-extrabold uppercase tracking-widest text-slate-600 dark:text-slate-400 mb-4">Aktivitas Transaksi</h3>
         <div class="overflow-x-auto">
             <table class="w-full text-left text-sm">
                 <thead class="bg-slate-50 text-xs uppercase tracking-widest text-slate-500 dark:bg-slate-900/60">
                     <tr>
                         <th class="px-4 py-3 font-bold">Pesanan</th>
                         <th class="px-4 py-3 font-bold">Pembeli</th>
-                        <th class="px-4 py-3 font-bold">Item</th>
+                        <th class="px-4 py-3 font-bold">Produk</th>
                         <th class="px-4 py-3 font-bold text-right">Total</th>
                     </tr>
                 </thead>
@@ -217,13 +217,13 @@
                         <tr class="transition-colors hover:bg-slate-50 dark:hover:bg-white/5">
                             <td class="px-4 py-3 align-top">
                                 <div class="font-bold text-slate-900 dark:text-white">#{{ $order->id }}</div>
-                                <div class="text-xs text-slate-500">{{ $order->paid_at?->translatedFormat('d M Y, H:i') }}</div>
+                                <div class="text-sm text-slate-500">{{ $order->paid_at?->translatedFormat('d M Y, H:i') }}</div>
                             </td>
                             <td class="px-4 py-3 align-top">
                                 <div class="font-medium text-slate-900 dark:text-white">{{ $order->user->name }}</div>
-                                <div class="text-xs text-slate-500">{{ $order->user->email }}</div>
+                                <div class="text-sm text-slate-500">{{ $order->user->email }}</div>
                             </td>
-                            <td class="px-4 py-3 text-xs text-slate-600 dark:text-slate-300">
+                            <td class="px-4 py-3 text-sm text-slate-600 dark:text-slate-300">
                                 @if($order->tickets->count() > 0)
                                     <div class="font-bold mb-1">Tiket:</div>
                                     <ul class="list-disc list-inside mb-2">
@@ -233,7 +233,7 @@
                                     </ul>
                                 @endif
                                 @if($order->merchandise->count() > 0)
-                                    <div class="font-bold mb-1">Merch:</div>
+                                    <div class="font-bold mb-1">Suvenir:</div>
                                     <ul class="list-disc list-inside">
                                         @foreach($order->merchandise as $merch)
                                             <li>{{ $merch->quantity }}x {{ $merch->merchandiseItem->name }} ({{ $merch->merchandiseVariant->variant_value }})</li>
@@ -243,7 +243,7 @@
                             </td>
                             <td class="px-4 py-3 align-top text-right">
                                 <div class="font-bold text-slate-900 dark:text-white">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</div>
-                                <div class="text-xs font-semibold text-emerald-600 dark:text-emerald-400">Berhasil</div>
+                                <div class="text-sm font-semibold text-emerald-600 dark:text-emerald-400">Berhasil</div>
                             </td>
                         </tr>
                     @empty

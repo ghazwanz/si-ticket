@@ -4,12 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Enums\UserRole;
 use App\Http\Requests\ProfileUpdateRequest;
-use App\Models\Event;
 use App\Models\Order;
+use App\Models\User;
+use App\Notifications\VerifyPendingEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class ProfileController extends Controller
@@ -17,27 +20,16 @@ class ProfileController extends Controller
     /**
      * Display the user's profile dashboard.
      */
-    public function index(): View
+    public function index(): View|RedirectResponse
     {
         $user = Auth::user();
 
         if ($user->role === UserRole::Admin) {
-            return view('profile.admin', [
-                'user' => $user,
-            ]);
+            return redirect()->route('admin.settings.index');
         }
 
         if ($user->role === UserRole::Organizer) {
-            $user->load('organizerProfile');
-            $recentEvents = Event::where('organizer_id', $user->id)
-                ->latest()
-                ->take(5)
-                ->get();
-
-            return view('profile.eo', [
-                'user' => $user,
-                'recentEvents' => $recentEvents,
-            ]);
+            return redirect()->route('organizer.settings');
         }
 
         // For Regular Users
@@ -67,40 +59,59 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $user = $request->user();
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        $user->name = $request->name;
+
+        $emailChanged = false;
+        if ($request->email !== $user->email) {
+            $user->pending_email = $request->email;
+            Notification::route('mail', $request->email)->notify(new VerifyPendingEmail($request->email, $user));
+            $emailChanged = true;
         }
 
-        $request->user()->save();
+        if ($request->hasFile('profile_photo')) {
+            if ($user->profile_photo_path) {
+                Storage::disk('public')->delete($user->profile_photo_path);
+            }
+            $user->profile_photo_path = $request->file('profile_photo')->store('profile-photos', 'public');
+        } elseif ($request->remove_photo === '1' || $request->remove_photo === 'true') {
+            if ($user->profile_photo_path) {
+                Storage::disk('public')->delete($user->profile_photo_path);
+            }
+            $user->profile_photo_path = null;
+        }
+
+        $user->save();
+
+        if ($emailChanged) {
+            return back()->with('status', 'verification-link-sent');
+        }
 
         return back()->with('status', 'profile-updated');
     }
 
     /**
-     * Delete the user's account.
+     * Verify the user's pending email address change.
      */
-    public function orderDetail(Request $request, string $orderId): View
+    public function verifyPendingEmail(Request $request, string $id, string $hash): RedirectResponse
     {
-        return view('profile.order-detail', [
-            'orderId' => $orderId,
-        ]);
-    }
+        $user = User::findOrFail($id);
 
-    /**
-     * Display order tickets QR codes.
-     */
-    public function ticketsQr(Request $request, string $orderId): View
-    {
-        $order = Order::with(['event', 'tickets.ticketCategory', 'merchandise.merchandiseVariant.item'])->findOrFail($orderId);
+        if ($user->id !== $request->user()->id) {
+            abort(403);
+        }
 
-        // Pastikan hanya pemilik pesanan yang bisa melihat QR
-        abort_if($order->user_id !== Auth::id(), 403);
+        if (! hash_equals((string) $hash, sha1((string) $user->pending_email))) {
+            return redirect()->route('profile.index')->with('error', 'Tautan verifikasi email tidak valid atau sudah kadaluwarsa.');
+        }
 
-        return view('profile.tickets-qr', [
-            'order' => $order,
-        ]);
+        $user->email = $user->pending_email;
+        $user->pending_email = null;
+        $user->email_verified_at = now();
+        $user->save();
+
+        return redirect()->route('profile.index')->with('success', 'Alamat email Anda berhasil diperbarui dan diverifikasi.');
     }
 
     /**

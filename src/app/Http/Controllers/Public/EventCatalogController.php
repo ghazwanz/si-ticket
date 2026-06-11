@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Public;
 
+use App\Enums\EventStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Models\EventCategory;
@@ -12,8 +13,10 @@ class EventCatalogController extends Controller
     public function index(Request $request)
     {
         $query = Event::query()
-            ->with(['category', 'organizer'])
-            ->whereIn('status', ['published', 'awaiting_cancellation', 'completed']) // Exclude cancelled and draft
+            ->with(['category', 'organizer', 'ticketCategories' => function ($q) {
+                $q->where('is_active', true);
+            }])
+            ->whereIn('status', [EventStatus::Published, EventStatus::AwaitingCancellation, EventStatus::Completed])
             ->orderBy('event_date')
             ->orderBy('start_time');
 
@@ -46,11 +49,11 @@ class EventCatalogController extends Controller
 
         if ($status = $request->input('status')) {
             if ($status === 'upcoming') {
-                $query->where('status', 'published');
+                $query->where('status', EventStatus::Published);
             } elseif ($status === 'suspended') {
-                $query->where('status', 'awaiting_cancellation');
+                $query->where('status', EventStatus::AwaitingCancellation);
             } elseif ($status === 'completed') {
-                $query->where('status', 'completed');
+                $query->where('status', EventStatus::Completed);
             }
         }
 
@@ -58,13 +61,13 @@ class EventCatalogController extends Controller
         $eventCategories = EventCategory::all();
 
         // Get unique cities for filter dropdown
-        $cities = Event::whereIn('status', ['published', 'awaiting_cancellation', 'completed'])
+        $cities = Event::whereIn('status', [EventStatus::Published, EventStatus::AwaitingCancellation, EventStatus::Completed])
             ->whereNotNull('city')
             ->distinct()
             ->orderBy('city')
             ->pluck('city');
 
-        return view('events.index', [
+        return view('public.events.index', [
             'events' => $events,
             'eventCategories' => $eventCategories,
             'cities' => $cities,
@@ -95,7 +98,7 @@ class EventCatalogController extends Controller
         ])->where('slug', $slug)->firstOrFail();
 
         // Cancellation Logic (Task 3.6)
-        if ($event->status === 'cancelled') {
+        if ($event->status === EventStatus::Cancelled) {
             $hasOrder = false;
 
             if (auth()->check()) {
@@ -121,7 +124,7 @@ class EventCatalogController extends Controller
             }
         }
 
-        return view('events.show', [
+        return view('public.events.show', [
             'event' => $event,
             'isNearlySoldOut' => $isNearlySoldOut,
         ]);

@@ -44,7 +44,7 @@
                     @php
                         $sold = $event->ticketCategories->sum('sold_count');
                         $quota = $event->ticketCategories->sum('quota');
-                        $isPayoutEligible = $event->status === 'completed';
+                        $isPayoutEligible = $event->status->value === 'completed';
                     @endphp
                     <tr class="transition-colors hover:bg-slate-50 dark:hover:bg-white/5">
                         <td class="px-4 py-3">
@@ -53,8 +53,8 @@
                         </td>
                         <td class="px-4 py-3 text-slate-600 dark:text-slate-300">{{ $event->event_date->translatedFormat('d M Y') }}</td>
                         <td class="px-4 py-3">
-                            <span class="rounded-full px-2 py-1 text-xs font-bold {{ $statusTones[$event->status] ?? $statusTones['draft'] }}">
-                                {{ $statusLabels[$event->status] ?? ucfirst($event->status) }}
+                            <span class="rounded-full px-2 py-1 text-xs font-bold {{ $statusTones[$event->status->value] ?? $statusTones['draft'] }}">
+                                {{ $statusLabels[$event->status->value] ?? $event->status->label() }}
                             </span>
                         </td>
                         <td class="px-4 py-3 font-bold text-slate-900 dark:text-white">{{ number_format($sold, 0, ',', '.') }}/{{ number_format($quota, 0, ',', '.') }} Tiket</td>

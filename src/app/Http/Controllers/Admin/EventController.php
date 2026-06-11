@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\EventStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Event;
-use App\Services\EventAnalyticsService;
-use App\Services\EventService;
+use App\Services\Admin\EventAnalyticsService;
+use App\Services\Admin\EventService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -40,19 +41,37 @@ class EventController extends Controller
 
     public function updateStatus(Request $request, Event $event)
     {
-        $allowedStatuses = ['draft', 'published', 'completed', 'cancelled'];
+        $allowedStatuses = ['draft', 'published', 'completed', 'cancelled', 'reject', 'awaiting_approval'];
 
         // Enforce transition rules for published events
-        if ($event->status === 'published') {
+        if ($event->status === EventStatus::Published) {
             $allowedStatuses = ['completed', 'cancelled'];
         }
 
         $request->validate([
             'status' => 'required|in:'.implode(',', $allowedStatuses),
+            'rejection_message' => 'required_if:status,reject,cancelled|nullable|string',
         ]);
 
-        $this->eventService->updateEventStatus($event, $request->status);
+        $this->eventService->updateEventStatus($event, $request->status, $request->rejection_message);
 
         return back()->with('status', 'Status event berhasil diperbarui.');
+    }
+
+    public function toggleFeatured(Event $event)
+    {
+        if ($event->status !== EventStatus::Published) {
+            return back()->withErrors(['error' => 'Hanya acara yang telah diterbitkan yang dapat ditandai sebagai Unggulan.']);
+        }
+
+        $event->update([
+            'is_featured' => ! $event->is_featured,
+        ]);
+
+        $message = $event->is_featured
+            ? 'Acara berhasil ditandai sebagai Unggulan.'
+            : 'Acara berhasil dihapus dari Unggulan.';
+
+        return back()->with('status', $message);
     }
 }
