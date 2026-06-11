@@ -52,7 +52,7 @@
     
     {{-- Banner Image Area --}}
     <div class="relative h-52 overflow-hidden shrink-0">
-        <img src="{{ $event->image_path ? Storage::url($event->image_path) : asset('img/eobanner.png') }}" 
+        <img src="{{ $event->image_path ? asset($event->image_path) : asset('img/eobanner.png') }}" 
              alt="{{ $event->name }}" 
              class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" 
              style="view-transition-name: event-img-{{ $event->id }};">

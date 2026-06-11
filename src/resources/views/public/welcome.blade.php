@@ -221,8 +221,8 @@
                         <h3 class="text-3xl font-extrabold tracking-tight">Pengalaman Tiket Modern</h3>
                         <p class="mt-4 max-w-md text-sm leading-relaxed text-violet-100">Semua fitur penting untuk transaksi acara modern: proses cepat, informasi jelas, dan dukungan pengguna yang responsif.</p>
                         <div class="mt-8 grid gap-4 text-sm font-medium text-white">
-                            <p class="inline-flex items-center gap-3"><span class="flex h-6 w-6 items-center justify-center rounded-full bg-white/20"><x-heroicon-s-check class="h-4 w-4" /></span>Elektronik-tiket langsung tersedia</p>
-                            <p class="inline-flex items-center gap-3"><span class="flex h-6 w-6 items-center justify-center rounded-full bg-white/20"><x-heroicon-s-check class="h-4 w-4" /></span>Status pesanan real-time</p>
+                            <p class="inline-flex items-center gap-3"><span class="flex h-6 w-6 items-center justify-center rounded-full bg-white/20"><x-heroicon-s-check class="h-4 w-4" /></span>Tiket elektronik langsung tersedia</p>
+                            <p class="inline-flex items-center gap-3"><span class="flex h-6 w-6 items-center justify-center rounded-full bg-white/20"><x-heroicon-s-check class="h-4 w-4" /></span>Status pesanan <i>real-time</i></p>
                         </div>
                     </div>
 
@@ -230,7 +230,7 @@
                         @php
                             $features = [
                                 ['title' => 'Pemesanan Instan', 'desc' => 'Checkout singkat dengan alur yang jelas.', 'icon' => 'bolt'],
-                                ['title' => 'E-Tiket Aman', 'desc' => 'Tiket digital tersimpan rapi di akun.', 'icon' => 'shield-check'],
+                                ['title' => 'Tiket Elektronik Aman', 'desc' => 'Tiket digital tersimpan rapi di akun.', 'icon' => 'shield-check'],
                                 ['title' => 'Pembayaran Fleksibel', 'desc' => 'Metode pembayaran modern dan tepercaya.', 'icon' => 'credit-card'],
                                 ['title' => 'Dukungan 24/7', 'desc' => 'Tim support siap membantu kapan saja.', 'icon' => 'chat-bubble-left-right'],
                             ];
@@ -257,7 +257,7 @@
                         <div class="max-w-2xl text-center lg:text-left">
                             <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight">Ingin Menyelenggarakan Acara Sendiri?</h2>
                             <p class="mt-4 text-violet-100 text-sm sm:text-base leading-relaxed">
-                                Buat acara pertamamu sekarang! Kelola penjualan tiket, souvenir, <i>scanner gate</i>, hingga pencairan dana penjualan dengan mudah dan transparan.
+                                Buat acara pertamamu sekarang! Kelola penjualan tiket, suvenir, <i>scanner gate</i>, hingga pencairan dana penjualan dengan mudah dan transparan.
                             </p>
                         </div>
                         <div class="shrink-0">

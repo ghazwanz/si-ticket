@@ -6,7 +6,7 @@
                 <span>JoinFest</span>
             </a>
             <p class="text-sm leading-7 text-slate-500">
-                Platform tiket, festival, dan souvenir resmi untuk pengalaman acara yang cepat, aman, dan mudah diakses.
+                Platform tiket, festival, dan suvenir resmi untuk pengalaman acara yang cepat, aman, dan mudah diakses.
             </p>
         </div>
 

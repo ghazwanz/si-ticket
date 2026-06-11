@@ -114,7 +114,7 @@
                     @empty
                         <div class="col-span-full py-20 text-center bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-white/10 rounded-[2rem] shadow-sm">
                             <x-heroicon-o-magnifying-glass class="mx-auto h-12 w-12 text-slate-400 dark:text-slate-600 mb-4" />
-                            <h3 class="text-lg font-bold text-slate-900 dark:text-white">Event tidak ditemukan</h3>
+                            <h3 class="text-lg font-bold text-slate-900 dark:text-white">Acara tidak ditemukan</h3>
                             <p class="text-sm text-slate-500 dark:text-slate-400 mt-2">Coba ubah filter atau kata kunci pencarian Anda.</p>
                         </div>
                     @endforelse
