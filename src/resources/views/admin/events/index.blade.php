@@ -7,7 +7,7 @@
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
                 <h2 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Persetujuan Acara</h2>
-                <p class="text-slate-500 dark:text-slate-400 mt-1 text-sm font-medium">Verify event details, check categories, and validate organizers.</p>
+                <p class="text-slate-500 dark:text-slate-400 mt-1 text-sm font-medium">Verifikasi rincian acara, periksa kategori, dan validasi penyelenggara.</p>
             </div>
             <div class="flex items-center gap-2">
                 <span class="inline-flex items-center px-4 py-2 rounded-2xl glass-panel text-xs font-bold text-slate-600 dark:text-slate-300">

@@ -7,7 +7,7 @@
         <div class="flex items-center justify-between">
             <div>
                 <h2 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Selamat Datang, Admin</h2>
-                <p class="text-slate-500 dark:text-slate-400 mt-1 text-sm font-medium">Overview performa platform JoinFest hari ini.</p>
+                <p class="text-slate-500 dark:text-slate-400 mt-1 text-sm font-medium">Ringkasan performa platform JoinFest hari ini.</p>
             </div>
         </div>
 
