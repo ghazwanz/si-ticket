@@ -10,11 +10,18 @@
             </a>
 
             <div class="hidden min-w-0 flex-1 items-center justify-center px-4 lg:flex">
-                <div class="relative w-full max-w-md">
+                <form action="{{ route('events.index') }}" method="GET" role="search" class="relative w-full max-w-md">
                     <x-heroicon-o-magnifying-glass class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
-                    <input type="text" placeholder="Cari event, konser, atau artis..."
-                        class="h-11 w-full rounded-full border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 py-2 pl-9 pr-4 text-sm text-slate-700 dark:text-slate-200 outline-none transition focus:border-violet-500 dark:focus:border-violet-500 focus:bg-white dark:focus:bg-slate-955 focus:ring-4 focus:ring-violet-500/10 dark:focus:ring-violet-500/5">
-                </div>
+                    <input
+                        type="search"
+                        name="q"
+                        value="{{ request('q') }}"
+                        placeholder="Cari acara, atau penyelenggara..."
+                        aria-label="Cari acara, atau penyelenggara"
+                        class="h-11 w-full rounded-full border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 py-2 pl-9 pr-4 text-sm text-slate-700 dark:text-slate-200 outline-none transition focus:border-violet-500 dark:focus:border-violet-500 focus:bg-white dark:focus:bg-slate-955 focus:ring-4 focus:ring-violet-500/10 dark:focus:ring-violet-500/5"
+                    >
+                    <button type="submit" class="sr-only">Cari</button>
+                </form>
             </div>
 
             <div class="flex items-center gap-3">
