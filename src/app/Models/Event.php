@@ -196,6 +196,14 @@ class Event extends Model
     // ──────────────────────────────────────────────
 
     /**
+     * Get the virtual image path (maps to banner_image).
+     */
+    public function getImagePathAttribute(): ?string
+    {
+        return $this->banner_image;
+    }
+    
+    /**
      * Get combined location (venue_name, city).
      */
     public function getLocationAttribute(): string
