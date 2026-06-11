@@ -56,7 +56,7 @@ class SendETicketNotification extends Notification implements ShouldQueue
         }
 
         return (new MailMessage)
-            ->subject("E-Tiket & Detail Transaksi Pembelian JoinFest: {$this->order->event->name}")
+            ->subject("Tiket Elektronik & Detail Transaksi Pembelian JoinFest: {$this->order->event->name}")
             ->markdown('emails.eticket', [
                 'order' => $this->order,
                 'qrCodes' => $qrCodes,
