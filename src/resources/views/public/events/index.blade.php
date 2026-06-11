@@ -22,7 +22,7 @@
                         @if(request('end_date')) <input type="hidden" name="end_date" value="{{ request('end_date') }}"> @endif
                         
                         <x-heroicon-o-magnifying-glass class="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 dark:text-slate-550 group-focus-within:text-violet-600 dark:group-focus-within:text-violet-400 transition-colors" />
-                        <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari nama event, artis, atau lokasi..."
+                        <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari acara, atau penyelenggara..." aria-label="Cari acara, atau penyelenggara"
                                class="w-full rounded-2xl border border-slate-200 dark:border-white/10 bg-white/50 dark:bg-slate-900/40 py-3 pl-11 pr-4 text-sm font-medium text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 outline-none transition-all focus:border-violet-500 focus:bg-white focus:dark:bg-slate-950 focus:ring-4 focus:ring-violet-500/10 dark:focus:ring-violet-500/5 shadow-sm">
                     </form>
                 </div>
