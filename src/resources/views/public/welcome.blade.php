@@ -1,60 +1,60 @@
 <x-public-layout title="Pengalaman Acara Masa Depan">
     <div class="px-4 py-6 md:px-6 md:py-10">
-        <div class="max-w-7xl w-full mx-auto lg:space-y-40 sm:space-y-32 space-y-16">
-            <!-- Hero Section -->
-            <section class="overflow-hidden rounded-[2rem] border border-slate-800 dark:border-white/10 backdrop-blur-xl shadow-xl" data-reveal data-reveal-delay="0">
-                <div class="relative isolate min-h-[500px] overflow-hidden" data-hero>
-                    <img src="{{ asset('img/HeroBanner.png') }}" alt="JoinFest hero" class="absolute inset-0 h-full w-full object-cover transition-transform duration-300 will-change-transform" data-parallax="0.07">
-                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-slate-950/20 to-transparent"></div>
-                    <div class="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-slate-950/30 to-transparent"></div>
+        <div class="max-w-7xl w-full mx-auto lg:space-y-30 sm:space-y-23 space-y-16">
+            <div class="flex flex-col gap-6 sm:gap-8">
 
-                    <div class="relative z-10 flex min-h-[500px] items-center p-6 sm:p-12 lg:p-16">
-                        <div class="max-w-3xl">
-                            <div class="inline-flex items-center gap-2 rounded-full border border-violet-500/30 bg-violet-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-violet-400 opacity-0 blur-sm transition-all duration-700 ease-out translate-y-6 scale-[0.98]" data-reveal data-reveal-delay="80">
-                                <span class="h-1.5 w-1.5 rounded-full bg-violet-400 animate-pulse"></span>
-                                {{ config('app.name') }}
-                            </div>
-                            <h1 class="mt-6 text-4xl font-extrabold leading-tight tracking-tight text-white sm:text-5xl lg:text-7xl opacity-0 blur-sm transition-all duration-700 ease-out translate-y-6 scale-[0.98]" data-reveal data-reveal-delay="140">
-                                Pengalaman Acara <span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 via-violet-400 to-sky-400">Masa Depan</span>
-                            </h1>
-                            <p class="mt-6 max-w-xl text-sm leading-relaxed text-slate-300 sm:text-base opacity-0 blur-sm transition-all duration-700 ease-out translate-y-6 scale-[0.98]" data-reveal data-reveal-delay="220">
-                                Temukan konser, festival, hingga seminar premium dalam satu tempat dengan alur pemesanan yang cepat, rapi, dan nyaman.
-                            </p>
-                            <div class="mt-8 flex flex-wrap items-center gap-4 opacity-0 blur-sm transition-all duration-700 ease-out translate-y-6 scale-[0.98]" data-reveal data-reveal-delay="300">
-                                <a href="{{ route('events.index') }}" data-link class="inline-flex h-12 items-center justify-center rounded-xl bg-violet-600 px-6 text-sm font-bold text-white shadow-lg shadow-violet-600/25 transition-all hover:-translate-y-0.5 hover:bg-violet-700 hover:shadow-violet-700/30">
-                                    Jelajahi Acara
+                <!-- Hero Text Section -->
+                <section data-reveal data-reveal-delay="0">
+                    <div class="flex flex-col items-center text-center p-6 sm:p-12 lg:p-12 pb-0 sm:pb-0 lg:pb-0">
+                        <h1 class="mt-6 text-4xl font-extrabold leading-tight tracking-tight text-slate-900 dark:text-white sm:text-5xl lg:text-7xl opacity-0 blur-sm transition-all duration-700 ease-out translate-y-6 scale-[0.98]" data-reveal data-reveal-delay="140">
+                            Pengalaman Acara <br>
+                            <span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 via-violet-400 to-sky-400">
+                                Masa Depan
+                            </span>
+                        </h1>
+                        <p class="mt-6 max-w-xl text-sm leading-relaxed text-slate-500 dark:text-slate-300 sm:text-base opacity-0 blur-sm transition-all duration-700 ease-out translate-y-6 scale-[0.98]" data-reveal data-reveal-delay="220">
+                            Temukan konser, festival, hingga seminar premium dalam satu tempat dengan alur pemesanan yang cepat, rapi, dan nyaman.
+                        </p>
+                        <div class="mt-8 mb-8 flex flex-wrap justify-center items-center gap-4 opacity-0 blur-sm transition-all duration-700 ease-out translate-y-6 scale-[0.98]" data-reveal data-reveal-delay="300">
+                            <a href="{{ route('events.index') }}" data-link class="inline-flex h-12 items-center justify-center rounded-xl bg-violet-600 px-6 text-sm font-bold text-white shadow-lg shadow-violet-600/25 transition-all hover:-translate-y-0.5 hover:bg-violet-700 hover:shadow-violet-700/30">
+                                Jelajahi Acara
+                            </a>
+                            @auth
+                                <a href="{{ route('pesanan.index') }}" data-link class="inline-flex h-12 items-center justify-center rounded-xl border border-slate-300 dark:border-white/10 bg-white dark:bg-white/5 hover:bg-slate-50 dark:hover:bg-white/10 px-6 text-sm font-bold text-slate-700 dark:text-white transition-all">
+                                    Lihat Pesanan Saya
                                 </a>
-                                @auth
-                                    <a href="{{ route('pesanan.index') }}" data-link class="inline-flex h-12 items-center justify-center rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 px-6 text-sm font-bold text-white transition-all">
-                                        Lihat Pesanan Saya
-                                    </a>
-                                @else
-                                    <a href="{{ route('register') }}" data-link class="inline-flex h-12 items-center justify-center rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 px-6 text-sm font-bold text-white transition-all">
-                                        Buat Akun
-                                    </a>
-                                @endauth
-                            </div>
+                            @else
+                                <a href="{{ route('register') }}" data-link class="inline-flex h-12 items-center justify-center rounded-xl border border-slate-300 dark:border-white/10 bg-white dark:bg-white/5 hover:bg-slate-50 dark:hover:bg-white/10 px-6 text-sm font-bold text-slate-700 dark:text-white transition-all">
+                                    Buat Akun
+                                </a>
+                            @endauth
                         </div>
                     </div>
-                </div>
-            </section>
+                </section>
+
+                <!-- Hero Banner Section -->
+                <section class="overflow-hidden rounded-[2rem] border border-slate-800 dark:border-white/10 shadow-xl" data-reveal data-reveal-delay="50">
+                    <img src="{{ asset('img/HeroBanner.png') }}" alt="JoinFest hero" class="w-full h-[400px] sm:h-[500px] object-cover transition-transform duration-300 will-change-transform" data-parallax="0.07">
+                </section>
+
+            </div>
 
             <!-- Popular Events Section -->
             <section data-reveal data-reveal-delay="110" class="lg:space-y-12 space-y-8">
-                <div class="mb-5 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-                    <div>
-                        <div class="inline-flex items-center gap-2 mb-3">
-                            <span class="h-px w-8 bg-violet-500"></span>
-                            <span class="text-[10px] font-bold uppercase tracking-widest text-violet-600 dark:text-violet-400">Populer</span>
-                        </div>
-                        <h2 class="lg:text-4xl text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">Acara Populer</h2>
+
+                <!-- Judul -->
+                <div class="text-center">
+                    <div class="inline-flex items-center justify-center gap-2 mb-3">
+                        <span class="h-px w-8 bg-violet-500"></span>
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-violet-600 dark:text-violet-400">Populer</span>
+                        <span class="h-px w-8 bg-violet-500"></span>
                     </div>
-                    <a href="{{ route('events.index') }}" data-link class="group inline-flex items-center gap-2 text-sm font-bold text-slate-500 dark:text-slate-400 transition hover:text-slate-800 dark:hover:text-white">
-                        Lihat Semua
-                        <x-heroicon-o-arrow-right class="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                    </a>
+                    <h2 class="lg:text-4xl text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+                        Acara Populer
+                    </h2>
                 </div>
 
+                <!-- Katalog -->
                 <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
                     @forelse ($popularEvents as $event)
                         <x-event-card :event="$event" :loop-index="$loop->index" />
@@ -64,18 +64,29 @@
                         </div>
                     @endforelse
                 </div>
+
+                <!-- Lihat Semua  -->
+                <div class="flex justify-center">
+                    <a href="{{ route('events.index') }}" data-link 
+                    class="group inline-flex items-center gap-2 text-sm font-bold text-slate-500 dark:text-slate-400 transition hover:text-slate-800 dark:hover:text-white">
+                        Lihat Semua
+                        <x-heroicon-o-arrow-right class="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    </a>
+                </div>
+
             </section>
 
             <!-- Categories Section (Dynamic) -->
-            <section id="kategori" data-reveal data-reveal-delay="90" class="lg:space-y-12 space-y-8">
-                <div class="mb-5 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-                    <div>
-                        <div class="inline-flex items-center gap-2 mb-3">
-                            <span class="h-px w-8 bg-sky-500"></span>
-                            <span class="text-[10px] font-bold uppercase tracking-widest text-sky-600 dark:text-sky-400">Eksplorasi</span>
-                        </div>
-                        <h2 class="lg:text-4xl text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">Kategori Acara</h2>
+            <<!-- Judul -->
+                <div class="text-center">
+                    <div class="inline-flex items-center justify-center gap-2 mb-3">
+                        <span class="h-px w-8 bg-violet-500"></span>
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-violet-600 dark:text-violet-400">Eksplorasi</span>
+                        <span class="h-px w-8 bg-violet-500"></span>
                     </div>
+                    <h2 class="lg:text-4xl text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+                        Kategori Acara
+                    </h2>
                 </div>
 
                 <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-4">

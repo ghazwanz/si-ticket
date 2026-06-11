@@ -1,6 +1,7 @@
 @php
     $isSuspended = $event->status->value === 'awaiting_cancellation';
     $isCancelled = $event->status->value === 'cancelled';
+    $isCompleted = $event->status->value === 'completed';
 
     $merchVariantsJson = $event->merchandiseItems->flatMap(fn($item) => 
         $item->variants->map(fn($v) => [
@@ -34,7 +35,7 @@
                     <div class="relative overflow-hidden rounded-[2rem] border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900/40 backdrop-blur-xl shadow-md">
                         <div class="relative isolate h-[320px] w-full md:h-[400px]">
                             <!-- The view-transition-name matches the catalog card -->
-                            <img src="{{ $event->image_path ? Storage::url($event->image_path) : asset('img/eobanner.png') }}" alt="{{ $event->name }}" class="absolute inset-0 h-full w-full object-cover opacity-60 {{ $isSuspended ? 'grayscale' : '' }}" style="view-transition-name: event-img-{{ $event->id }};" />
+                            <img src="{{ $event->image_path ? asset($event->image_path) : asset('img/eobanner.png') }}" alt="{{ $event->name }}" class="absolute inset-0 h-full w-full object-cover opacity-60 {{ $isSuspended ? 'grayscale' : '' }}" style="view-transition-name: event-img-{{ $event->id }};" />
                             <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
 
                             <div class="absolute inset-x-0 bottom-0 p-6 md:p-8">
@@ -110,7 +111,7 @@
                             <article class="relative overflow-hidden rounded-[2rem] border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900/40 backdrop-blur-xl shadow-md transition-all duration-300 hover:-translate-y-1 hover:border-fuchsia-500/30 flex flex-col h-full">
                                 <div class="relative h-48 w-full bg-slate-100 dark:bg-white/5">
                                     @if($item->image)
-                                        <img src="{{ Storage::url($item->image) }}" alt="{{ $item->name }}" class="h-full w-full object-cover">
+                                        <img src="{{ asset($item->image) }}" alt="{{ $item->name }}" class="h-full w-full object-cover">
                                     @else
                                         <div class="flex h-full items-center justify-center text-slate-400 dark:text-slate-600">
                                             <x-heroicon-o-shopping-bag class="h-12 w-12" />
@@ -151,12 +152,12 @@
                     <!-- Glow effect inside card -->
                     <div class="absolute -right-20 -top-20 h-40 w-40 rounded-full bg-violet-500/20 blur-3xl pointer-events-none"></div>
 
-                    @if($isSuspended || $isCancelled)
+                    @if($isSuspended || $isCancelled || $isCompleted)
                         <div class="absolute inset-0 z-10 bg-white/80 dark:bg-slate-950/80 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center">
                             <x-heroicon-o-no-symbol class="h-12 w-12 text-rose-500 mb-4" />
                             <h3 class="text-lg font-bold text-slate-900 dark:text-white">Penjualan Ditutup</h3>
                             <p class="text-sm text-slate-650 dark:text-slate-300 mt-2">
-                                {{ $isCancelled ? 'Event ini telah dibatalkan.' : 'Penjualan Tiket Ditunda' }}
+                                {{ $isCancelled ? 'Event ini telah dibatalkan.' : ($isCompleted ? 'Acara ini telah selesai.' : 'Penjualan Tiket Ditunda') }}
                             </p>
                         </div>
                     @endif
@@ -281,7 +282,10 @@
                             </button>
                             <div class="w-full md:w-3/4 bg-slate-50 dark:bg-slate-900/50 flex items-center justify-center h-48 md:h-auto md:min-h-[300px] border-b md:border-b-0 md:border-r border-slate-200 dark:border-slate-800 relative shrink-0">
                                 @if($item->image)
-                                    <img src="{{ Storage::url($item->image) }}" alt="{{ $item->name }}" class="absolute inset-0 h-full w-full object-cover">
+                                    @php
+                                        $merchImage = str_starts_with($item->image, 'img/') ? asset($item->image) : Storage::url($item->image);
+                                    @endphp
+                                    <img src="{{ $merchImage }}" alt="{{ $item->name }}" class="absolute inset-0 h-full w-full object-cover">
                                 @else
                                     <div class="flex h-full items-center justify-center text-slate-400 dark:text-slate-600">
                                         <x-heroicon-o-shopping-bag class="h-20 w-20" />

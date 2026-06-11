@@ -41,7 +41,7 @@ class EventAnalyticsService
             'total_gross' => $totalRevenue,
             'platform_fee' => $platformFee,
             'payout_projection' => $netPayout,
-            'formatted_gross' => 'Rp '.number_format($totalRevenue, 0, ',', '.'),
+            'formatted_gross' => 'Rp '.number_format((float) $totalRevenue, 0, ',', '.'),
         ];
     }
 
