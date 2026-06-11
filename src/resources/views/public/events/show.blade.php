@@ -34,7 +34,7 @@
                     <div class="relative overflow-hidden rounded-[2rem] border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900/40 backdrop-blur-xl shadow-md">
                         <div class="relative isolate h-[320px] w-full md:h-[400px]">
                             <!-- The view-transition-name matches the catalog card -->
-                            <img src="{{ $event->image_path ? Storage::url($event->image_path) : asset('img/eobanner.png') }}" alt="{{ $event->name }}" class="absolute inset-0 h-full w-full object-cover opacity-60 {{ $isSuspended ? 'grayscale' : '' }}" style="view-transition-name: event-img-{{ $event->id }};" />
+                            <img src="{{ $event->image_path ? asset($event->image_path) : asset('img/eobanner.png') }}" alt="{{ $event->name }}" class="absolute inset-0 h-full w-full object-cover opacity-60 {{ $isSuspended ? 'grayscale' : '' }}" style="view-transition-name: event-img-{{ $event->id }};" />
                             <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
 
                             <div class="absolute inset-x-0 bottom-0 p-6 md:p-8">
@@ -281,7 +281,10 @@
                             </button>
                             <div class="w-full md:w-3/4 bg-slate-50 dark:bg-slate-900/50 flex items-center justify-center h-48 md:h-auto md:min-h-[300px] border-b md:border-b-0 md:border-r border-slate-200 dark:border-slate-800 relative shrink-0">
                                 @if($item->image)
-                                    <img src="{{ Storage::url($item->image) }}" alt="{{ $item->name }}" class="absolute inset-0 h-full w-full object-cover">
+                                    @php
+                                        $merchImage = str_starts_with($item->image, 'img/') ? asset($item->image) : Storage::url($item->image);
+                                    @endphp
+                                    <img src="{{ $merchImage }}" alt="{{ $item->name }}" class="absolute inset-0 h-full w-full object-cover">
                                 @else
                                     <div class="flex h-full items-center justify-center text-slate-400 dark:text-slate-600">
                                         <x-heroicon-o-shopping-bag class="h-20 w-20" />
