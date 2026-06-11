@@ -5,7 +5,7 @@
     description="Tambahkan kategori acara baru untuk memperluas taksonomi pencarian platform."
     width="2xl"
 >
-    <form id="create-category-form" method="POST" action="{{ route('admin.event-categories.store') }}" enctype="multipart/form-data" class="space-y-8">
+    <form id="create-category-form" method="POST" action="{{ route('api.admin.event-categories.store') }}" enctype="multipart/form-data" class="space-y-8" data-api-form>
         @csrf
 
         {{-- Identity Section --}}

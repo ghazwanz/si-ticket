@@ -75,12 +75,6 @@
                     <x-heroicon-o-sun x-show="darkMode" class="w-5 h-5" />
                 </button>
 
-                {{-- Notifications --}}
-                <button class="p-2 rounded-xl text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors relative">
-                    <x-heroicon-o-bell class="w-5 h-5" />
-                    <span class="absolute top-2 right-2 w-2 h-2 bg-rose-500 rounded-full border-2 border-white dark:border-slate-950"></span>
-                </button>
-
                 {{-- Profile Dropdown --}}
                 <div class="relative ml-2" x-data="{ open: false }" @click.away="open = false">
                     <button @click="open = !open" class="flex items-center gap-3 p-1 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">

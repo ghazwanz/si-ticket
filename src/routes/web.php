@@ -88,10 +88,8 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
     Route::put('cancellations/{cancellationRequest}/reject', [CancellationController::class, 'reject'])->name('cancellations.reject');
 
     // Category Registry
-    Route::get('event-categories', [EventCategoryController::class, 'index'])->name('event-categories.index');
-    Route::post('event-categories', [EventCategoryController::class, 'store'])->name('event-categories.store');
-    Route::put('event-categories/{event_category}', [EventCategoryController::class, 'update'])->name('event-categories.update');
-    Route::delete('event-categories/{event_category}', [EventCategoryController::class, 'destroy'])->name('event-categories.destroy');
+    Route::apiResource('event-categories', EventCategoryController::class)
+        ->except(['show']);
 
     // System Settings (Profile & System Configurations)
     Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
