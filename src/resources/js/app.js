@@ -324,6 +324,40 @@ window.loadPage = function loadPage(url, push = true) {
         });
 }
 
+function getApiFormMethod(form) {
+    const methodInput = form.querySelector('input[name="_method"]');
+    const method = (methodInput?.value || form.getAttribute('method') || 'POST').toUpperCase();
+
+    return method === 'GET' ? 'GET' : 'POST';
+}
+
+function getJsonMessage(payload) {
+    return payload?.message || 'Permintaan berhasil diproses.';
+}
+
+window.submitApiForm = async function submitApiForm(form) {
+    const formData = new FormData(form);
+    const method = getApiFormMethod(form);
+    const response = await fetch(form.action, {
+        method,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+        },
+        body: method === 'GET' ? undefined : formData,
+    });
+
+    const payload = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+        const errorMessage = payload?.message || 'Terjadi kesalahan saat memproses permintaan.';
+        throw new Error(errorMessage);
+    }
+
+    return payload;
+};
+
 document.addEventListener('DOMContentLoaded', () => {
     initAppLogic();
     Alpine.start();
@@ -333,6 +367,26 @@ document.addEventListener('DOMContentLoaded', () => {
         if (link && link.getAttribute('href') && !link.getAttribute('href').startsWith('#')) {
             e.preventDefault();
             loadPage(link.getAttribute('href'));
+        }
+    });
+
+    document.body.addEventListener('submit', async (e) => {
+        const form = e.target.closest('form[data-api-form]');
+        if (!form) return;
+
+        e.preventDefault();
+
+        try {
+            const payload = await window.submitApiForm(form);
+            const modal = form.closest('[x-data]');
+            if (modal && window.Alpine?.$data) {
+                // no-op: modal state is reset by reloading below
+            }
+
+            window.loadPage(window.location.pathname + window.location.search, false);
+        } catch (error) {
+            console.error('API form submit failed', error);
+            alert(error.message || 'Terjadi kesalahan saat memproses permintaan.');
         }
     });
 

@@ -5,7 +5,7 @@
     description="Perbarui nama dan properti kategori {{ $category->name }}."
     width="2xl"
 >
-    <form id="edit-category-form-{{ $category->id }}" method="POST" action="{{ route('admin.event-categories.update', $category) }}" enctype="multipart/form-data" class="space-y-8">
+    <form id="edit-category-form-{{ $category->id }}" method="POST" action="{{ route('api.admin.event-categories.update', $category) }}" enctype="multipart/form-data" class="space-y-8" data-api-form>
         @csrf
         @method('PUT')
 
@@ -187,7 +187,7 @@
         @endif
 
         <div class="mt-8 flex flex-col gap-3">
-            <form method="POST" action="{{ route('admin.event-categories.destroy', $category) }}">
+            <form method="POST" action="{{ route('api.admin.event-categories.destroy', $category) }}" data-api-form>
                 @csrf
                 @method('DELETE')
                 <x-danger-button 
