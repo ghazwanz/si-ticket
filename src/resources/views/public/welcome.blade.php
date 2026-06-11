@@ -77,7 +77,7 @@
             </section>
 
             <!-- Categories Section (Dynamic) -->
-            <<!-- Judul -->
+            <!-- Judul -->
                 <div class="text-center">
                     <div class="inline-flex items-center justify-center gap-2 mb-3">
                         <span class="h-px w-8 bg-violet-500"></span>
