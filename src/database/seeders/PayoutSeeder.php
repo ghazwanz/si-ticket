@@ -53,7 +53,8 @@ class PayoutSeeder extends Seeder
             'reviewed_at' => now()->subDays(2),
             'disbursed_by' => $admin->id,
             'disbursed_at' => now()->subDays(1),
-            'midtrans_reference' => 'WD-'.Str::random(10),
+            'transfer_reference' => 'WD-'.Str::random(10),
+            'proof_photo' => 'payouts/proofs/dummy.jpg',
             'created_at' => now()->subDays(9),
             'updated_at' => now()->subDays(1),
         ]);

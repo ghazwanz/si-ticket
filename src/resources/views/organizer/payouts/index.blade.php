@@ -100,63 +100,60 @@
                     @forelse($events as $event)
                         @php
                             $summary = $event->payout_summary;
-                            $statusLabel = 'Belum Mencapai ';
-                            $statusColor = 'text-slate-400 bg-slate-400/10 border-slate-500/20';
+                            $statusLabel = 'Belum Memenuhi Syarat (Tidak ada Penjualan)';
+                            $statusColor = 'text-slate-400 bg-slate-400/10 border-slate-500/20 dark:text-slate-400 dark:bg-slate-400/5 dark:border-slate-500/10';
 
                             if ($event->manual_settlement_required) {
                                 $statusLabel = 'Manual Settlement Required';
-                                $statusColor = 'text-rose-500 bg-rose-500/10 border-rose-500/20';
+                                $statusColor = 'text-rose-600 bg-rose-50 border-rose-200 dark:text-rose-400 dark:bg-rose-500/10 dark:border-rose-500/20';
                             } elseif ($event->status === \App\Enums\EventStatus::Cancelled || $event->status === 'cancelled') {
                                 $statusLabel = 'Acara Dibatalkan';
-                                $statusColor = 'text-slate-400 bg-slate-400/10 border-slate-500/20';
+                                $statusColor = 'text-slate-600 bg-slate-50 border-slate-200 dark:text-slate-400 dark:bg-slate-500/10 dark:border-slate-500/20';
                             } elseif ($event->status === \App\Enums\EventStatus::Completed || $event->status === 'completed') {
                                 $finalPayout = $event->finalPayout;
                                 if ($finalPayout) {
-                                    $statusLabel = match($finalPayout->status) {
-                                        \App\Enums\PayoutStatus::Completed => 'Selesai',
-                                        \App\Enums\PayoutStatus::Processing => 'Dicairkan (Sedang Diproses)',
-                                        \App\Enums\PayoutStatus::Failed => 'Gagal (Hubungi Admin)',
-                                        \App\Enums\PayoutStatus::Pending => 'Menunggu Tinjauan Akhir',
-                                        default => 'Menunggu Tinjauan Akhir',
-                                    };
-                                    $statusColor = match($finalPayout->status) {
-                                        \App\Enums\PayoutStatus::Completed => 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20',
-                                        \App\Enums\PayoutStatus::Processing => 'text-blue-500 bg-blue-500/10 border-blue-500/20',
-                                        \App\Enums\PayoutStatus::Failed => 'text-rose-500 bg-rose-500/10 border-rose-500/20',
-                                        default => 'text-amber-500 bg-amber-500/10 border-amber-500/20',
-                                    };
+                                    $statusLabel = $finalPayout->statusLabel();
+                                    $statusColor = $finalPayout->statusColor();
                                 } else {
-                                    $statusLabel = 'Menunggu Tinjauan Akhir';
-                                    $statusColor = 'text-amber-500 bg-amber-500/10 border-amber-500/20';
+                                    $statusLabel = 'Bisa Ajukan Payout Final';
+                                    $statusColor = 'text-violet-600 bg-violet-50 border-violet-200 dark:text-violet-400 dark:bg-violet-500/10 dark:border-violet-500/20';
                                 }
                             } elseif ($event->status === \App\Enums\EventStatus::Published || $event->status === 'published') {
                                 if ($event->isStarted()) {
                                     $statusLabel = 'Menunggu Tinjauan Akhir';
-                                    $statusColor = 'text-amber-500 bg-amber-500/10 border-amber-500/20';
+                                    $statusColor = 'text-amber-600 bg-amber-50 border-amber-200 dark:text-amber-400 dark:bg-amber-500/10 dark:border-amber-500/20';
                                 } else {
-                                    // Check active advance payouts
-                                    $pendingAdvance = $event->payouts()->where('payout_type', \App\Enums\PayoutType::Advance)->where('status', \App\Enums\PayoutStatus::Pending)->exists();
-                                    $processingAdvance = $event->payouts()->where('payout_type', \App\Enums\PayoutType::Advance)->where('status', \App\Enums\PayoutStatus::Processing)->exists();
+                                    // Check active advance payouts (pending or processing)
+                                    $activeAdvance = $event->payouts()
+                                        ->where('payout_type', \App\Enums\PayoutType::Advance)
+                                        ->whereIn('status', [\App\Enums\PayoutStatus::Pending, \App\Enums\PayoutStatus::Processing])
+                                        ->first();
 
-                                    if ($pendingAdvance) {
-                                        $statusLabel = 'Dana Muka (Dalam Tinjauan)';
-                                        $statusColor = 'text-amber-500 bg-amber-500/10 border-amber-500/20';
-                                    } elseif ($processingAdvance) {
-                                        $statusLabel = 'Dana Muka (Sedang Diproses)';
-                                        $statusColor = 'text-blue-500 bg-blue-500/10 border-blue-500/20';
+                                    if ($activeAdvance) {
+                                        $statusLabel = $activeAdvance->statusLabel();
+                                        $statusColor = $activeAdvance->statusColor();
                                     } else {
-                                        $completedAdvances = $event->payouts()->where('payout_type', \App\Enums\PayoutType::Advance)->where('status', \App\Enums\PayoutStatus::Completed)->exists();
+                                        $completedAdvance = $event->payouts()
+                                            ->where('payout_type', \App\Enums\PayoutType::Advance)
+                                            ->where('status', \App\Enums\PayoutStatus::Completed)
+                                            ->first();
+
                                         if ($summary['gross_sales'] > 0) {
                                             if ($summary['available_advance_amount'] > 0) {
-                                                $statusLabel = $completedAdvances ? 'Lunas (Bisa Ajukan Dana Muka)' : 'Bisa Ajukan Dana Muka';
-                                                $statusColor = 'text-violet-500 bg-violet-500/10 border-violet-500/20';
+                                                $statusLabel = $completedAdvance ? 'Lunas (Bisa Ajukan Dana Muka)' : 'Bisa Ajukan Uang Muka';
+                                                $statusColor = 'text-violet-600 bg-violet-50 border-violet-200 dark:text-violet-400 dark:bg-violet-500/10 dark:border-violet-500/20';
                                             } else {
-                                                $statusLabel = 'Lunas (Dana Muka Sudah Diajukan)';
-                                                $statusColor = 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20';
+                                                if ($completedAdvance) {
+                                                    $statusLabel = $completedAdvance->statusLabel();
+                                                    $statusColor = $completedAdvance->statusColor();
+                                                } else {
+                                                    $statusLabel = 'Lunas (Dana Muka Sudah Diajukan)';
+                                                    $statusColor = 'text-emerald-600 bg-emerald-50 border-emerald-200 dark:text-emerald-400 dark:bg-emerald-700 dark:border-emerald-500/20';
+                                                }
                                             }
                                         } else {
                                             $statusLabel = 'Belum Memenuhi Syarat (Tidak ada Penjualan)';
-                                            $statusColor = 'text-slate-400 bg-slate-400/10 border-slate-500/20';
+                                            $statusColor = 'text-slate-600 bg-slate-50 border-slate-200 dark:text-slate-400 dark:bg-slate-500/10 dark:border-slate-500/20';
                                         }
                                     }
                                 }
@@ -188,7 +185,7 @@
                         <tr>
                             <td colspan="5" class="px-6 py-12 text-center">
                                 <div class="flex flex-col items-center opacity-40">
-                                    <span class="text-4xl mb-2">💰</span>
+                                    <x-heroicon-o-banknotes class="w-12 h-12 text-slate-400 mb-2" />
                                     <p class="text-sm font-bold text-slate-400 uppercase tracking-widest">Tidak ada acara ditemukan</p>
                                 </div>
                             </td>

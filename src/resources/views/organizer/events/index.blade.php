@@ -174,10 +174,12 @@
                                 </a>
                                 
                                 @if(in_array($event->status->value, ['completed', 'cancelled', 'awaiting_cancellation']))
-                                    <a href="{{ route('organizer.events.edit', $event) }}" data-link class="inline-flex items-center justify-end gap-1 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300 font-bold">
-                                        <x-heroicon-o-eye class="w-4 h-4" />
-                                        Lihat
-                                    </a>
+                                    @if($event->status->value !== 'completed')
+                                        <a href="{{ route('organizer.events.edit', $event) }}" data-link class="inline-flex items-center justify-end gap-1 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300 font-bold">
+                                            <x-heroicon-o-eye class="w-4 h-4" />
+                                            Lihat
+                                        </a>
+                                    @endif
                                     @can('delete', $event)
                                         <x-organizer.confirm-delete
                                             :id="$event->id"

@@ -16,7 +16,6 @@ use App\Http\Controllers\Public\EventCatalogController;
 use App\Http\Controllers\User\CheckoutController;
 use App\Http\Controllers\User\PesananController;
 use App\Http\Controllers\Webhook\PaymentWebhookController;
-use App\Http\Controllers\Webhook\PayoutWebhookController;
 use App\Models\Event;
 use App\Models\EventCategory;
 use Illuminate\Support\Facades\Route;
@@ -79,8 +78,7 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
     Route::put('payouts/{payout}/approve', [PayoutController::class, 'approve'])->name('payouts.approve');
     Route::put('payouts/{payout}/approve-advance', [PayoutController::class, 'approveAdvance'])->name('payouts.approve-advance');
     Route::put('payouts/{payout}/reject-advance', [PayoutController::class, 'rejectAdvance'])->name('payouts.reject-advance');
-    Route::put('payouts/{payout}/confirm', [PayoutController::class, 'confirm'])->name('payouts.confirm');
-    Route::post('payouts/{payout}/sync', [PayoutController::class, 'sync'])->name('payouts.sync');
+    Route::post('payouts/{payout}/disburse', [PayoutController::class, 'disburse'])->name('payouts.disburse');
 
     // Cancellation Review Queue
     Route::get('cancellations', [CancellationController::class, 'index'])->name('cancellations.index');
@@ -122,7 +120,7 @@ Route::middleware(['auth', 'verified', 'role:organizer'])->prefix('organizer')->
         // Payouts & Advance Requests
         Route::get('payouts', [App\Http\Controllers\Organizer\PayoutController::class, 'index'])->name('payouts.index');
         Route::get('payouts/{event}', [App\Http\Controllers\Organizer\PayoutController::class, 'show'])->name('payouts.show');
-        Route::post('payouts/{event}/request-advance', [App\Http\Controllers\Organizer\PayoutController::class, 'requestAdvance'])->name('payouts.request-advance');
+        Route::post('payouts/{event}/request', [App\Http\Controllers\Organizer\PayoutController::class, 'requestPayout'])->name('payouts.request');
     });
 });
 
@@ -150,8 +148,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 });
 
-// Public Webhook for Midtrans Payment Callbacks
 Route::post('/api/payment/callback', [PaymentWebhookController::class, 'handleCallback'])->name('payment.callback');
-Route::post('/api/payout/callback', [PayoutWebhookController::class, 'handleCallback'])->name('payout.callback');
 
 require __DIR__.'/auth.php';

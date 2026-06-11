@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Organizer;
 
+use App\Enums\EventStatus;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Organizer\RequestAdvancePayoutRequest;
+use App\Http\Requests\Organizer\RequestPayoutRequest;
 use App\Models\Event;
 use App\Services\Organizer\PayoutService;
 use Illuminate\Http\RedirectResponse;
@@ -24,7 +25,7 @@ final class PayoutController extends Controller
      */
     public function index(Request $request): View
     {
-        $query = Event::with(['payouts'])
+        $query = Event::with(['payouts', 'finalPayout'])
             ->where('organizer_id', $request->user()->id);
 
         // Search by Event Name
@@ -95,23 +96,23 @@ final class PayoutController extends Controller
     }
 
     /**
-     * Submit request for an advance payout.
+     * Submit request for a payout (advance or final).
      */
-    public function requestAdvance(Event $event, RequestAdvancePayoutRequest $request): RedirectResponse
+    public function requestPayout(Event $event, RequestPayoutRequest $request): RedirectResponse
     {
         if ($event->organizer_id !== $request->user()->id) {
             abort(403, 'Unauthorized action.');
         }
 
         try {
-            $this->payoutService->requestAdvancePayout(
-                $event,
-                (int) $request->validated()['amount'],
-                $request->validated()['reason']
-            );
+            $this->payoutService->requestPayout($event, $request->validated());
+
+            $message = ($event->status === EventStatus::Completed || $event->status === 'completed')
+                ? 'Pengajuan pembayaran akhir (final payout) berhasil dikirim.'
+                : 'Pengajuan pembayaran awal (advance payout) berhasil dikirim.';
 
             return redirect()->route('organizer.payouts.show', $event)
-                ->with('success', 'Pengajuan pembayaran awal (advance payout) berhasil dikirim.');
+                ->with('success', $message);
         } catch (InvalidArgumentException $e) {
             return back()->withInput()->with('error', $e->getMessage());
         }

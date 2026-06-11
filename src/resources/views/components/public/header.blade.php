@@ -47,9 +47,13 @@
                             <button @click="profileOpen = !profileOpen" type="button"
                                 class="flex items-center gap-2 focus:outline-none transition hover:opacity-90 cursor-pointer"
                                 id="user-menu-button" aria-expanded="false" aria-haspopup="true">
-                                <span class="inline-flex items-center justify-center w-9 h-9 rounded-full bg-violet-600 dark:bg-violet-500 text-white text-sm font-semibold shrink-0 shadow-md shadow-violet-600/10 dark:shadow-none">
-                                    {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
-                                </span>
+                                @if(Auth::user()->profile_photo_path)
+                                    <img src="{{ Auth::user()->avatar_url }}" alt="{{ Auth::user()->name }}" class="w-9 h-9 rounded-full object-cover shrink-0 shadow-md shadow-violet-600/10 dark:shadow-none">
+                                @else
+                                    <span class="inline-flex items-center justify-center w-9 h-9 rounded-full bg-violet-600 dark:bg-violet-500 text-white text-sm font-semibold shrink-0 shadow-md shadow-violet-600/10 dark:shadow-none">
+                                        {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
+                                    </span>
+                                @endif
                                 <x-heroicon-o-chevron-down class="w-4 h-4 text-slate-500 dark:text-slate-400 transition-transform duration-200" ::class="profileOpen ? 'rotate-180' : ''" />
                             </button>
 
@@ -137,9 +141,13 @@
                 @auth
                     <div class="border-t border-slate-200 dark:border-slate-800 my-2"></div>
                     <div class="flex items-center gap-3 px-3 py-2">
-                        <span class="inline-flex items-center justify-center w-9 h-9 rounded-full bg-violet-600 dark:bg-violet-500 text-white text-sm font-semibold shrink-0 shadow-md shadow-violet-600/10">
-                            {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
-                        </span>
+                        @if(Auth::user()->profile_photo_path)
+                            <img src="{{ Auth::user()->avatar_url }}" alt="{{ Auth::user()->name }}" class="w-9 h-9 rounded-full object-cover shrink-0 shadow-md shadow-violet-600/10">
+                        @else
+                            <span class="inline-flex items-center justify-center w-9 h-9 rounded-full bg-violet-600 dark:bg-violet-500 text-white text-sm font-semibold shrink-0 shadow-md shadow-violet-600/10">
+                                {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
+                            </span>
+                        @endif
                         <div class="flex-1 min-w-0">
                             <p class="text-sm font-semibold text-slate-900 dark:text-white truncate">{{ Auth::user()->name }}</p>
                             <p class="text-xs text-slate-500 dark:text-slate-400 truncate">{{ Auth::user()->email }}</p>

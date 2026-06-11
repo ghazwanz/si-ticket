@@ -8,7 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class FinalPayoutDisbursedNotification extends Notification implements ShouldQueue
+class FinalPayoutRequestedNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -36,20 +36,20 @@ class FinalPayoutDisbursedNotification extends Notification implements ShouldQue
     public function toMail(object $notifiable): MailMessage
     {
         $event = $this->payout->event;
+        $organizer = $this->payout->organizer;
         $netAmountFormatted = 'Rp '.number_format($this->payout->net_amount, 0, ',', '.');
-        $reference = $this->payout->transfer_reference ?? '-';
 
         return (new MailMessage)
-            ->subject("Pencairan Dana Akhir Selesai: {$event->name}")
-            ->greeting("Halo, {$notifiable->name}")
-            ->line("Pencairan dana akhir (Final Payout) untuk acara \"{$event->name}\" yang telah selesai, kini telah berhasil disalurkan.")
-            ->line('Detail Pencairan Akhir:')
-            ->line("- Jumlah yang Ditransfer: {$netAmountFormatted}")
-            ->line("- Bank Penerima: {$this->payout->payout_bank_name}")
+            ->subject("Pengajuan Pembayaran Akhir (Final Payout): {$event->name}")
+            ->greeting('Halo, Admin')
+            ->line("Penyelenggara Acara \"{$organizer->name}\" telah mengajukan Pembayaran Akhir (Final Payout) untuk acara \"{$event->name}\" yang telah selesai.")
+            ->line('Detail Pengajuan:')
+            ->line("- Sisa Dana Bersih (Net): {$netAmountFormatted}")
+            ->line("- Nama Bank: {$this->payout->payout_bank_name}")
             ->line("- Nomor Rekening: {$this->payout->payout_account_number}")
             ->line("- Nama Pemilik Rekening: {$this->payout->payout_account_holder}")
-            ->line("- Referensi Transfer: {$reference}")
-            ->line('Terima kasih telah menggunakan JoinFest untuk menyelenggarakan acara Anda!');
+            ->action('Review Pengajuan Payout', url('/admin/payouts/'.$this->payout->id))
+            ->line('Silakan lakukan peninjauan dan berikan persetujuan atau penolakan.');
     }
 
     /**

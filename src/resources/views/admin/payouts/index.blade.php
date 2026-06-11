@@ -130,7 +130,7 @@
                                 </a>
                             </td>
                             <td class="px-8 py-5">
-                                <span class="inline-flex items-center px-3 py-1 rounded-xl text-[10px] font-bold uppercase tracking-wider border {{ $payout->payout_type?->color() ?? 'text-emerald-400 bg-emerald-400/10' }}">
+                                <span class="inline-flex items-center px-3 py-1 rounded-xl text-[10px] font-bold uppercase tracking-wider border {{ $payout->payout_type?->color() ?? 'text-emerald-600 bg-emerald-50 border-emerald-200 dark:text-emerald-400 dark:bg-emerald-500/10 dark:border-emerald-500/20' }}">
                                     {{ $payout->payout_type?->label() ?? 'Pelunasan (Final)' }}
                                 </span>
                             </td>
@@ -161,8 +161,8 @@
                                 </div>
                             </td>
                             <td class="px-8 py-5">
-                                <span class="inline-flex items-center px-3 py-1 rounded-xl text-[10px] font-bold uppercase tracking-wider border {{ $payout->status->color() }}">
-                                    {{ $payout->status->label() }}
+                                <span class="inline-flex items-center px-3 py-1 rounded-xl text-[10px] font-bold uppercase tracking-wider border {{ $payout->statusColor() }}">
+                                    {{ $payout->statusLabel() }}
                                 </span>
                             </td>
                             <td class="px-8 py-5 text-right">
@@ -176,7 +176,7 @@
                         <tr>
                             <td colspan="6" class="px-8 py-12 text-center">
                                 <div class="flex flex-col items-center opacity-40">
-                                    <span class="text-4xl mb-2">💰</span>
+                                    <x-heroicon-o-banknotes class="w-12 h-12 text-slate-400 mb-2" />
                                     <p class="text-sm font-bold text-slate-400 uppercase tracking-widest">Tidak ada pencairan dana ditemukan</p>
                                 </div>
                             </td>

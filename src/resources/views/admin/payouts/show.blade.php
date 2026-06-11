@@ -36,14 +36,14 @@
                         <div>
                             <div class="flex items-center gap-2">
                                 <h2 class="text-2xl font-bold text-slate-900 dark:text-white">{{ $payout->event->name }}</h2>
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-lg text-[10px] font-semibold {{ $payout->payout_type?->color() ?? 'text-emerald-400 bg-emerald-400/10' }}">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-lg text-[10px] font-semibold border {{ $payout->payout_type?->color() ?? 'text-emerald-600 bg-emerald-50 border-emerald-200 dark:text-emerald-400 dark:bg-emerald-500/10 dark:border-emerald-500/20' }}">
                                     {{ $payout->payout_type?->label() ?? 'Pelunasan (Final)' }}
                                 </span>
                             </div>
                             <div class="text-sm text-slate-500 mt-1">Penyelenggara: {{ $payout->organizer->organizerProfile->organization_name ?? $payout->organizer->name }}</div>
                         </div>
-                        <span class="inline-flex items-center px-3 py-1 rounded-xl text-[10px] font-bold uppercase tracking-wider border {{ $payout->status->color() }}">
-                            {{ $payout->status->label() }}
+                        <span class="inline-flex items-center px-3 py-1 rounded-xl text-[10px] font-bold uppercase tracking-wider border {{ $payout->statusColor() }}">
+                            {{ $payout->statusLabel() }}
                         </span>
                     </div>
 
@@ -153,10 +153,21 @@
                         @endif
                     </div>
 
-                    @if($payout->midtrans_reference)
-                    <div class="pt-6 border-t border-slate-100 dark:border-slate-800">
-                        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Ref Transfer / Midtrans</div>
-                        <div class="text-sm font-mono text-slate-700 dark:text-slate-300">{{ $payout->midtrans_reference }}</div>
+                    @if($payout->transfer_reference)
+                    <div class="pt-6 border-t border-slate-100 dark:border-slate-800 space-y-4">
+                        <div>
+                            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Referensi Transfer</div>
+                            <div class="text-sm font-mono text-slate-700 dark:text-slate-300">{{ $payout->transfer_reference }}</div>
+                        </div>
+                        @if($payout->proof_photo_url)
+                        <div>
+                            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Bukti Transfer</div>
+                            <a href="{{ $payout->proof_photo_url }}" target="_blank" class="inline-flex items-center gap-2 text-xs text-violet-600 hover:text-violet-500 font-bold">
+                                <x-heroicon-o-document-magnifying-glass class="w-4 h-4" />
+                                Lihat Bukti Transfer (Private)
+                            </a>
+                        </div>
+                        @endif
                     </div>
                     @endif
                 </div>
@@ -188,8 +199,8 @@
                                             Rp {{ number_format($hist->isAdvance() ? ($hist->approved_amount ?? 0) : $hist->net_amount, 0, ',', '.') }}
                                         </td>
                                         <td class="py-3">
-                                            <span class="inline-flex px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider border {{ $hist->status->color() }}">
-                                                {{ $hist->status->label() }}
+                                            <span class="inline-flex px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider border {{ $hist->statusColor() }}">
+                                                {{ $hist->statusLabel() }}
                                             </span>
                                         </td>
                                         <td class="py-3 text-slate-400 font-medium">
@@ -276,7 +287,7 @@
                             @endif
                         @else
                             <div class="text-xs text-slate-400 mt-1 italic">
-                                {{ $payout->status->label() }}
+                                {{ $payout->statusLabel() }}
                             </div>
                         @endif
                     </div>
@@ -296,34 +307,33 @@
                             @endif
                         @elseif($payout->status === \App\Enums\PayoutStatus::Processing)
                             <div class="space-y-4 mt-3">
-                                <form action="{{ route('admin.payouts.sync', $payout) }}" method="POST">
-                                    @csrf
-                                    <button type="submit" 
-                                            class="w-full py-2.5 rounded-xl bg-violet-600 text-white text-xs font-bold hover:bg-violet-700 transition-all shadow-lg shadow-violet-500/20 flex items-center justify-center gap-2 cursor-pointer">
-                                        <x-heroicon-o-arrow-path class="w-4 h-4" />
-                                        Sinkronisasi Status Iris
-                                    </button>
-                                </form>
+                                @if ($errors->any())
+                                    <div class="p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-500 text-xs">
+                                        <ul class="list-disc pl-4 space-y-1">
+                                            @foreach ($errors->all() as $error)
+                                                <li>{{ $error }}</li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                @endif
 
-                                <div class="relative flex py-2 items-center">
-                                    <div class="flex-grow border-t border-slate-200 dark:border-slate-800"></div>
-                                    <span class="flex-shrink mx-4 text-slate-400 text-[10px] font-bold uppercase tracking-widest">Atau Konfirmasi Manual</span>
-                                    <div class="flex-grow border-t border-slate-200 dark:border-slate-800"></div>
-                                </div>
-
-                                <form action="{{ route('admin.payouts.confirm', $payout) }}" method="POST" class="space-y-3">
+                                <form action="{{ route('admin.payouts.disburse', $payout) }}" method="POST" enctype="multipart/form-data" class="space-y-4">
                                     @csrf
-                                    @method('PUT')
                                     <div>
-                                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Ref Transfer / Midtrans</label>
-                                        <input type="text" name="midtrans_reference" required
+                                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Bukti Transfer (Gambar, Maks 5MB)</label>
+                                        <input type="file" name="proof_photo" required accept="image/*"
+                                               class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-violet-500/20 dark:text-white file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 dark:file:bg-violet-950 dark:file:text-violet-300">
+                                    </div>
+                                    <div>
+                                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Nomor Referensi Transfer</label>
+                                        <input type="text" name="transfer_reference" required
                                                class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-violet-500/20 dark:text-white"
                                                placeholder="e.g. TRF-123456789"
-                                               value="{{ $payout->midtrans_reference }}">
+                                               value="{{ old('transfer_reference') }}">
                                     </div>
                                     <button type="submit" 
                                             class="w-full py-2.5 rounded-xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-600/20 cursor-pointer">
-                                        Tandai Selesai & Kirim
+                                        Unggah & Konfirmasi Selesai
                                     </button>
                                 </form>
                             </div>

@@ -222,11 +222,17 @@ class EventController extends Controller
         ));
     }
 
-    public function edit(string $id): View
+    public function edit(string $id): View|RedirectResponse
     {
         $event = Event::with('category', 'ticketCategories', 'merchandiseItems')
             ->where('organizer_id', auth()->id())
             ->findOrFail($id);
+
+        if ($event->status === EventStatus::Completed) {
+            return redirect()->route('organizer.events.index')
+                ->withErrors(['error' => 'Acara yang telah selesai tidak dapat diubah kembali.']);
+        }
+
         $categories = EventCategory::orderBy('name')->get();
         $pendingCancellation = $event->cancellationRequests()->where('status', 'pending')->latest()->first();
 
@@ -239,6 +245,11 @@ class EventController extends Controller
             ->with('ticketCategories')
             ->where('organizer_id', $request->user()->id)
             ->findOrFail($id);
+
+        if ($event->status === EventStatus::Completed) {
+            return redirect()->route('organizer.events.index')
+                ->withErrors(['error' => 'Acara yang telah selesai tidak dapat diubah kembali.']);
+        }
 
         $isLocked = $event->status === EventStatus::Published && $event->hasSales();
 
@@ -445,6 +456,11 @@ class EventController extends Controller
             ->where('organizer_id', $request->user()->id)
             ->findOrFail($id);
 
+        if ($event->status === EventStatus::Completed) {
+            return redirect()->route('organizer.events.index')
+                ->withErrors(['error' => 'Acara yang telah selesai tidak dapat dibatalkan.']);
+        }
+
         try {
             $cancellationService->cancelEvent($event);
 
@@ -460,6 +476,11 @@ class EventController extends Controller
             ->with('ticketCategories')
             ->where('organizer_id', $request->user()->id)
             ->findOrFail($id);
+
+        if ($event->status === EventStatus::Completed) {
+            return redirect()->route('organizer.events.index')
+                ->withErrors(['error' => 'Acara yang telah selesai tidak dapat dibatalkan.']);
+        }
 
         $request->validate([
             'reason' => ['required', 'string', 'min:20', 'max:1000'],

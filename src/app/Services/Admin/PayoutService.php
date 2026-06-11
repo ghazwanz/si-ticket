@@ -14,17 +14,13 @@ use App\Models\User;
 use App\Notifications\AdvancePayoutApprovedNotification;
 use App\Notifications\AdvancePayoutRejectedNotification;
 use App\Notifications\FinalPayoutDisbursedNotification;
-use App\Services\MidtransIrisService;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 
 class PayoutService
 {
-    public function __construct(
-        private readonly MidtransIrisService $irisService
-    ) {}
-
     /**
      * Get a paginated list of payouts with filters, search, and sorting.
      */
@@ -104,7 +100,7 @@ class PayoutService
 
             // If net_amount is 0 or less, auto-complete the payout as nothing is left to disburse
             $status = $netAmount <= 0 ? PayoutStatus::Completed : PayoutStatus::Pending;
-            $midtransReference = $netAmount <= 0 ? 'AUTO_DEDUCTED_BY_ADVANCE' : null;
+            $transferReference = $netAmount <= 0 ? 'AUTO_DEDUCTED_BY_ADVANCE' : null;
 
             $payout = Payout::create([
                 'event_id' => $event->id,
@@ -119,7 +115,7 @@ class PayoutService
                 'payout_account_holder' => $organizerProfile?->bank_account_name,
                 'missing_bank_details' => $missingBankDetails,
                 'status' => $status,
-                'midtrans_reference' => $midtransReference,
+                'transfer_reference' => $transferReference,
                 'disbursed_at' => $netAmount <= 0 ? now() : null,
             ]);
 
@@ -145,29 +141,19 @@ class PayoutService
             throw new InvalidArgumentException('Approved amount exceeds the maximum available advance payout limit.');
         }
 
-        try {
-            return DB::transaction(function () use ($payout, $admin, $approvedAmount) {
-                $payout->update([
-                    'status' => PayoutStatus::Processing,
-                    'approved_amount' => $approvedAmount,
-                    'reviewed_by' => $admin->id,
-                    'reviewed_at' => now(),
-                ]);
+        return DB::transaction(function () use ($payout, $admin, $approvedAmount) {
+            $payout->update([
+                'status' => PayoutStatus::Processing,
+                'approved_amount' => $approvedAmount,
+                'reviewed_by' => $admin->id,
+                'reviewed_at' => now(),
+            ]);
 
-                $response = $this->irisService->createPayout($payout);
+            // Notify Organizer
+            $payout->organizer->notify(new AdvancePayoutApprovedNotification($payout));
 
-                $payout->update([
-                    'midtrans_reference' => $response['reference_no'] ?? null,
-                ]);
-
-                // Notify Organizer
-                $payout->organizer->notify(new AdvancePayoutApprovedNotification($payout));
-
-                return $payout;
-            });
-        } catch (\Exception $e) {
-            throw new InvalidArgumentException($e->getMessage(), (int) $e->getCode(), $e);
-        }
+            return $payout;
+        });
     }
 
     /**
@@ -251,71 +237,43 @@ class PayoutService
             throw new InvalidArgumentException('Cannot approve payout with missing bank details.');
         }
 
-        try {
-            return DB::transaction(function () use ($payout, $admin) {
-                $payout->update([
-                    'status' => PayoutStatus::Processing,
-                    'reviewed_by' => $admin->id,
-                    'reviewed_at' => now(),
-                ]);
+        return DB::transaction(function () use ($payout, $admin) {
+            $payout->update([
+                'status' => PayoutStatus::Processing,
+                'reviewed_by' => $admin->id,
+                'reviewed_at' => now(),
+            ]);
 
-                $response = $this->irisService->createPayout($payout);
-
-                $payout->update([
-                    'midtrans_reference' => $response['reference_no'] ?? null,
-                ]);
-
-                return $payout;
-            });
-        } catch (\Exception $e) {
-            throw new InvalidArgumentException($e->getMessage(), (int) $e->getCode(), $e);
-        }
+            return $payout;
+        });
     }
 
     /**
-     * Step 2: Confirm Completed.
+     * Step 2: Disburse Payout (Confirm completed with manual proof upload).
      */
-    public function confirmPayout(Payout $payout, User $admin, string $reference): Payout
+    public function disbursePayout(Payout $payout, User $admin, UploadedFile $proofPhoto, string $reference): Payout
     {
         if ($payout->status !== PayoutStatus::Processing) {
-            throw new InvalidArgumentException('Only processing payouts can be confirmed.');
+            throw new InvalidArgumentException('Hanya payout dengan status processing yang dapat dicairkan.');
         }
 
-        $payout->update([
-            'status' => PayoutStatus::Completed,
-            'midtrans_reference' => $reference,
-            'disbursed_by' => $admin->id,
-            'disbursed_at' => now(),
-        ]);
+        return DB::transaction(function () use ($payout, $admin, $proofPhoto, $reference) {
+            // Store proof photo on private local disk
+            $path = $proofPhoto->store('payouts/proofs', 'local');
 
-        if ($payout->isFinal()) {
-            $payout->organizer->notify(new FinalPayoutDisbursedNotification($payout));
-        }
-
-        return $payout;
-    }
-
-    /**
-     * Synchronize payout status with Midtrans Iris and update database.
-     */
-    public function syncPayoutStatus(Payout $payout): void
-    {
-        if (empty($payout->midtrans_reference)) {
-            throw new InvalidArgumentException('Payout tidak memiliki reference Midtrans.');
-        }
-
-        $response = $this->irisService->getPayoutStatus($payout->midtrans_reference);
-        $status = strtolower($response['status'] ?? '');
-
-        if ($status === 'completed' || $status === 'success') {
-            if ($payout->status !== PayoutStatus::Completed) {
-                $admin = auth()->user() ?? $payout->reviewer ?? User::where('role', 'admin')->first();
-                $this->confirmPayout($payout, $admin, $payout->midtrans_reference);
-            }
-        } elseif ($status === 'failed' || $status === 'rejected') {
             $payout->update([
-                'status' => PayoutStatus::Failed,
+                'status' => PayoutStatus::Completed,
+                'transfer_reference' => $reference,
+                'proof_photo' => $path,
+                'disbursed_by' => $admin->id,
+                'disbursed_at' => now(),
             ]);
-        }
+
+            if ($payout->isFinal()) {
+                $payout->organizer->notify(new FinalPayoutDisbursedNotification($payout));
+            }
+
+            return $payout;
+        });
     }
 }

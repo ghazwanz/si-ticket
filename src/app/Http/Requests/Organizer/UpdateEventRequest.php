@@ -5,6 +5,7 @@ namespace App\Http\Requests\Organizer;
 use App\Enums\EventStatus;
 use App\Models\Event;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Validation\Validator;
 
 class UpdateEventRequest extends FormRequest
@@ -12,6 +13,19 @@ class UpdateEventRequest extends FormRequest
     public function authorize(): bool
     {
         return $this->user() !== null;
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $eventId = $this->route('event');
+        $event = Event::find($eventId);
+
+        if ($event && $event->status === EventStatus::Completed) {
+            throw new HttpResponseException(
+                redirect()->route('organizer.events.index')
+                    ->withErrors(['error' => 'Acara yang telah selesai tidak dapat diubah kembali.'])
+            );
+        }
     }
 
     /**

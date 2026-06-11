@@ -17,8 +17,9 @@ use App\Notifications\AdvancePayoutApprovedNotification;
 use App\Notifications\AdvancePayoutRejectedNotification;
 use App\Notifications\FinalPayoutDisbursedNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Http;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 final class PayoutTest extends TestCase
@@ -92,17 +93,6 @@ final class PayoutTest extends TestCase
     public function test_admin_can_approve_advance_payout(): void
     {
         Notification::fake();
-        Http::fake([
-            'https://app.sandbox.midtrans.com/iris/api/v1/payouts' => Http::response([
-                'payouts' => [
-                    [
-                        'reference_no' => 'IRIS-REF-ADV',
-                        'status' => 'created',
-                        'amount' => '250000.00',
-                    ],
-                ],
-            ], 201),
-        ]);
 
         $admin = User::factory()->admin()->create();
         $organizer = User::factory()->organizer()->create();
@@ -229,20 +219,11 @@ final class PayoutTest extends TestCase
 
     public function test_two_step_final_payout_flow(): void
     {
+        Storage::fake('local');
         Notification::fake();
-        Http::fake([
-            'https://app.sandbox.midtrans.com/iris/api/v1/payouts' => Http::response([
-                'payouts' => [
-                    [
-                        'reference_no' => 'IRIS-REF-FINAL',
-                        'status' => 'created',
-                        'amount' => '500000.00',
-                    ],
-                ],
-            ], 201),
-        ]);
 
-        $admin = User::factory()->admin()->create();
+        $admin1 = User::factory()->admin()->create();
+        $admin2 = User::factory()->admin()->create();
         $organizer = User::factory()->organizer()->create();
 
         $payout = Payout::factory()->pending()->create([
@@ -251,24 +232,66 @@ final class PayoutTest extends TestCase
         ]);
 
         // Step 1: Approve for disbursement
-        $response = $this->actingAs($admin)
+        $response = $this->actingAs($admin1)
             ->put(route('admin.payouts.approve', $payout));
 
         $response->assertRedirect();
         $payout->refresh();
         $this->assertEquals(PayoutStatus::Processing, $payout->status);
+        $this->assertEquals($admin1->id, $payout->reviewed_by);
 
-        // Step 2: Confirm disbursement completed
-        $response2 = $this->actingAs($admin)
-            ->put(route('admin.payouts.confirm', $payout), [
-                'midtrans_reference' => 'TRF-12345',
+        // Step 2: Confirm disbursement completed (by different admin)
+        $file = UploadedFile::fake()->image('proof.jpg');
+        $response2 = $this->actingAs($admin2)
+            ->post(route('admin.payouts.disburse', $payout), [
+                'proof_photo' => $file,
+                'transfer_reference' => 'TRF-12345',
             ]);
 
         $response2->assertRedirect();
+        $response2->assertSessionHas('success');
+
         $payout->refresh();
         $this->assertEquals(PayoutStatus::Completed, $payout->status);
-        $this->assertEquals('TRF-12345', $payout->midtrans_reference);
+        $this->assertEquals('TRF-12345', $payout->transfer_reference);
+        $this->assertNotNull($payout->proof_photo);
+        Storage::disk('local')->assertExists($payout->proof_photo);
 
         Notification::assertSentTo($organizer, FinalPayoutDisbursedNotification::class);
+    }
+
+    public function test_same_admin_can_disburse_payout(): void
+    {
+        Storage::fake('local');
+
+        $admin1 = User::factory()->admin()->create();
+        $organizer = User::factory()->organizer()->create();
+
+        $payout = Payout::factory()->pending()->create([
+            'organizer_id' => $organizer->id,
+            'payout_type' => PayoutType::Final,
+        ]);
+
+        // Step 1: Approve for disbursement
+        $this->actingAs($admin1)
+            ->put(route('admin.payouts.approve', $payout));
+
+        $payout->refresh();
+
+        // Step 2: Disburse by same admin (should succeed now that 4-eyes is removed)
+        $file = UploadedFile::fake()->image('proof.jpg');
+        $response = $this->actingAs($admin1)
+            ->post(route('admin.payouts.disburse', $payout), [
+                'proof_photo' => $file,
+                'transfer_reference' => 'TRF-12345',
+            ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHasNoErrors();
+
+        $payout->refresh();
+        $this->assertEquals(PayoutStatus::Completed, $payout->status);
+        $this->assertNotNull($payout->proof_photo);
+        $this->assertEquals($admin1->id, $payout->disbursed_by);
     }
 }

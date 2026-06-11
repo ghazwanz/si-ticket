@@ -357,4 +357,112 @@ final class EventCancellationTest extends TestCase
         $response->assertSessionHas('status', 'Acara berhasil dihapus dari daftar aktif.');
         $this->assertNotNull($event->fresh()->deleted_at);
     }
+
+    /**
+     * Test organizer cannot edit a completed event.
+     */
+    public function test_organizer_cannot_edit_completed_event(): void
+    {
+        $organizer = User::factory()->create(['role' => UserRole::Organizer]);
+        $event = Event::factory()->create([
+            'organizer_id' => $organizer->id,
+            'status' => EventStatus::Completed,
+        ]);
+
+        $response = $this->actingAs($organizer)
+            ->get(route('organizer.events.edit', $event));
+
+        $response->assertRedirect(route('organizer.events.index'));
+        $response->assertSessionHasErrors(['error' => 'Acara yang telah selesai tidak dapat diubah kembali.']);
+    }
+
+    /**
+     * Test organizer cannot update a completed event.
+     */
+    public function test_organizer_cannot_update_completed_event(): void
+    {
+        $organizer = User::factory()->create(['role' => UserRole::Organizer]);
+        $event = Event::factory()->create([
+            'organizer_id' => $organizer->id,
+            'status' => EventStatus::Completed,
+        ]);
+
+        $response = $this->actingAs($organizer)
+            ->put(route('organizer.events.update', $event), [
+                'name' => 'Updated Event Name',
+                'status' => 'completed',
+            ]);
+
+        $response->assertRedirect(route('organizer.events.index'));
+        $response->assertSessionHasErrors(['error' => 'Acara yang telah selesai tidak dapat diubah kembali.']);
+    }
+
+    /**
+     * Test organizer cannot cancel a completed event directly.
+     */
+    public function test_organizer_cannot_cancel_completed_event_directly(): void
+    {
+        $organizer = User::factory()->create(['role' => UserRole::Organizer]);
+        $event = Event::factory()->create([
+            'organizer_id' => $organizer->id,
+            'status' => EventStatus::Completed,
+        ]);
+
+        $response = $this->actingAs($organizer)
+            ->post(route('organizer.events.cancel', $event));
+
+        $response->assertRedirect(route('organizer.events.index'));
+        $response->assertSessionHasErrors(['error' => 'Acara yang telah selesai tidak dapat dibatalkan.']);
+    }
+
+    /**
+     * Test organizer cannot request cancellation of a completed event.
+     */
+    public function test_organizer_cannot_request_cancellation_of_completed_event(): void
+    {
+        $organizer = User::factory()->create(['role' => UserRole::Organizer]);
+        $event = Event::factory()->create([
+            'organizer_id' => $organizer->id,
+            'status' => EventStatus::Completed,
+        ]);
+
+        $response = $this->actingAs($organizer)
+            ->post(route('organizer.events.request-cancellation', $event), [
+                'reason' => 'Alasan pembatalan ini valid dan panjang lebih dari dua puluh karakter.',
+            ]);
+
+        $response->assertRedirect(route('organizer.events.index'));
+        $response->assertSessionHasErrors(['error' => 'Acara yang telah selesai tidak dapat dibatalkan.']);
+    }
+
+    /**
+     * Test organizer cannot see 'Lihat' button for completed event on the index page.
+     */
+    public function test_organizer_cannot_see_lihat_button_for_completed_event(): void
+    {
+        $organizer = User::factory()->create(['role' => UserRole::Organizer]);
+
+        $completedEvent = Event::factory()->create([
+            'organizer_id' => $organizer->id,
+            'status' => EventStatus::Completed,
+        ]);
+
+        $cancelledEvent = Event::factory()->create([
+            'organizer_id' => $organizer->id,
+            'status' => EventStatus::Cancelled,
+        ]);
+
+        $response = $this->actingAs($organizer)
+            ->get(route('organizer.events.index'));
+
+        $response->assertOk();
+
+        // Assert we see 'Lihat' for the cancelled event
+        $editUrlCancelled = route('organizer.events.edit', $cancelledEvent);
+        $response->assertSee($editUrlCancelled);
+
+        // Assert we do not see the edit link ('Lihat') for the completed event
+        $editUrlCompleted = route('organizer.events.edit', $completedEvent);
+        $response->assertDontSee($editUrlCompleted);
+    }
 }

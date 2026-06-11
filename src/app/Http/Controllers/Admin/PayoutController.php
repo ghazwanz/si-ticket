@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\OrderStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ApproveAdvancePayoutRequest;
+use App\Http\Requests\Admin\DisbursePayoutRequest;
 use App\Http\Requests\Admin\RejectAdvancePayoutRequest;
 use App\Models\Event;
 use App\Models\Order;
@@ -80,28 +81,18 @@ class PayoutController extends Controller
         }
     }
 
-    public function confirm(Payout $payout, Request $request): RedirectResponse
+    public function disburse(Payout $payout, DisbursePayoutRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'midtrans_reference' => ['required', 'string', 'max:255'],
-        ]);
-
         try {
-            $this->payoutService->confirmPayout($payout, $request->user(), $validated['midtrans_reference']);
+            $this->payoutService->disbursePayout(
+                $payout,
+                $request->user(),
+                $request->file('proof_photo'),
+                $request->validated()['transfer_reference']
+            );
 
-            return back()->with('success', 'Payout confirmed as completed.');
+            return back()->with('success', 'Payout berhasil dicairkan.');
         } catch (InvalidArgumentException $e) {
-            return back()->with('error', $e->getMessage());
-        }
-    }
-
-    public function sync(Payout $payout): RedirectResponse
-    {
-        try {
-            $this->payoutService->syncPayoutStatus($payout);
-
-            return back()->with('success', 'Payout status successfully synchronized with Midtrans.');
-        } catch (\Exception $e) {
             return back()->with('error', $e->getMessage());
         }
     }

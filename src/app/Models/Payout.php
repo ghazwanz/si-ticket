@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Storage;
 
 class Payout extends Model
 {
@@ -42,7 +43,8 @@ class Payout extends Model
         'disbursed_by',
         'fee_percentage',
         'status',
-        'midtrans_reference',
+        'transfer_reference',
+        'proof_photo',
         'disbursed_at',
     ];
 
@@ -169,5 +171,46 @@ class Payout extends Model
     public function canBeDisbursed(): bool
     {
         return $this->status === PayoutStatus::Processing;
+    }
+
+    /**
+     * Get the signed temporary URL for the proof photo.
+     */
+    public function getProofPhotoUrlAttribute(): ?string
+    {
+        if (empty($this->proof_photo)) {
+            return null;
+        }
+
+        return Storage::disk('local')->temporaryUrl(
+            $this->proof_photo,
+            now()->addMinutes(15)
+        );
+    }
+
+    /**
+     * Get the display label for the payout status, differentiating advance and final.
+     */
+    public function statusLabel(): string
+    {
+        if ($this->status === PayoutStatus::Completed) {
+            return $this->isAdvance() ? 'Selesai (Uang Muka)' : 'Selesai (Akhir)';
+        }
+
+        return $this->status->label();
+    }
+
+    /**
+     * Get the CSS color class for the payout status, supporting light/dark modes and type differentiation.
+     */
+    public function statusColor(): string
+    {
+        if ($this->status === PayoutStatus::Completed) {
+            return $this->isAdvance()
+                ? 'text-violet-600 bg-violet-50 border-violet-200 dark:text-violet-400 dark:bg-violet-500/10 dark:border-violet-500/20'
+                : 'text-emerald-600 bg-emerald-50 border-emerald-200 dark:text-emerald-400 dark:bg-emerald-700 dark:border-emerald-500/20';
+        }
+
+        return $this->status->color();
     }
 }

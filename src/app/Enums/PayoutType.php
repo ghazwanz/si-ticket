@@ -20,8 +20,8 @@ enum PayoutType: string
     public function color(): string
     {
         return match ($this) {
-            self::Advance => 'text-violet-400 bg-violet-400/10',
-            self::Final => 'text-emerald-400 bg-emerald-400/10',
+            self::Advance => 'text-violet-600 bg-violet-50 border-violet-200 dark:text-violet-400 dark:bg-violet-500/10 dark:border-violet-500/20',
+            self::Final => 'text-emerald-600 bg-emerald-50 border-emerald-200 dark:text-emerald-400 dark:bg-emerald-500/10 dark:border-emerald-500/20',
         };
     }
 }

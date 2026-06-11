@@ -43,7 +43,8 @@ class PayoutFactory extends Factory
             'reviewed_at' => ! in_array($status, [PayoutStatus::Pending]) ? now() : null,
             'disbursed_by' => $status === PayoutStatus::Completed ? User::factory()->admin() : null,
             'disbursed_at' => $status === PayoutStatus::Completed ? now() : null,
-            'midtrans_reference' => $status === PayoutStatus::Completed ? 'REF-'.rand(1000, 9999) : null,
+            'transfer_reference' => $status === PayoutStatus::Completed ? 'REF-'.rand(1000, 9999) : null,
+            'proof_photo' => $status === PayoutStatus::Completed ? 'payouts/proofs/dummy.jpg' : null,
         ];
     }
 
@@ -58,7 +59,8 @@ class PayoutFactory extends Factory
             'reviewed_at' => null,
             'disbursed_by' => null,
             'disbursed_at' => null,
-            'midtrans_reference' => null,
+            'transfer_reference' => null,
+            'proof_photo' => null,
         ]);
     }
 
@@ -73,7 +75,8 @@ class PayoutFactory extends Factory
             'reviewed_at' => now(),
             'disbursed_by' => null,
             'disbursed_at' => null,
-            'midtrans_reference' => null,
+            'transfer_reference' => null,
+            'proof_photo' => null,
         ]);
     }
 
@@ -88,7 +91,8 @@ class PayoutFactory extends Factory
             'reviewed_at' => now()->subDay(),
             'disbursed_by' => User::factory()->admin(),
             'disbursed_at' => now(),
-            'midtrans_reference' => 'REF-'.rand(1000, 9999),
+            'transfer_reference' => 'REF-'.rand(1000, 9999),
+            'proof_photo' => 'payouts/proofs/dummy.jpg',
         ]);
     }
 
@@ -103,7 +107,8 @@ class PayoutFactory extends Factory
             'reviewed_at' => null,
             'disbursed_by' => null,
             'disbursed_at' => null,
-            'midtrans_reference' => null,
+            'transfer_reference' => null,
+            'proof_photo' => null,
         ]);
     }
 

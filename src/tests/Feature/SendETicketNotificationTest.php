@@ -82,7 +82,7 @@ class SendETicketNotificationTest extends TestCase
         $html = (string) $mailMessage->render();
 
         // Check text content
-        $this->assertStringContainsString('Tiket Elektronik Acara:', $html);
+        $this->assertStringContainsString('E-Tiket Acara:', $html);
         $this->assertStringContainsString($event->name, $html);
         $this->assertStringContainsString('John Doe', $html);
         $this->assertStringContainsString('TICKET-QR-123456', $html);

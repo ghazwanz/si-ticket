@@ -12,6 +12,7 @@ use App\Models\Payout;
 use App\Models\SystemSetting;
 use App\Models\User;
 use App\Notifications\AdvancePayoutRequestedNotification;
+use App\Notifications\FinalPayoutRequestedNotification;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
 use InvalidArgumentException;
@@ -19,11 +20,29 @@ use InvalidArgumentException;
 class PayoutService
 {
     /**
+     * Unified method to request a payout for an event (determines type based on status).
+     */
+    public function requestPayout(Event $event, array $data = []): Payout
+    {
+        $status = $event->status;
+
+        if ($status === EventStatus::Published || $status === 'published') {
+            return $this->processAdvancePayoutRequest($event, (int) ($data['amount'] ?? 0), $data['reason'] ?? '');
+        }
+
+        if ($status === EventStatus::Completed || $status === 'completed') {
+            return $this->processFinalPayoutRequest($event);
+        }
+
+        throw new InvalidArgumentException('Pencairan dana tidak dapat diajukan untuk acara dengan status: '.($status->label() ?? $status->value ?? $status));
+    }
+
+    /**
      * Request an advance payout for an event.
      */
-    public function requestAdvancePayout(Event $event, int $amount, string $reason): Payout
+    private function processAdvancePayoutRequest(Event $event, int $amount, string $reason): Payout
     {
-        if ($event->status !== EventStatus::Published) {
+        if ($event->status !== EventStatus::Published && $event->status !== 'published') {
             throw new InvalidArgumentException('Advance payout can only be requested for published events.');
         }
 
@@ -88,6 +107,71 @@ class PayoutService
             // Notify Admins
             $admins = User::where('role', 'admin')->get();
             Notification::send($admins, new AdvancePayoutRequestedNotification($payout));
+
+            return $payout;
+        });
+    }
+
+    /**
+     * Request a final payout for a completed event.
+     */
+    private function processFinalPayoutRequest(Event $event): Payout
+    {
+        if ($event->status !== EventStatus::Completed && $event->status !== 'completed') {
+            throw new InvalidArgumentException('Pencairan dana akhir hanya dapat diajukan untuk acara yang telah selesai.');
+        }
+
+        if (! $event->organizer->is_active) {
+            throw new InvalidArgumentException('Akun penyelenggara sedang tidak aktif.');
+        }
+
+        $organizerProfile = $event->organizer->organizerProfile;
+        if (empty($organizerProfile?->bank_name) || empty($organizerProfile?->bank_account_number) || empty($organizerProfile?->bank_account_name)) {
+            throw new InvalidArgumentException('Data rekening bank penyelenggara harus dilengkapi sebelum mengajukan pencairan dana akhir.');
+        }
+
+        $hasFinalPayout = $event->payouts()
+            ->where('payout_type', PayoutType::Final)
+            ->whereIn('status', [PayoutStatus::Pending, PayoutStatus::Processing, PayoutStatus::Completed])
+            ->exists();
+        if ($hasFinalPayout) {
+            throw new InvalidArgumentException('Pengajuan pencairan dana akhir sudah ada untuk acara ini.');
+        }
+
+        $grossAmount = (int) $event->orders()->where('status', 'paid')->sum('total_amount');
+        $feePercentage = (float) SystemSetting::get('platform_fee_percent', 5.00);
+        $platformFee = (int) round($grossAmount * ($feePercentage / 100));
+        $netSales = $grossAmount - $platformFee;
+
+        $completedAdvanceTotal = (int) $event->payouts()
+            ->where('payout_type', PayoutType::Advance)
+            ->where('status', PayoutStatus::Completed)
+            ->sum('approved_amount');
+
+        $netAmount = $netSales - $completedAdvanceTotal;
+        if ($netAmount <= 0) {
+            throw new InvalidArgumentException('Tidak ada sisa dana bersih yang dapat dicairkan untuk acara ini.');
+        }
+
+        return DB::transaction(function () use ($event, $grossAmount, $platformFee, $netAmount, $feePercentage, $organizerProfile) {
+            $payout = Payout::create([
+                'event_id' => $event->id,
+                'organizer_id' => $event->organizer_id,
+                'payout_type' => PayoutType::Final,
+                'gross_amount' => $grossAmount,
+                'platform_fee' => $platformFee,
+                'net_amount' => $netAmount,
+                'fee_percentage' => $feePercentage,
+                'payout_bank_name' => $organizerProfile->bank_name,
+                'payout_account_number' => $organizerProfile->bank_account_number,
+                'payout_account_holder' => $organizerProfile->bank_account_name,
+                'missing_bank_details' => false,
+                'status' => PayoutStatus::Pending,
+            ]);
+
+            // Notify Admins
+            $admins = User::where('role', 'admin')->get();
+            Notification::send($admins, new FinalPayoutRequestedNotification($payout));
 
             return $payout;
         });
