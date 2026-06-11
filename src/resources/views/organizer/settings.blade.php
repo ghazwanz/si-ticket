@@ -199,12 +199,12 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="space-y-1">
-                        <label for="name" class="block text-[10px] font-bold uppercase tracking-widest text-neutral-900 dark:text-slate-450 dark:text-slate-550 ml-1">Nama Penanggung Jawab</label>
+                        <label for="name" class="block text-xs font-bold text-neutral-900 dark:text-slate-500 uppercase tracking-widest ml-1">Nama Penanggung Jawab</label>
                         <x-text-input id="name" name="name" type="text" :value="old('name', $user->name)" required class="mt-1 block w-full glass-panel !bg-transparent rounded-2xl border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-sm" />
                         <x-input-error class="mt-1" :messages="$errors->get('name')" />
                     </div>
                     <div class="space-y-1">
-                        <label for="email" class="block text-[10px] font-bold uppercase tracking-widest text-neutral-900 dark:text-slate-450 dark:text-slate-555 ml-1">Email Bisnis</label>
+                        <label for="email" class="block text-xs font-bold text-neutral-900 dark:text-slate-500 uppercase tracking-widest ml-1">Email Bisnis</label>
                         <x-text-input id="email" name="email" type="email" :value="old('email', $user->email)" required class="mt-1 block w-full glass-panel !bg-transparent rounded-2xl border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-sm" />
                         <x-input-error class="mt-1" :messages="$errors->get('email')" />
                         
@@ -220,12 +220,12 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="space-y-1">
-                        <label for="organization_name" class="block text-[10px] font-bold uppercase tracking-widest text-neutral-900 dark:text-slate-450 dark:text-slate-550 ml-1">Nama Organisasi</label>
+                        <label for="organization_name"class="block text-xs font-bold text-neutral-900 dark:text-slate-500 uppercase tracking-widest ml-1">Nama Organisasi</label>
                         <x-text-input id="organization_name" name="organization_name" type="text" :value="old('organization_name', $user->organizerProfile?->organization_name)" required class="mt-1 block w-full glass-panel !bg-transparent rounded-2xl border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-sm" />
                         <x-input-error class="mt-1" :messages="$errors->get('organization_name')" />
                     </div>
                     <div class="space-y-1">
-                        <label for="phone" class="block text-[10px] font-bold uppercase tracking-widest text-neutral-900 dark:text-slate-450 dark:text-slate-550 ml-1">Nomor Telepon</label>
+                        <label for="phone" class="block text-xs font-bold text-neutral-900 dark:text-slate-500 uppercase tracking-widest ml-1">Nomor Telepon</label>
                         <x-text-input id="phone" name="phone" type="text" :value="old('phone', $user->organizerProfile?->phone)" required class="mt-1 block w-full glass-panel !bg-transparent rounded-2xl border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-sm" />
                         <x-input-error class="mt-1" :messages="$errors->get('phone')" />
                     </div>
@@ -233,12 +233,12 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="space-y-1">
-                        <label for="official_contact" class="block text-[10px] font-bold uppercase tracking-widest text-neutral-900 dark:text-slate-450 dark:text-slate-550 ml-1">Kontak Resmi</label>
+                        <label for="official_contact" class="block text-xs font-bold text-neutral-900 dark:text-slate-500 uppercase tracking-widest ml-1">Kontak Resmi</label>
                         <x-text-input id="official_contact" name="official_contact" type="text" :value="old('official_contact', $user->organizerProfile?->official_contact)" required class="mt-1 block w-full glass-panel !bg-transparent rounded-2xl border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-sm" />
                         <x-input-error class="mt-1" :messages="$errors->get('official_contact')" />
                     </div>
                     <div class="space-y-1">
-                        <label for="legality_document" class="block text-[10px] font-bold uppercase tracking-widest text-neutral-900 dark:text-slate-450 dark:text-slate-550 ml-1">Dokumen Legalitas (PDF/JPG/PNG, Max 5MB)</label>
+                        <label for="legality_document" class="block text-xs font-bold text-neutral-900 dark:text-slate-500 uppercase tracking-widest ml-1">Dokumen Legalitas (PDF/JPG/PNG, Max 5MB)</label>
                         <input id="legality_document" type="file" name="legality_document" class="mt-1 block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-violet-50/10 file:text-violet-700 dark:file:bg-violet-500/10 dark:file:text-violet-400 hover:file:bg-violet-100 dark:hover:file:bg-violet-500/20 bg-transparent border border-slate-200 dark:border-slate-800 rounded-2xl py-2 px-4 focus:outline-none">
                         @if($user->organizerProfile?->legality_document)
                             <p class="text-xs text-slate-550 mt-1">Dokumen saat ini: <a href="{{ Storage::url($user->organizerProfile->legality_document) }}" target="_blank" class="text-violet-650 dark:text-violet-400 hover:underline">Lihat Dokumen</a></p>
@@ -248,7 +248,7 @@
                 </div>
 
                 <div class="space-y-1">
-                    <label for="organization_address" class="block text-[10px] font-bold uppercase tracking-widest text-neutral-900 dark:text-slate-450 dark:text-slate-550 ml-1">Alamat Organisasi</label>
+                    <label for="organization_address" class="block text-xs font-bold text-neutral-900 dark:text-slate-500 uppercase tracking-widest ml-1">Alamat Organisasi</label>
                     <textarea id="organization_address" name="organization_address" rows="2" required
                               class="mt-1 block w-full glass-panel !bg-transparent rounded-2xl border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-sm p-3 focus:border-violet-500 dark:focus:border-violet-400 focus:ring-4 focus:ring-violet-500/10 transition-shadow">{{ old('organization_address', $user->organizerProfile?->organization_address) }}</textarea>
                     <x-input-error class="mt-1" :messages="$errors->get('organization_address')" />
@@ -258,17 +258,17 @@
                     <p class="text-xs font-bold text-neutral-900 dark:text-slate-500 uppercase tracking-widest mb-3">Informasi Rekening Bank (Untuk Pencairan Dana)</p>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div class="space-y-1">
-                            <label for="bank_name" class="block text-[10px] font-bold uppercase tracking-widest text-neutral-900 dark:text-slate-450 dark:text-slate-550 ml-1">Nama Bank</label>
+                            <label for="bank_name" class="block text-xs font-bold text-neutral-900 dark:text-slate-500 uppercase tracking-widest ml-1"">Nama Bank</label>
                             <x-text-input id="bank_name" name="bank_name" type="text" :value="old('bank_name', $user->organizerProfile?->bank_name)" placeholder="BCA / Mandiri" required class="mt-1 block w-full glass-panel !bg-transparent rounded-2xl border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-sm" />
                             <x-input-error class="mt-1" :messages="$errors->get('bank_name')" />
                         </div>
                         <div class="space-y-1">
-                            <label for="bank_account_number" class="block text-[10px] font-bold uppercase tracking-widest text-neutral-900 dark:text-slate-450 dark:text-slate-550 ml-1">Nomor Rekening</label>
+                            <label for="bank_account_number" class="block text-xs font-bold text-neutral-900 dark:text-slate-500 uppercase tracking-widest ml-1">Nomor Rekening</label>
                             <x-text-input id="bank_account_number" name="bank_account_number" type="text" :value="old('bank_account_number', $user->organizerProfile?->bank_account_number)" required class="mt-1 block w-full glass-panel !bg-transparent rounded-2xl border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-sm" />
                             <x-input-error class="mt-1" :messages="$errors->get('bank_account_number')" />
                         </div>
                         <div class="space-y-1">
-                            <label for="bank_account_name" class="block text-[10px] font-bold uppercase tracking-widest text-neutral-900 dark:text-slate-450 dark:text-slate-550 ml-1">Nama Pemilik</label>
+                            <label for="bank_account_name" class="block text-xs font-bold text-neutral-900 dark:text-slate-500 uppercase tracking-widest ml-1">Nama Pemilik</label>
                             <x-text-input id="bank_account_name" name="bank_account_name" type="text" :value="old('bank_account_name', $user->organizerProfile?->bank_account_name)" required class="mt-1 block w-full glass-panel !bg-transparent rounded-2xl border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-sm" />
                             <x-input-error class="mt-1" :messages="$errors->get('bank_account_name')" />
                         </div>

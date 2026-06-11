@@ -139,7 +139,7 @@
                                     'paid', 'sukses', 'success' => 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20',
                                     'pending' => 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400 border border-amber-200 dark:border-amber-500/20',
                                     'cancelled', 'batal' => 'bg-rose-50 text-rose-700 dark:bg-rose-500/10 dark:text-rose-400 border border-rose-200 dark:border-rose-500/20',
-                                    default => 'bg-slate-50 text-slate-700 dark:bg-slate-850 dark:text-slate-300 border border-slate-200 dark:border-slate-750',
+                                    default => 'text-slate-700 dark:bg-slate-850 dark:text-slate-300 border border-slate-200 dark:border-slate-750',
                                 };
                             @endphp
                             <tr class="transition-colors hover:bg-slate-50 dark:hover:bg-white/5">
