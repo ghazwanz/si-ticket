@@ -1,6 +1,7 @@
 @php
     $isSuspended = $event->status->value === 'awaiting_cancellation';
     $isCancelled = $event->status->value === 'cancelled';
+    $isCompleted = $event->status->value === 'completed';
 
     $merchVariantsJson = $event->merchandiseItems->flatMap(fn($item) => 
         $item->variants->map(fn($v) => [
@@ -151,12 +152,12 @@
                     <!-- Glow effect inside card -->
                     <div class="absolute -right-20 -top-20 h-40 w-40 rounded-full bg-violet-500/20 blur-3xl pointer-events-none"></div>
 
-                    @if($isSuspended || $isCancelled)
+                    @if($isSuspended || $isCancelled || $isCompleted)
                         <div class="absolute inset-0 z-10 bg-white/80 dark:bg-slate-950/80 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center">
                             <x-heroicon-o-no-symbol class="h-12 w-12 text-rose-500 mb-4" />
                             <h3 class="text-lg font-bold text-slate-900 dark:text-white">Penjualan Ditutup</h3>
                             <p class="text-sm text-slate-650 dark:text-slate-300 mt-2">
-                                {{ $isCancelled ? 'Event ini telah dibatalkan.' : 'Penjualan Tiket Ditunda' }}
+                                {{ $isCancelled ? 'Event ini telah dibatalkan.' : ($isCompleted ? 'Acara ini telah selesai.' : 'Penjualan Tiket Ditunda') }}
                             </p>
                         </div>
                     @endif
