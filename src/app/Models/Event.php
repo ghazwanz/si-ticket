@@ -18,7 +18,13 @@ use Illuminate\Support\Carbon;
 class Event extends Model
 {
     use HasFactory, HasUuids, SoftDeletes;
-
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var list<string>
+     */
+    protected $appends = ['image_path'];
+    
     /**
      * The attributes that are mass assignable.
      *

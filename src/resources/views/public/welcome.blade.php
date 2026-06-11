@@ -4,7 +4,7 @@
             <!-- Hero Section -->
             <section class="overflow-hidden rounded-[2rem] border border-slate-800 dark:border-white/10 backdrop-blur-xl shadow-xl" data-reveal data-reveal-delay="0">
                 <div class="relative isolate min-h-[500px] overflow-hidden" data-hero>
-                    <img src="{{ asset('img/eobanner.png') }}" alt="JoinFest hero" class="absolute inset-0 h-full w-full object-cover transition-transform duration-300 will-change-transform" data-parallax="0.07">
+                    <img src="{{ asset('img/HeroBanner.png') }}" alt="JoinFest hero" class="absolute inset-0 h-full w-full object-cover transition-transform duration-300 will-change-transform" data-parallax="0.07">
                     <div class="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-slate-950/20 to-transparent"></div>
                     <div class="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-slate-950/30 to-transparent"></div>
 
