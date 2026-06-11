@@ -202,7 +202,7 @@
                     @endforeach
                 </div>
                 <div class="mt-8 pt-8 border-t border-slate-100 dark:border-slate-800">
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center">Data real-time disinkronkan</p>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center">Data <i>real-time</i> disinkronkan</p>
                 </div>
             </div>
         </div>
