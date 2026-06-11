@@ -111,7 +111,7 @@
                             <article class="relative overflow-hidden rounded-[2rem] border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900/40 backdrop-blur-xl shadow-md transition-all duration-300 hover:-translate-y-1 hover:border-fuchsia-500/30 flex flex-col h-full">
                                 <div class="relative h-48 w-full bg-slate-100 dark:bg-white/5">
                                     @if($item->image)
-                                        <img src="{{ Storage::url($item->image) }}" alt="{{ $item->name }}" class="h-full w-full object-cover">
+                                        <img src="{{ asset($item->image) }}" alt="{{ $item->name }}" class="h-full w-full object-cover">
                                     @else
                                         <div class="flex h-full items-center justify-center text-slate-400 dark:text-slate-600">
                                             <x-heroicon-o-shopping-bag class="h-12 w-12" />
