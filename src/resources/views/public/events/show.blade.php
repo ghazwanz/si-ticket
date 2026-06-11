@@ -274,12 +274,12 @@
                              x-transition:leave="transition ease-in duration-200"
                              x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
                              x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                             class="relative w-full max-w-3xl overflow-hidden rounded-[2rem] border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 shadow-2xl transition-all duration-300 max-h-[90vh] flex flex-col md:flex-row"
+                             class="relative w-full max-w-7xl overflow-hidden rounded-[2rem] border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 shadow-2xl transition-all duration-300 max-h-[90vh] flex flex-col md:flex-row"
                         >
                             <button @click="activeMerchModalId = null" class="absolute right-4 top-4 z-50 p-2 rounded-xl text-slate-400 hover:text-slate-900 dark:hover:text-white bg-slate-100 dark:bg-slate-900 transition shadow-sm" aria-label="Close modal">
                                 <x-heroicon-o-x-mark class="w-5 h-5" />
                             </button>
-                            <div class="w-full md:w-1/2 bg-slate-50 dark:bg-slate-900/50 flex items-center justify-center h-48 md:h-auto md:min-h-[300px] border-b md:border-b-0 md:border-r border-slate-200 dark:border-slate-800 relative shrink-0">
+                            <div class="w-full md:w-3/4 bg-slate-50 dark:bg-slate-900/50 flex items-center justify-center h-48 md:h-auto md:min-h-[300px] border-b md:border-b-0 md:border-r border-slate-200 dark:border-slate-800 relative shrink-0">
                                 @if($item->image)
                                     <img src="{{ Storage::url($item->image) }}" alt="{{ $item->name }}" class="absolute inset-0 h-full w-full object-cover">
                                 @else
@@ -288,7 +288,7 @@
                                     </div>
                                 @endif
                             </div>
-                            <div class="w-full md:w-1/2 p-6 md:p-8 flex flex-col justify-between overflow-y-auto max-h-[60vh] md:max-h-[80vh] custom-scrollbar bg-white dark:bg-slate-950">
+                            <div class="w-full md:w-1/4 p-6 md:p-8 flex flex-col justify-between overflow-y-auto max-h-[60vh] md:max-h-[80vh] custom-scrollbar bg-white dark:bg-slate-950">
                                 <div>
                                     <h2 class="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">{{ $item->name }}</h2>
                                     <div class="mt-4 text-sm leading-relaxed text-slate-600 dark:text-slate-400 prose dark:prose-invert">
