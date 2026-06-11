@@ -187,7 +187,7 @@
                                     <div class="flex justify-between items-start mb-3">
                                         <div>
                                             <h4 class="text-sm font-bold text-slate-900 dark:text-white">{{ $cat->name }}</h4>
-                                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{{ $cat->description }}</p>
+                                            {{-- <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{{ $cat->description }}</p> --}}
                                         </div>
                                         <div class="text-right">
                                             <div class="text-sm font-extrabold text-emerald-600 dark:text-emerald-450">Rp {{ number_format($cat->price, 0, ',', '.') }}</div>
