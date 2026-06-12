@@ -370,6 +370,46 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Global interceptor to prevent double form submission (spamming click)
+    document.addEventListener('submit', (e) => {
+        const form = e.target.closest('form');
+        if (!form) return;
+
+        // Skip GET requests and forms targeting a new tab/window
+        if ((form.getAttribute('method') || 'GET').toUpperCase() === 'GET' || form.target === '_blank') {
+            return;
+        }
+
+        // If the submit event has already been prevented, skip
+        if (e.defaultPrevented) {
+            return;
+        }
+
+        // Prevent duplicate submission if already submitting
+        if (form.dataset.submitting === 'true') {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            return;
+        }
+
+        // Mark the form as submitting
+        form.dataset.submitting = 'true';
+
+        // Disable all submit buttons inside the form
+        const submitButtons = form.querySelectorAll('button[type="submit"], input[type="submit"]');
+        submitButtons.forEach(button => {
+            button.disabled = true;
+        });
+
+        // Disable any external submit buttons that target this form via the form attribute
+        if (form.id) {
+            const externalButtons = document.querySelectorAll(`button[type="submit"][form="${form.id}"], input[type="submit"][form="${form.id}"]`);
+            externalButtons.forEach(button => {
+                button.disabled = true;
+            });
+        }
+    });
+
     document.body.addEventListener('submit', async (e) => {
         const form = e.target.closest('form[data-api-form]');
         if (!form) return;
@@ -387,6 +427,19 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error('API form submit failed', error);
             alert(error.message || 'Terjadi kesalahan saat memproses permintaan.');
+
+            // Re-enable form submission on error
+            form.dataset.submitting = 'false';
+            const submitButtons = form.querySelectorAll('button[type="submit"], input[type="submit"]');
+            submitButtons.forEach(button => {
+                button.disabled = false;
+            });
+            if (form.id) {
+                const externalButtons = document.querySelectorAll(`button[type="submit"][form="${form.id}"], input[type="submit"][form="${form.id}"]`);
+                externalButtons.forEach(button => {
+                    button.disabled = false;
+                });
+            }
         }
     });
 

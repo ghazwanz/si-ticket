@@ -78,13 +78,16 @@
                         expiry: {{ $pesanan->stock_reserved_until->timestamp * 1000 }},
                         remaining: '',
                         timer: null,
+                        wasActive: false,
                         updateTimer() {
                             const now = new Date().getTime();
                             const diff = this.expiry - now;
                             if (diff <= 0) {
                                 this.remaining = '00:00';
                                 clearInterval(this.timer);
-                                window.location.reload();
+                                if (this.wasActive) {
+                                    window.location.reload();
+                                }
                                 return;
                             }
                             const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
@@ -92,6 +95,10 @@
                             this.remaining = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
                         },
                         init() {
+                            const diff = this.expiry - new Date().getTime();
+                            if (diff > 0) {
+                                this.wasActive = true;
+                            }
                             this.updateTimer();
                             this.timer = setInterval(() => this.updateTimer(), 1000);
                         }
@@ -279,13 +286,16 @@
                                     expiry: {{ $pesanan->stock_reserved_until->timestamp * 1000 }},
                                     remaining: '',
                                     timer: null,
+                                    wasActive: false,
                                     updateTimer() {
                                         const now = new Date().getTime();
                                         const diff = this.expiry - now;
                                         if (diff <= 0) {
                                             this.remaining = '00:00';
                                             clearInterval(this.timer);
-                                            window.location.reload();
+                                            if (this.wasActive) {
+                                                window.location.reload();
+                                            }
                                             return;
                                         }
                                         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
@@ -293,6 +303,10 @@
                                         this.remaining = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
                                     },
                                     init() {
+                                        const diff = this.expiry - new Date().getTime();
+                                        if (diff > 0) {
+                                            this.wasActive = true;
+                                        }
                                         this.updateTimer();
                                         this.timer = setInterval(() => this.updateTimer(), 1000);
                                     }

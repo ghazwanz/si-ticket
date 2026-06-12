@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use App\Enums\EventStatus;
+use App\Enums\OrderStatus;
 use App\Enums\UserRole;
 use App\Models\Event;
 use App\Models\Order;
 use App\Models\OrderTicket;
+use App\Models\TicketCategory;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -190,5 +193,49 @@ class PesananTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertViewHas('canRetryPayment', true);
+    }
+
+    /**
+     * Test that viewing an expired pending order automatically cancels it and releases stock.
+     */
+    public function test_viewing_expired_pending_order_automatically_cancels_it_and_releases_stock(): void
+    {
+        $user = User::factory()->create(['role' => UserRole::User]);
+
+        $event = Event::factory()->create([
+            'status' => EventStatus::Published,
+        ]);
+
+        $ticketCategory = TicketCategory::factory()->create([
+            'event_id' => $event->id,
+            'quota' => 100,
+            'sold_count' => 5,
+        ]);
+
+        $order = Order::factory()->create([
+            'user_id' => $user->id,
+            'event_id' => $event->id,
+            'status' => OrderStatus::Pending,
+            'stock_reserved_until' => now()->subMinutes(10), // expired!
+        ]);
+
+        OrderTicket::factory()->create([
+            'order_id' => $order->id,
+            'ticket_category_id' => $ticketCategory->id,
+        ]);
+
+        // Prior to viewing, order is pending and ticketCategory has 5 sold
+        $this->assertEquals(OrderStatus::Pending, $order->status);
+        $this->assertEquals(5, $ticketCategory->fresh()->sold_count);
+
+        $response = $this->actingAs($user)->get("/pesanan/{$order->id}");
+
+        $response->assertStatus(200);
+
+        // Assert that the order is updated to Cancelled
+        $this->assertEquals(OrderStatus::Cancelled, $order->fresh()->status);
+
+        // Assert that the sold count was decremented back to 4
+        $this->assertEquals(4, $ticketCategory->fresh()->sold_count);
     }
 }

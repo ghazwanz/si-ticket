@@ -76,6 +76,12 @@ class PesananController extends Controller
             }
         }
 
+        // Auto-cancel expired pending order to release stock on page view
+        if ($pesanan->status === OrderStatus::Pending && $pesanan->isExpired()) {
+            $checkoutService->updateOrderStatus($pesanan, 'expire', $pesanan->payment_type ?? '', $pesanan->midtrans_transaction_id ?? '');
+            $pesanan->refresh();
+        }
+
         $ticketQrs = [];
         $merchQrs = [];
 
