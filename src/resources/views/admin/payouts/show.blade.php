@@ -77,7 +77,7 @@
                             <div>
                                 <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Batas Maks. Pengajuan</div>
                                 @php
-                                    $summary = app(\App\Services\PayoutService::class)->getAdvanceSummary($payout->event);
+                                    $summary = app(\App\Services\Admin\PayoutService::class)->getAdvanceSummary($payout->event);
                                 @endphp
                                 <div class="text-xl font-bold text-emerald-500">Rp {{ number_format($summary['available_advance_amount'] + ($payout->status === \App\Enums\PayoutStatus::Pending ? 0 : ($payout->approved_amount ?? $payout->requested_amount)), 0, ',', '.') }}</div>
                             </div>

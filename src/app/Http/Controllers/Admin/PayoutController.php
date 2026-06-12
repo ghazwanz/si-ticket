@@ -64,7 +64,7 @@ class PayoutController extends Controller
         try {
             $this->payoutService->approveAdvancePayout($payout, $request->user(), $request->validated()['approved_amount']);
 
-            return back()->with('success', 'Advance payout approved for disbursement.');
+            return back()->with('success', 'Pembayaran uang muka disetujui untuk pencairan.');
         } catch (InvalidArgumentException $e) {
             return back()->with('error', $e->getMessage());
         }
