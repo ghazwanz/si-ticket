@@ -31,6 +31,12 @@
         font-family: theme('fontFamily.heading');
         font-weight: 500;
     }
+
+    button:disabled, input[type="submit"]:disabled {
+        opacity: 0.5;
+        cursor: not-allowed !important;
+        pointer-events: none;
+    }
 }
 
 @layer components {
