@@ -1,0 +1,36 @@
+name: Export Commits to Markdown
+
+on:
+  push:
+    branches:
+      - main # Change to your default branch if different
+  workflow_dispatch: # Allows you to run this manually
+
+jobs:
+  export-commits:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetches all history for all branches and tags
+
+      - name: Generate Commit Log Table
+        run: |
+          echo "# Commit History Log" > COMMIT_LOG.md
+          echo "" >> COMMIT_LOG.md
+          echo "| Date | Author | Commit SHA | Message |" >> COMMIT_LOG.md
+          echo "| --- | --- | --- | --- |" >> COMMIT_LOG.md
+          
+          # Format git log into Markdown table rows
+          git log --pretty=format:"| %ad | %an | [%h](https://github.com{{ github.repository }}/commit/%H) | %s |" --date=short >> COMMIT_LOG.md
+
+      - name: Commit and Push Markdown File
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "docs: update COMMIT_LOG.md with latest history"
+          file_pattern: 'COMMIT_LOG.md'
+          
